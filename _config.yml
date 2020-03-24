@@ -1,115 +1,316 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+# Jekyll: https://jekyllrb.com/docs/configuration/
 
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
-title: MM
-email:
-description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
-twitter_username: username
-github_username: username
-minimal_mistakes_skin: default
-search: true
+## Default Configuration: https://jekyllrb.com/docs/configuration/default/
 
-# Build settings
-markdown: kramdown
-remote_theme: mmistakes/minimal-mistakes
-# Outputting
-permalink: /:categories/:title/
-paginate: 5 # amount of posts to show
-paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+future                   : true
 
+### Conversion
+markdown                 : kramdown
+highlighter              : rouge
+
+### Outputting
+permalink                : /:categories/:title/
+paginate_path            : /:num
+timezone                 : "Europe/Warsaw" # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+### Where things are
 include:
+  - _collections
   - _pages
 
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+sass:
+  #  sass_dir: ui/_scss
+  style: compressed
 
-# Plugins (previously gems:)
-plugins:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jekyll-feed
-  - jemoji
-  - jekyll-include-cache
+## Collections: https://jekyllrb.com/docs/collections/
+collections_dir          : _collections
+collections:
+  categories:
+    output               : true
+    permalink            : /:collection/:path/
+  tags:
+    output               : true
+    permalink            : /:collection/:path/
+  langs:
+    output               : true
+    permalink            : /:collection/:path/
+  tools:
+    output               : true
+    permalink            : /:collection/:path/
+  libs:
+    output               : true
+    permalink            : /:collection/:path/
+  projects:
+    output               : true
+    permalink            : /:collection/:path/
+  eso:
+    output               : true
+    permalink            : /:collection/:path/
+  books:
+    output               : true
+    permalink            : /:collection/:path/
 
-author:
-  name   : "First Lastname"
-  avatar : "/assets/images/bio-photo.jpg"
-  bio    : "My awesome biography constrained to a sentence or two goes here."
-  links:
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://"
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      url: "https://instagram.com/"
-
-footer:
-  links:
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      url: "https://instagram.com/"
+## Front Matter Defaults: https://jekyllrb.com/docs/configuration/front-matter-defaults/
 
 defaults:
   # _posts
   - scope:
-      path: ""
-      type: posts
+      path               : ""
+      type               : posts
     values:
-      layout: single
-      author_profile: true
-      read_time: true
-      comments: true
-      share: true
-      related: true
+      layout             : post
+      read_time          : true
+      comments           : true
+      share              : true
+      related            : true
+      pagination         : true
+      toc: true
+      toc_sticky         : true
+      sidebar:
+        nav              : sidebar-main
   # _pages
   - scope:
-      path: "_pages"
-      type: pages
+      path               : "_pages"
+      type               : pages
     values:
-      layout: single
-      author_profile: true
+      layout             : page
+      classes            : wide
+      sidebar            :
+        main             : true
+        nav              : sidebar-main
+  # _categories
+  - scope:
+      path               : ""
+      type               : categories
+    values:
+      layout             : page-category
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _tags
+  - scope:
+      path               : ""
+      type               : tags
+    values:
+      layout             : page-tag
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _langs
+  - scope:
+      path               : ""
+      type               : langs
+    values               :
+      layout             : page-lang
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _tools
+  - scope:
+      path               : ""
+      type               : tools
+    values:
+      layout             : page-tool
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _libs
+  - scope:
+      path               : ""
+      type               : libs
+    values:
+      layout             : page-lib
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _projects
+  - scope:
+      path               : ""
+      type               : projects
+    values:
+      layout             : page-project
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _eso
+  - scope:
+      path               : ""
+      type               : eso
+    values:
+      layout             : page-eso
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
+  # _books
+  - scope:
+      path               : ""
+      type               : books
+    values:
+      layout             : page-book
+      share              : true
+      classes            : wide
+      sidebar:
+        main             : true
+        nav              : sidebar-main
 
+# Plugins
+plugins:
+  - jemoji
+  - jekyll-avatar
+  - jekyll-coffeescript
+  - jekyll-commonmark-ghpages
+  - jekyll-default-layout
+  - jekyll-feed
+  - jekyll-gist
+  - jekyll-github-metadata
+  - jekyll-include-cache
+  - jekyll-mentions
+  - jekyll-optional-front-matter
+  - jekyll-paginate
+  - jekyll-readme-index
+  - jekyll-redirect-from
+  - jekyll-relative-links
+  - jekyll-remote-theme
+  - jekyll-sass-converter
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-titles-from-headings
+
+## jekyll-commonmark-ghpages
+commonmark:
+  options                : ["SMART", "FOOTNOTES"]
+  extensions             : ["strikethrough", "autolink", "table", "tagfilter"]
+
+## jekyll-mentions
+jekyll-mentions:
+  base_url               : "https://twitter.com"
+
+## jekyll-paginate
+paginate                 : 1
+
+## jekyll-remote-theme
+remote_theme             : twocolumn/minimal-mistakes@gh-pages
+
+## jekyll-seo-tag
+title                    : "WriteOnly.pl"
+tagline                  : "WriteOnly Haskell, Scala, Jekyll, Git & Bash Blog"
+description: >-
+  Blog o programowaniu w językach Haskell, Eta, Scala Native i Scala.js
+  oraz generatorze stron Jekyll, systemie kontroli wersji Git i użyciu wiersza poleceń CLI
+url                      :
+author:
+  twitter                : "TheKamilAdam"
+  name                   : "Kamil Adam"
+  avatar                 : "/assets/images/kamil.adam.jpg"
+  bio                    : "My awesome biography constrained to a sentence or two goes here."
+twitter:
+  username               : "TheKamilAdam"
+facebook:
+logo                     : "/assets/favicon.ico"
+social:
+  name      : "Kamil Adam"
+  links:
+    - https://github.com/writeonly
+    - https://www.linkedin.com/company/writeonly-pl
+    - https://www.facebook.com/WriteOnlyPL
+    - https://www.instagram.com/degustujacaistota/
+    - https://twitter.com/TheKamilAdam
+
+# External systems
+
+## Compress HTML
+compress_html:
+  clippings              : all
+  comments               : all
+  endings                : all
+  profile                : false
+  startings              : [head, body]
+
+## Analytics
+analytics:
+  provider               : "google-gtag"
+  google:
+    tracking_id          : "UA-136426906-1"
+    anonymize_ip         : false
+
+## Comments
+comments:
+  provider               : "disqus_empty"
+  disqus:
+    shortname            : "writeonly-pl"
+
+## Search
+search                   : true
+search_full_content      : true
+search_provider          : "google"
+google:
+  search_engine_id       : "bf18084b82c20452c"
+  instant_search         : true # false (default), true
+
+ad_sense                 : "ca-pub-8978320289517812"
+
+## Social Sharing
+og_image                 : "/favocon.ico"
+footer:
+  links:
+    - label              : "GitHub"
+      icon               : "fab fa-fw fa-github"
+      url                : "https://github.com/writeonly"
+    - label              : "Linkedin"
+      icon               : "fab fa-fw fa-linkedin"
+      url                : "https://www.linkedin.com/company/writeonly-pl/"
+    - label              : "Facebook"
+      icon               : "fab fa-fw fa-facebook"
+      url                : "https://www.facebook.com/WriteOnlyPL"
+    - label              : "Instagram"
+      icon               : "fab fa-fw fa-instagram"
+      url                : "https://instagram.com/degustujacaistota"
+    - label              : "Twitter"
+      icon               : "fab fa-fw fa-twitter"
+      url                : "https://twitter.com/TheKamilAdam"
+    - label              : "Dev.to"
+      icon               : "fab fa-fw fa-dev"
+      url                : "https://dev.to/kamiladam"
+
+# Theme settings
+locale                   : "pl-PL"
+
+masthead_title           : "Blog o programowaniu w językach Haskell, Eta, Scala Native i Scala.js"
+subtitle                 : "oraz generatorze stron Jekyll, systemie kontroli wersji Git i użyciu wiersza poleceń CLI"
+email                    : "kamil.adam.zabinski@gmail.com"
+
+repository               : "writeonly/writeonly.github.io"
+twitter_username         : "TheKamilAdam"
+github_username          : "kamil-adam"
+
+minimal_mistakes_skin    : "gold"
+breadcrumbs              : true
+words_per_minute         : 100
+
+## Scripts
+scripts:
+  - /assets/js/main.min.js
+  - /assets/js/app.js
+  - https://kit.fontawesome.com/4eee35f757.js
+
+## Archives
 category_archive:
-  type: liquid
-  path: /categories/
+  type                   : collection
+  path                   : /categories/
 tag_archive:
-  type: liquid
-  path: /tags/
+  type                   : collection
+  path                   : /tags/
