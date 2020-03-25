@@ -1,9 +1,36 @@
 main:
-  - title: "Posts"
+
+sidebar-main:
+  - title: "Artykuły"
     url: /posts/
-  - title: "Categories"
-    url: /categories/
-  - title: "Tags"
-    url: /tags/
-  - title: "About"
-    url: /about/
+    children:
+     - title: "Po kategoriach"
+       url: /categories/
+     - title: "Po językach"
+       url: /langs/
+     - title: "Po narzędziach"
+       url: /tools/
+     - title: "Po bibliotekach"
+       url: /libs/
+     - title: "Po tagach"
+       url: /tags/
+     - title: "Po projektach"
+       url: /projects/
+     - title: "Eso"
+       url: /eso/
+  - title: "Strony"
+    children:
+    - title: "Przeczytane ksiązki"
+      url: /books/
+    - title: "O autorze"
+      url: /about/
+    - title: "Polityka prywatności"
+      url: /privacy/
+    - title: "Degustujaca Istota"
+      url: https://www.degustujacaistota.pl/
+  - title: "Wyszukiwarki"
+    children:
+      - title: "Wyszukiwarka Jekyll"
+        url: /search-jekyll/
+      - title: "Wyszukiwarka Jekyll Prosta"
+        url: /search-jekyll-simple/
