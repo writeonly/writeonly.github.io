@@ -1,9 +1,52 @@
 main:
-  - title: "Posts"
-    url: /posts/
-  - title: "Categories"
-    url: /categories/
-  - title: "Tags"
-    url: /tags/
-  - title: "About"
-    url: /about/
+#  - title: "🔍"
+#    url: /search
+  - title: "🕵️"
+    url: /privacy
+  - title: "✍️"
+    url: /about
+  - title: "🔖"
+    url: /books
+  - title: "☀️"
+    url: https://helvm.online/
+  - title: "🍆"
+    url: https://www.degustujacaistota.pl/
+
+sidebar-main:
+  - title: "Artykuły"
+    url: /posts
+    children:
+     - title: "🐈 Po kategoriach"
+       url: /categories
+     - title: "🤟 Po językach"
+       url: /langs
+     - title: "🧰 Po narzędziach"
+       url: /tools
+     - title: "📚 Po bibliotekach"
+       url: /libs
+     - title: "🏷️ Po tagach"
+       url: /tags
+     - title: "🚧 Po projektach"
+       url: /projects
+     - title: "🌈 Eso"
+       url: /eso
+  - title: "Strony"
+    children:
+#    - title: "🔍 Wyszukiwarka"
+#      url: /search
+    - title: "🕵️ Polityka prywatności"
+      url: /privacy
+    - title: "✍️ O autorze"
+      url: /about
+    - title: "🔖 Przeczytane książki"
+      url: /books
+    - title: "☀ HelVM️"
+      url: https://helvm.online/
+    - title: "🍆 Degustująca Istota"
+      url: https://www.degustujacaistota.pl/
+#  - title: "Wyszukiwarki"
+#    children:
+#      - title: "Wyszukiwarka Jekyll"
+#        url: /search-jekyll/
+#      - title: "Wyszukiwarka Jekyll Prosta"
+#        url: /search-jekyll-simple/
