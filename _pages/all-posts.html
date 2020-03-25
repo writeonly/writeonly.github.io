@@ -1,0 +1,22 @@
+---
+layout: page
+title: Wszystkie artykuły
+permalink: /all-posts/
+description: Wszystkie artykuły po ilości słów
+---
+<div class="page">
+    <script defer src="/assets/js/plugins/jquery-tablesort/jquery.tablesort.js"></script>
+    <pre>$('table').tablesort();</pre>
+    <table>
+        <tr>
+            <th>title</th>
+            <th>words</th>
+        </tr>
+        {% for post in site.posts %}
+        <tr>
+            <td><a href="{{ post.url | relative_url }}">{{ post.title }}</a></td>
+            <td>{{post.content | strip_html | number_of_words}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
