@@ -28,6 +28,8 @@ W stylu wyrażeń tworzysz duże wyrażenia z małych wyrażeń.
 
 ### Abstrakcja lambda i wiązanie globalne
 
+(Definitions: define, define-syntax, ...)[https://docs.racket-lang.org/reference/define.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._define%29%29]
+
 ```racket
 (lambda (a b) (+ a b))
 ```
@@ -60,10 +62,20 @@ let f = \a b -> a+b
 
 ### wyrażenie `let in` czyli wiązanie lokalny
 
+[Local Binding](https://docs.racket-lang.org/guide/let.html)
 
+[Local Binding: let, let*, letrec, ...](https://docs.racket-lang.org/reference/let.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._let%29%29)
 
-let, let*, letrec, ...
+```racket
 
+(let ([id val-expr] ...) body ...+)
+
+(let proc-id ([id init-expr] ...) body ...+)
+```
+
+```racket
+(lambda (id ...) body ...+)
+```
 
 ### wyrażenie if
 
