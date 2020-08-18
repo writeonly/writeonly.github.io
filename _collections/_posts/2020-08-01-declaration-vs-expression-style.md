@@ -26,7 +26,7 @@ W stylu wyrażeń tworzysz duże wyrażenia z małych wyrażeń.
 
 
 
-### Abstrakcja lambda i wiązanie globalne
+### Abstrakcja lambda i wiązanie
 
 (Functions (Procedures): lambda)[https://docs.racket-lang.org/guide/lambda.html]
 
@@ -101,7 +101,7 @@ let f = \a b -> a+b
 
 ## Styl deklaracja
 
-### Deklaracja funkcji i wiązanie globalny
+### Deklaracja funkcji i wiązanie
 
 ```haskell
 f :: Num -> Num -> Num
