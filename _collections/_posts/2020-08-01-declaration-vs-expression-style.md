@@ -93,6 +93,8 @@ let f = \a b -> a+b
 
 ### wyrażenie case
 
+[Simple Dispatch: case](https://docs.racket-lang.org/guide/case.html)
+
 [Pattern Matching](https://docs.racket-lang.org/guide/match.html)
 
 [Case](https://wiki.haskell.org/Case)
