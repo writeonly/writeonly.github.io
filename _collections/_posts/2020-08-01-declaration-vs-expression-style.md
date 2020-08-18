@@ -79,6 +79,8 @@ let f = \a b -> a+b
 
 ### wyrażenie if
 
+[Conditionals: if, cond, and, and or](https://docs.racket-lang.org/reference/if.html)
+
 [https://wiki.haskell.org/If-then-else](If-then-else)
 
 ### wyrażenie case
