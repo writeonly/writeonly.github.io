@@ -28,6 +28,12 @@ W stylu wyrażeń tworzysz duże wyrażenia z małych wyrażeń.
 
 ### Abstrakcja lambda i wiązanie globalne
 
+(Functions (Procedures): lambda)[https://docs.racket-lang.org/guide/lambda.html]
+
+(Definitions: define)[https://docs.racket-lang.org/guide/define.html]
+
+(Identifiers and Binding)[https://docs.racket-lang.org/guide/binding.html]
+
 (Definitions: define, define-syntax, ...)[https://docs.racket-lang.org/reference/define.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._define%29%29]
 
 ```racket
@@ -79,11 +85,15 @@ let f = \a b -> a+b
 
 ### wyrażenie if
 
+[Conditionals](https://docs.racket-lang.org/guide/conditionals.html)
+
 [Conditionals: if, cond, and, and or](https://docs.racket-lang.org/reference/if.html)
 
 [https://wiki.haskell.org/If-then-else](If-then-else)
 
 ### wyrażenie case
+
+[Pattern Matching](https://docs.racket-lang.org/guide/match.html)
 
 [Case](https://wiki.haskell.org/Case)
 
