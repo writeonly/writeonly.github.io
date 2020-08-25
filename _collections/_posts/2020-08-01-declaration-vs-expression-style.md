@@ -1,16 +1,11 @@
 ---
-title:    'Parsowanie parametrów wiersza poleceń w Haskellu'
+title:    'Styl wyrażenia a styl deklaracji'
 author:   TheKamilAdam
 category: haskell-eta
-tags:     assembler cli interpreter
-langs:    eta haskell
-libs:     optparse-applicative
-tools:    cabal etlas
-projects: helcam helpa helvm
-eso:      brainfuck eta subleq whitespace
+langs:    haskell ocaml perl python racket scheme
 redirect_from:
-  - optparse-applicative
-  - haskell-eta/optparse-applicative
+  - declaration-vs-expression-style
+  - haskell-eta/declaration-vs-expression-style
 ---
 
 Wiele styli - jak perl
@@ -24,43 +19,77 @@ W stylu wyrażeń tworzysz duże wyrażenia z małych wyrażeń.
 
 ## Styl wyrażeń
 
+Zacznę od stylu wyrażeń,
+bo jest to coś co częściej jest spotykane w językach funkcyjnych.
 
+Scheme Racket
+
+Styl wyrażeń 
 
 ### Abstrakcja lambda i wiązanie
 
+Trudno powiedzieć czym jest programowanie funkcyjne.
+Wielu pisze że jest programowanie oparte na zwracaniu wartości.
+Trudno jednak wyokrazić sobie programowanie funkcyjne bez możliwości deklarowania lambd.
+
 (Functions (Procedures): lambda)[https://docs.racket-lang.org/guide/lambda.html]
 
-(Definitions: define)[https://docs.racket-lang.org/guide/define.html]
+```
+(lambda (arg-id ...)
+  body ...+)
+```
 
-(Identifiers and Binding)[https://docs.racket-lang.org/guide/binding.html]
-
-(Definitions: define, define-syntax, ...)[https://docs.racket-lang.org/reference/define.html#%28form._%28%28lib._racket%2Fprivate%2Fbase..rkt%29._define%29%29]
-
+Przykładowe utworzenie lambdy to
 ```racket
 (lambda (a b) (+ a b))
 ```
 
+Z taką utworznoną lambdą niewiele można zrobić.
+W zasadzie można ją tylko wywołać (zaaplikować)
 ```racket
 ((lambda (a b) (+ a b)) 2 3)
 ```
 
+(Definitions: define)[https://docs.racket-lang.org/guide/define.html]
+```
+(define id expr)
+```
+
+Czyli w maszym przypadku
 ```racket
 (define add (lambda (a b) (+ a b)))
 ```
 
 
+Konstrukcja 
+```racket
+(define id (lambda (arg ...) body ...+))
+```
+jest na tyle popularna, że istnieje dla niej skrót
+```
+(define (id arg ...) body ...+)
+```
+
+Czyli maszą lambdę można przypisać do zmiennej za pomocą kodu:
 ```racket
 (define (add a b) (+ a b))
 ```
 
-(define (id arg ...) body ...+)
-which is a shorthand for
+https://www2.lib.uchicago.edu/keith/ocaml-class/data.html#function
+```ocaml
+let inc = fun n -> n + 1;;
+```
 
-(define id (lambda (arg ...) body ...+))
-
+W Haskellu w trybie interaktywnym 
 ```haskell
 let f :: Num -> Num -> Num
 let f = \a b -> a+b
+```
+
+Poza intrybem interaktywnym
+```haskell
+f :: Num -> Num -> Num
+f = \a b -> a+b
 ```
 
 [Lambda abstraction](https://wiki.haskell.org/Lambda_abstraction) 
@@ -73,14 +102,35 @@ let f = \a b -> a+b
 [Local Binding: let, let*, letrec, ...](https://docs.racket-lang.org/reference/let.html#%28form._%28%28lib._racket%2Fprivate%2Fletstx-scheme..rkt%29._let%29%29)
 
 ```racket
-
 (let ([id val-expr] ...) body ...+)
-
-(let proc-id ([id init-expr] ...) body ...+)
 ```
 
 ```racket
-(lambda (id ...) body ...+)
+((lambda (id ...) body ...+) val-expr ...)
+```
+
+```racket
+((lambda (a b) (+ a b)) 2 3)
+```
+
+(let )
+
+https://www2.lib.uchicago.edu/keith/ocaml-class/definitions.html
+
+#### Ocaml
+
+```ocaml
+let n = 2 in n * n;;
+```
+
+#### Haskell
+
+W Haskellu jest wyrażenie `let-in`
+
+```
+aaa x y = let r = 3 
+              s = 6
+              in  r*x + s*y
 ```
 
 ### wyrażenie if
@@ -99,19 +149,86 @@ let f = \a b -> a+b
 
 [Case](https://wiki.haskell.org/Case)
 
+[Type declarations and pattern matching](https://caml.inria.fr/pub/docs/oreilly-book/html/book-ora016.html)
+
+```ocaml
+let imply v = match v with 
+     (true,true)   -> true
+   | (true,false)  -> false
+   | (false,true)  -> true
+   | (false,false) -> true;;
+val imply : bool * bool -> bool = <fun>
+```
+
+[Data Types and Matching](https://ocaml.org/learn/tutorials/data_types_and_matching.html)
+
+```ocaml
+# let rec to_string e =
+    match e with
+    | Plus (left, right) ->
+       "(" ^ to_string left ^ " + " ^ to_string right ^ ")"
+    | Minus (left, right) ->
+       "(" ^ to_string left ^ " - " ^ to_string right ^ ")"
+    | Times (left, right) ->
+       "(" ^ to_string left ^ " * " ^ to_string right ^ ")"
+    | Divide (left, right) ->
+       "(" ^ to_string left ^ " / " ^ to_string right ^ ")"
+    | Value v -> v;;
+val to_string : expr -> string = <fun>
+# let print_expr e =
+    print_endline (to_string e);;
+val print_expr : expr -> unit = <fun>
+```
+
+[Pattern Matching](https://www2.lib.uchicago.edu/keith/ocaml-class/pattern-matching.html)
+```ocaml
+    # let f x = 
+	if x = "foo"
+	then "it is foo"
+	else if x = "bar"
+	then "bar is the one"
+	else if x = "zap"
+	then "totally different"
+	else "our default: " ^ x
+      ;;
+    val f : string -> string = <fun>
+    # f "hello";;
+    - : string = "our default: hello"
+    # f "bar";;
+    - : string = "bar is the one"
+```
+
+https://ocaml.org/learn/tutorials/data_types_and_matching.html#Pattern-matching-on-datatypes
+
 ## Styl deklaracja
 
 ### Deklaracja funkcji i wiązanie
 
+W Scheme ani Racket nie ma innej możliwości deklaracji funkcji niż za pomocą lambdy.
+Dlatego przejrziemy odrazu do języka Haskell
+
+W Haskellu deklaracja funkcji wygląda następująco
 ```haskell
 f :: Num -> Num -> Num
 f x = x*x
 ```
 
 Co warto zauważyć?
-Otóż typ funkcji oraz zmiennej zawiwrającą
+Otóż typ funkcji oraz typ lambdy przypisanej do zmiennej są identyczne.
+Dlatego w każdym miejscu,
+gdzie jest wymagana lambda,
+możemy też użyć funkcji.
 
-[Eta conversion](https://wiki.haskell.org/Eta_conversion)
+Jeśli jednak postanowimy napisać lambdę jak w poniższym przykładzie:
+```haskell
+map (\x -> abs x) [1, -1, 2 -2]
+```
+
+Kompilator haskella skorzysta z [Eta conversion](https://wiki.haskell.org/Eta_conversion)
+i zamieni to na postać:
+```haskell
+map abs [1, -1, 2 -2]
+```
 
 
 ### Klauzura `where` czyli wiązanie lokalny
@@ -123,7 +240,9 @@ Otóż typ funkcji oraz zmiennej zawiwrającą
 ### Dopasowanie do wzorców (ang `Pattern matching`)
 
 
-## Inne
+## Podsumowanie
+Który ze styli jest lepszy?
+Moim skromnym zdaniem 
 
 [Declaration vs. expression style](https://wiki.haskell.org/Declaration_vs._expression_style)
 

@@ -117,11 +117,11 @@ Ja widzę tu jednak Scalę :D
 
 Mój plan nauki języków to:
 
-1. Haskell i dokończyć eso-assembler WebAssembly do języków ezoterycznych'a
-2. Scheme i napisać kompilator eso-C do języków ezoterycznych
-3. Rust i przepisać interpretery języków ezoterycznych
-4. Idris jeszcze nie wiem do czego mi to potrzebne, ale jak się dowiem to powiem o tym wszystkim
-5. Scala i dostać w niej pracę
+1. Haskell i dokończyć eso-assembler WebAssembly do języków ezoterycznych'a.
+2. Scheme i napisać kompilator eso-C do języków ezoterycznych.
+3. Rust i przepisać interpretery języków ezoterycznych.
+4. Idris jeszcze nie wiem do czego mi to potrzebne, ale jak się dowiem to powiem o tym wszystkim.
+5. Scala i dostać w niej pracę.
 
 
 
