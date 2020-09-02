@@ -7,19 +7,23 @@ langs:    dc forth haskell joy mouse postscript rpl webassembly
 libs:     attoparsec megaparsec
 tools:    cabal etlas jvm misc
 projects: helcam helpa helvm
-eso:      eas eta false funge piet whitespace
+eso:      beatnik eas eta false funge piet whitespace
 redirect_from:
   - attoparsec
   - haskell-eta/attoparsec
 ---
 
-Wyrażenia regularne są trudne i mało czytalne.
+Wyrażenia regularne są trudne i mało czytelne.
 Czy są dla nich jakieś alternatywy?
-Tak, są to parsery
+Tak, są to parsery.
 
-## Rodzaje parserów 
 
-Dla haskella istnieją cztery popularke biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych)
+
+## Rodzaje parserów
+
+Z grubsza najczęściej występujące parsery można podzielić na RL i LL
+
+Dla Haskella istnieją cztery popularke biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych)
 
 * Happy & Alex
 * Parsec/MegaParsec
@@ -30,36 +34,42 @@ Dla haskella istnieją cztery popularke biblioteki do pisania parserów (plus co
 
 Happy & Alex haskellowe wersje klasycznej pary Yacc i Lex (lub ich darmowych odpowiedników Bison i Flex).
 Jedyne w tym zestawieniu pozwalają na używanie gramatyk LR.
+Wadą pary Happy & Alex jest to,
+że trzeba napisać gramatykę.
+czyli nauczyć się nowego języka niewiele ładniejszego niż wyrażenia regularne.
 
 ### Parsec/MegaParsec
 
-Parsec jest to klasyczna bibliokteka do pisania parserów.
+Parsec jest to klasyczna biblioteka do pisania parserów.
+Pozwala Combinatory (ang. [Parser combinator](https://en.wikipedia.org/wiki/Parser_combinator))
+
 Parsec niestety nie jest już rozwijany.
-Zamiast tego jest rozwijana jego ulepszona wersja
+Zamiast tego jest rozwijana jego ulepszona wersja, czyli MegaParsec.
 
 
 ### AttoParsec
-
-Biblioteka oryginalnie pomyślana do parsowania logów na bierząco.
-Dlateog jest zdecydowanie uproszczona w porównaniu do Parseca.
-W zamian za to jest szybsza, araz jako jedyna  umożliwia parsowanie przyrastającego pliku linia po linii.
-
-AttoParsec to minimalistyczny parser do obsługi tekstow o prostej strukturze.
+AttoParsec to biblioteka oryginalnie pomyślana do parsowania logów na bieżąco.
+Jest szybsza niż MegaParsec czy Parsec oraz jako jedyna umożliwia parsowanie przyrastającego pliku linia po linii.
+Niestety jest o wiele uboższa w składni przez co jest uważana za dobrą do parsowania plików o prostrzej strukturze.
+Ubogość sładni przekłada się także na prostrzą strukturę samej biblioteki.
+Dzięki czemu o wiele prościej się jej nauczyć.
 
 ## Wyzwanie - EAS i ETA
 
-Chcemy przetestować parser więc potrzebujemy jakiś teksto do sparsowania.
-Można by wziąć logg, ja jednak zedcydowałem się na pliki zawierające EAS.
-**EAS** (ETA Assembler) - 
+Skoro już wybrałem AttoParsec to przydałyby się jakieś logi do sparsowania.
+Logów jednak nie mam w zwiazku z tym będę parsować kod źródłowy napisany w EAS.
 
-**ETA** to ezoteryczny język programowania
+**EAS** (ETA Assembler) - to para assembler dla exoterycznego jezyka programowania **ETA**.
 
-eta, false, funge, piet, whitespace
+Zarówno **EAS** jak i **ETA** to języki stosowe (ang. stack-based).
+Wiele języków ezoterycznych jak **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
+
+Istnieje też wiele nieezoterycznych języków 
 
 
 Minimalistyczny asembler stosowy bez makr.
 
-Glownie rozwiązywanie liczb i etykiet.
+Głównie rozwiązywanie liczb i etykiet.
 
 MISC (ang. Minimal Instruction Set Computer)
 
@@ -78,11 +88,6 @@ webassembly
 Języki stosowe stack-based 
 dc forth mouse postcript rpl joy
 
-z czego na szczególną uwagę zasługują
-* forth - jako najpopularniejszy język stosowy
-* joy - jako funkcyjny język stosowy
-* mouse - jako prawdziwie używany język stosowy który wygląda jak ezoteryczny język
-* rpl - nazywany Reversed Polish Lisp
 
 https://pl.wikipedia.org/wiki/OSV
 
@@ -223,8 +228,8 @@ Redukcja siły operatorów (ang. [Strength reduction](https://en.wikipedia.org/w
 jest częścią optymalizacji.
 W naszy przypadku mamy reukcę skomplikowanych instrukcji na instrukce proste.
 
-* Redukcja Etykiet - wyliczanie adresów skoków
-* Redukcja Stringów - zamiana na znaki
+* Redukcja etykiet - wyliczanie adresów skoków
+* Redukcja stringów - zamiana na znaki
 
 ```haskell
 replaceLabels ::  LabelAddresses -> InstructionList -> InstructionList
