@@ -7,7 +7,7 @@ langs:    dc forth haskell joy mouse postscript rpl webassembly
 libs:     attoparsec megaparsec
 tools:    cabal etlas jvm misc
 projects: helcam helpa helvm
-eso:      eas eta false funge piet whitespace
+eso:      beatnik eas eta false funge piet whitespace
 redirect_from:
   - attoparsec
   - haskell-eta/attoparsec
