@@ -61,8 +61,10 @@ Logów jednak nie mam w zwiazku z tym będę parsować kod źródłowy napisany 
 
 **EAS** (ETA Assembler) - to para assembler dla exoterycznego jezyka programowania **ETA**.
 
-Zarówno **EAS** jak i **ETA** to języki stosowe (ang. stack-based)
+Zarówno **EAS** jak i **ETA** to języki stosowe (ang. stack-based).
 Wiele języków ezoterycznych jak **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
+
+Istnieje też wiele nieezoterycznych języków 
 
 
 Minimalistyczny asembler stosowy bez makr.
@@ -86,11 +88,6 @@ webassembly
 Języki stosowe stack-based 
 dc forth mouse postcript rpl joy
 
-z czego na szczególną uwagę zasługują
-* forth - jako najpopularniejszy język stosowy
-* joy - jako funkcyjny język stosowy
-* mouse - jako prawdziwie używany język stosowy który wygląda jak ezoteryczny język
-* rpl - nazywany Reversed Polish Lisp
 
 https://pl.wikipedia.org/wiki/OSV
 
