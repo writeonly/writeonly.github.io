@@ -26,7 +26,8 @@ Z grubsza najczęściej występujące parsery można podzielić na RL i LL
 Dla Haskella istnieją cztery popularke biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych)
 
 * Happy & Alex
-* Parsec/MegaParsec
+* Parsec
+* MegaParsec
 * AttoParsec
 
 
@@ -38,10 +39,12 @@ Wadą pary Happy & Alex jest to,
 że trzeba napisać gramatykę.
 czyli nauczyć się nowego języka niewiele ładniejszego niż wyrażenia regularne.
 
-### Parsec/MegaParsec
+### Parsec
 
 Parsec jest to klasyczna biblioteka do pisania parserów.
 Pozwala Combinatory (ang. [Parser combinator](https://en.wikipedia.org/wiki/Parser_combinator))
+
+### MegaParsec
 
 Parsec niestety nie jest już rozwijany.
 Zamiast tego jest rozwijana jego ulepszona wersja, czyli MegaParsec.
@@ -54,24 +57,61 @@ Niestety jest o wiele uboższa w składni przez co jest uważana za dobrą do pa
 Ubogość sładni przekłada się także na prostrzą strukturę samej biblioteki.
 Dzięki czemu o wiele prościej się jej nauczyć.
 
-## Wyzwanie - EAS i ETA
-
 Skoro już wybrałem AttoParsec to przydałyby się jakieś logi do sparsowania.
 Logów jednak nie mam w zwiazku z tym będę parsować kod źródłowy napisany w EAS.
 
-**EAS** (ETA Assembler) - to para assembler dla exoterycznego jezyka programowania **ETA**.
+## Wyzwanie - pseudo asembler
 
-Zarówno **EAS** jak i **ETA** to języki stosowe (ang. stack-based).
-Wiele języków ezoterycznych jak **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
+Gramatyka assemblera jest mocno powiązana z typem [modelu programowym procesora](https://pl.wikipedia.org/wiki/Model_programowy_procesora) 
+(ang. *[Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)*, **[ISA]**)
+
+
+
+Trzy najczęściej spotykane typy modeli programowych procesora to:
+* CISC (ang. Complex Instruction Set Computing)
+* RISC (ang. Reduced Instruction Set Computing)
+* MISC (ang. Minimal Instruction Set Computing)
+
+
+CISC historycznie był pierwszym modelem.
+Charakteryzował się skomplikowanymi rozkazami ze skomplikowanymi sposobami adresowania.
+Miało to ułatwić pisanie kompilatorów.
+
+RISC powstał jak reakcja na to że CISCi okazało się jednak ślepą uliczką.
+Skomplikowane rozkazy i sposoby adresowania nie Nie pomoagały jednak w pisaniu kompilatorów.
+W związku z tym postanowiono pójść w drugą skrajnośc upraszczając maksymalnie listę rozkazów oraz sposoby adresowania.
+Wynikiem tego była prostsza jednostka arytmetyczno-logiczna.
+Zaoszczędzone tranzystory przeznaczano na wiekszą ilość rejestrów ogólnego przeznaczenia.
+
+MISC rozwijany niezależnie.
+Charakteryzuje się bardzo małą ilością rozkazów.
+Niektóre assemblery MISC wyglądają wręcz jak języki ezoteryczne.
+
+Nie jest to w zasadzie wymagane, ale zwykle MISCy to zwykle maszyny stosowe.
+Rozwiązuje to także problem adresowania (operacji wykonywanych na stosie to rozkazy 0 adresowe, ewentualnie 1 adresowe)
+
+Co ciekawe rzeczywiste procesory są rzadko budowane jako maszyny stosowe.
+O wiele częściej procesory wirtualne jak JVM, Wirtualna Maszyna Perla czy WebAssembly są maszynami stosowymi.
+Wiele języków ezoterycznych jak **[ETA]**  **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
+
+Teoretycznie najprostrzy możliwy assembler dla maszyny stosowej wystarczyło by żeby zawierał 8 prostych instrukcji. 
+
+
+Jak już mowa o językach ezoterycznych.
+Naszym prostym assemblerem do sparsowania będzie **EAS**.
+**EAS** (ETA Assembler) - to para assembler dla ezoterycznego języka programowania **ETA**.
+
+Zarówno jak i **ETA** to języki stosowe (ang. stack-based).
 
 Istnieje też wiele nieezoterycznych języków 
+
+
+
 
 
 Minimalistyczny asembler stosowy bez makr.
 
 Głównie rozwiązywanie liczb i etykiet.
-
-MISC (ang. Minimal Instruction Set Computer)
 
 Minimalizm osiąga się poprzez wykonywanie operacji na stosie.
 maszyna stosowa (https://pl.wikipedia.org/wiki/Maszyna_stosowa)
