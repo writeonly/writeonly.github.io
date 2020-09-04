@@ -161,9 +161,8 @@ Następnie następuje redukcja instrukcji i generacja kodu docelowego.
 
 
 Parsowanie liczb nieujemnych całkowitych
-Parsowanie liczb ujemnych calkowitych
 Parsowanie etykiet
-Parsowanie identyfikatorów (zależne od jezyka docelowego)
+Parsowanie identyfikatorów 
 
 
 Naszym tekstem do sparsowania jest
@@ -188,6 +187,7 @@ instructionParser =
   <|> commentParser
 ```
 
+EAS jak to assembler maszyny stosowej zawiera wiele rozkazów bezargumentowych.
 ```haskell
 zeroOperandInstructionParser :: Parser Instruction
 zeroOperandInstructionParser =
@@ -198,17 +198,21 @@ zeroOperandInstructionParser =
   <|> zeroOperandInstruction I ["I", "Input"]
   <|> zeroOperandInstruction S ["S", "Subtract"]
   <|> zeroOperandInstruction H ["H", "Halibut"]
-    where zeroOperandInstruction i ts = (asciiCIChoices ts *> endWordParser) $> i
+    where zeroOperandInstruction i ts = i <$ (asciiCIChoices ts *> endWordParser)
+```
 
+Oryginalnie EAS posiada tylko jeden rozkaz jednoargumentowy. 
+Jest tu umieszczenie liczby na stosie.
+Przy czym liczbą może być wartość podana wprost, wartośc literału znakowego lub adres etykiety.
+Dodatkowo posiada także możliwość dołączenia (ang. *incluDe*) pliku oraz zdefiniowania etykiety (ang. *Label*).
+Ja rozszeżyłem to jeszcze o możliwość umieszczenie (ang. *pUt*) stringa na stosie
+```haskell
 numberOperandInstructionParser :: Parser Instruction
 numberOperandInstructionParser = N <$> (
       naturalValueParser
   <|> (asciiCI "N" *> skipHorizontalSpace *> naturalValueParser)
   <|> (asciiCI "Number" *> endWordParser *> skipHorizontalSpace *> naturalValueParser)
   )
-
-rParser :: Parser Instruction
-rParser = (skipMany1EndLine *> skipManyComment) $> R
 
 dParser :: Parser Instruction
 dParser = D <$> (char '*' *> fileNameParser <* char '\n')
@@ -218,6 +222,12 @@ lParser = L <$> (char '>' *> identifierParser <* char ':')
 
 uParser :: Parser Instruction
 uParser = U <$> stringParser
+```
+
+Ponieważ w EAS znaki końca linii () są znaczące trzeba je parsować w sposób świadomy 
+```haskell
+rParser :: Parser Instruction
+rParser = R <$ (skipMany1EndLine *> skipManyComment)
 
 commentParser :: Parser Instruction
 commentParser = skipComment *> rParser
@@ -232,8 +242,11 @@ skipMany1EndLine :: Parser String
 skipMany1EndLine = many1 (char '\n')
 ```
 
-problem Koniec wyrazu
 
+Problem końca wyrazu to coś co zajeło mi jeden wieczór.
+W wyrażeniach regularnych było by to proste `\b`.
+Tutaj jednak trzeba było napisać ręcznie funkcję wykrywania końca wyrazu oraz funkcję pobierajacą wszystko przed końcem wyrazy.
+Ostatecznie stwierdziłęm że koniec wyrazu to albo miały znak, albo początek komentarza
 ```haskell
 endWordParser :: Parser T.Text
 endWordParser = takeTill isEndWord
@@ -247,6 +260,8 @@ commentChar = '#'
 
 ### Konsolidator
 
+Konsolidator (ang. linker) to program łączący pliki.
+Dołącza on plik biblioteczny w miejsce wystąpienia `*nazwa_biblioteki.wsa` 
 ```haskell
 link :: String -> String -> ExceptT String IO InstructionList
 link dirName fileName = includeFiles $ ExceptT $ parseAssembler <$> T.readFile (dirName ++ "/" ++ fileName) where
@@ -326,6 +341,8 @@ naturalToChar index = ['h', 't', 'a', 'o', 'i', 'n', 's'] `genericIndex` index
 
 
 ## Podsumowanie
+
+To dopiero początek
 
 Assember
 
