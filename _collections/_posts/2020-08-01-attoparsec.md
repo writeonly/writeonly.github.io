@@ -3,8 +3,8 @@ title:    'Wyrażenia regularne kontra parsery'
 author:   TheKamilAdam
 category: haskell-eta
 tags:     assembler cisc dsl misc parser lexer regexp risc rpn
-langs:    dc forth haskell joy mouse postscript rpl webassembly
-libs:     attoparsec megaparsec
+langs:    dc forth haskell joy mouse perl postscript rpl webassembly
+libs:     attoparsec happy-alex megaparsec
 tools:
 projects: helcam helpa helvm
 eso:      beatnik eas eta false funge piet whitespace
@@ -74,9 +74,10 @@ Dzięki czemu o wiele prościej się jej nauczyć.
 
 ## Tekst o prostej strukturze - Assembler
 
+Ponieważ chce 
 
 
-
+### Rodzaje Assemblerów
 
 Składnia assemblera jest mocno powiązana  [modelem programowym procesora](https://pl.wikipedia.org/wiki/Model_programowy_procesora) 
 (ang. *[Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)*, **[ISA]**)
@@ -109,15 +110,21 @@ Niektóre assemblery **[MISC]** wyglądają wręcz jak języki ezoteryczne.
 Nie jest to w zasadzie wymagane, ale zwykle MISCy to zwykle maszyny stosowe.
 Rozwiązuje to także problem adresowania (większość operacji wykonywanych na stosie to rozkazy 0 adresowe, ewentualnie 1 adresowe).
 
-Co ciekawe rzeczywiste procesory są rzadko budowane jako maszyny stosowe.
-O wiele częściej procesory wirtualne jak JVM, Wirtualna Maszyna Perla czy WebAssembly są maszynami stosowymi.
+Co ciekawe rzeczywiste procesory są rzadko budowane jako [maszyny stosowe](https://pl.wikipedia.org/wiki/Maszyna_stosowa).
+Prawdopodobnie najbardziej znanym procosorem stosowym był [Transputer](https://en.wikipedia.org/wiki/Transputer).
+
+
+O wiele częściej procesory wirtualne jak **[JVM]**, Wirtualna Maszyna Perla czy **[WebAssembly]** są maszynami stosowymi.
 Wiele języków ezoterycznych jak **[ETA]**  **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
 
-Teoretycznie najprostszy możliwy assembler dla maszyny stosowej wystarczyłoby,
-żeby zawierał 8 prostych instrukcji (Zobacz [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)))
+Najprostrzy możliwi zestaw instrukcji dla maszyny stosowej został opisany jako [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)).
+Zawiera on tylko 8 instrukcji.
+Ja jednak zdecydowałem się na inny zestaw istrukcji będacy językiem ezoterycznym **[ETA]**.
+Język **[ETA]** posiada także prosty assembler, **[EAS]**, zaimplementowany co prawda w Perlu,
+ale przy pomocy wyrażeń regularnych. 
 
 
-
+### EAS
 
 
 
@@ -138,16 +145,8 @@ Minimalistyczny asembler stosowy bez makr.
 Głównie rozwiązywanie liczb i etykiet.
 
 Minimalizm osiąga się poprzez wykonywanie operacji na stosie.
-maszyna stosowa (https://pl.wikipedia.org/wiki/Maszyna_stosowa)
 
 
-maszyny
-https://en.wikipedia.org/wiki/Transputer
-
-
-Maszyny wirtualne
-JVM 
-webassembly
 
 Języki stosowe stack-based 
 dc forth mouse postcript rpl joy
@@ -159,8 +158,6 @@ Object Subject Verb
 
 https://en.wikipedia.org/wiki/Mouse_(programming_language)
 https://en.wikipedia.org/wiki/PostScript
-
-
 
 ## Struktura Asemblera
 
@@ -183,7 +180,7 @@ Następnie następuje redukcja instrukcji i generacja kodu docelowego.
 
 ### Parser asemblera
 
-Pierwszym modyłem programu jest parser:
+Pierwszym modułem programu jest parser:
 ```haskell
 parseAssembler :: T.Text -> Either String InstructionList
 parseAssembler = parseOnly instructionListParser
@@ -276,7 +273,8 @@ co zajeło mi jeden wieczór.
 W wyrażeniach regularnych byłoby to proste `\b`.
 Tutaj jednak trzeba było napisać ręcznie funkcję wykrywania końca wyrazu oraz funkcję pobierajacą wszystko przed końcem wyrazy.
 Ostatecznie stwierdziłem,
-że koniec wyrazu to albo biały znak albo początek komentarza:
+że koniec wyrazu to albo biały znak,
+albo początek komentarza:
 ```haskell
 endWordParser :: Parser T.Text
 endWordParser = takeTill isEndWord
@@ -311,11 +309,10 @@ link dirName fileName = includeFiles $ ExceptT $ parseAssembler <$> T.readFile (
 
 Redukcja siły operatorów (ang. [Strength reduction](https://en.wikipedia.org/wiki/Strength_reduction))
 jest częścią optymalizacji.
-W naszy przypadku mamy reukcę skomplikowanych instrukcji na instrukce proste.
+W naszym przypadku mamy redukcję skomplikowanych instrukcji na instrukcje proste.
 
-* Redukcja etykiet - wyliczanie adresów skoków
-* Redukcja stringów - zamiana na znaki
-
+Redukcja etykiet,
+czyli wyliczanie adresów skoków:
 ```haskell
 replaceLabels ::  LabelAddresses -> InstructionList -> InstructionList
 replaceLabels addresses il = replaceLabel addresses <$> il
@@ -325,6 +322,8 @@ replaceLabel addresses (N (Variable l)) = N $ Literal $ findOrError l addresses
 replaceLabel _          i               = i
 ```
 
+Redukcja literałów stringów,
+czyli zamiana na literały znaków:
 ```haskell
 replaceStrings :: InstructionList -> InstructionList
 replaceStrings il = replaceString =<< il
@@ -340,13 +339,8 @@ charToInstruction c = N $ Literal $ fromIntegral $ ord c
 
 ### Generator kodu docelowego
 
-Oprocz parsera jest potrzebny także generator kodu docelowego
-
-Kodowanie instrukcji.
-Wyliczanie etykiety skoków  i zmiennych.
-Kodowanie wartości umieszczanych na stosie.
-Obsługa wartości ujemnych (zamiana na odejmowanie)
-
+Oprócz parsera jest potrzebny także generator kodu docelowego.
+Zamienia on naszą zredukowaną listę instrukcji na język **ETA**:
 ```haskell
 generateCode :: InstructionList -> String
 generateCode il = show . WhiteInstruction =<< il
@@ -368,7 +362,6 @@ showValue value = naturalToChar <$> naturalToDigits7 value
 naturalToChar :: Natural -> Char
 naturalToChar index = ['h', 't', 'a', 'o', 'i', 'n', 's'] `genericIndex` index
 ```
-
 
 ## Podsumowanie
 
