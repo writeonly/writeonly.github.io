@@ -192,10 +192,9 @@ instructionListParser :: Parser InstructionList
 instructionListParser = skipManyComment *> skipHorizontalSpace *> many (instructionParser <* skipHorizontalSpace)
 ```
 Parser pobiera zmienną typu `Text` i przypadku powodzenia zwraca listę sparsowanych instrukcji.
-W przypadku niepowodzenia zwraca mało intuicyjny komunikat błędu. 
+W przypadku niepowodzenia zwraca mało intuicyjny komunikat o błędzie. 
 
-Parsowanie pojedynczej instrukcji dzieli się na kilka przypadków: 
-
+Parsowanie pojedynczej instrukcji dzieli się na kilka przypadków:
 ```haskell
 instructionParser :: Parser Instruction
 instructionParser =
@@ -216,7 +215,7 @@ Czyli:
 * parsowanie końca linii
 * parsowanie komentarza
 
-EAS jak to assembler maszyny stosowej zawiera wiele rozkazów bezargumentowych.
+EAS jak to assembler maszyny stosowej zawiera wiele rozkazów bezargumentowych:
 ```haskell
 zeroOperandInstructionParser :: Parser Instruction
 zeroOperandInstructionParser =
@@ -234,7 +233,7 @@ Oryginalnie EAS posiada tylko jeden rozkaz jednoargumentowy.
 Jest tu umieszczenie liczby na stosie.
 Przy czym liczbą może być wartość podana wprost, wartośc literału znakowego lub adres etykiety.
 Ja rozszeżyłem to jeszcze o możliwość umieszczenie (ang. *pUt*) stringa na stosie.
-Dodatkowo posiada także możliwość dołączenia (ang. *incluDe*) pliku oraz zdefiniowania etykiety (ang. *Label*).
+Dodatkowo posiada także możliwość dołączenia (ang. *incluDe*) pliku oraz zdefiniowania etykiety (ang. *Label*):
 ```haskell
 naturalNumberParser :: Parser Instruction
 naturalNumberParser = N <$> (
@@ -253,7 +252,7 @@ includeFileParser :: Parser Instruction
 includeFileParser = D <$> (char '*' *> fileNameParser <* char '\n')
 ```
 
-Ponieważ w EAS znaki końca linii () są znaczące trzeba je parsować w sposób świadomy 
+Ponieważ w EAS znaki końca linii są znaczące trzeba je parsować w sposób świadomy:
 ```haskell
 lineBreakParser :: Parser Instruction
 lineBreakParser = R <$ (skipMany1EndLine *> skipManyComment)
@@ -272,10 +271,12 @@ skipMany1EndLine = many1 (char '\n')
 ```
 
 
-Problem końca wyrazu to coś co zajeło mi jeden wieczór.
-W wyrażeniach regularnych było by to proste `\b`.
+Problem końca wyrazu to coś,
+co zajeło mi jeden wieczór.
+W wyrażeniach regularnych byłoby to proste `\b`.
 Tutaj jednak trzeba było napisać ręcznie funkcję wykrywania końca wyrazu oraz funkcję pobierajacą wszystko przed końcem wyrazy.
-Ostatecznie stwierdziłęm że koniec wyrazu to albo miały znak, albo początek komentarza
+Ostatecznie stwierdziłem,
+że koniec wyrazu to albo biały znak albo początek komentarza:
 ```haskell
 endWordParser :: Parser T.Text
 endWordParser = takeTill isEndWord
@@ -290,7 +291,7 @@ commentChar = '#'
 ### Konsolidator
 
 Konsolidator (ang. linker) to program łączący pliki.
-Dołącza on plik biblioteczny w miejsce wystąpienia `*nazwa_biblioteki.wsa` 
+Dołącza on plik biblioteczny w miejsce wystąpienia `*nazwa_biblioteki.wsa`:
 ```haskell
 link :: String -> String -> ExceptT String IO InstructionList
 link dirName fileName = includeFiles $ ExceptT $ parseAssembler <$> T.readFile (dirName ++ "/" ++ fileName) where
@@ -371,14 +372,7 @@ naturalToChar index = ['h', 't', 'a', 'o', 'i', 'n', 's'] `genericIndex` index
 
 ## Podsumowanie
 
-To dopiero początek
-
-Assember
-
-
-WhiteSpace - etykiety, podprogramy
-Piet - makra, call makra
-Subleq - higieniczne makr?
-
-BrainFuck - makra wieloniowe, szablony, parsowane z zewnetrzego źródła
-
+AttoParsec jest prostą biblioteką.
+Czy tak prostą jak wyrażenia regularne?
+Tego nie wiem,
+ale na pewno jest dużo czytelniejszy.
