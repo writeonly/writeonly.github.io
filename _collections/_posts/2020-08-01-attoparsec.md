@@ -200,20 +200,20 @@ Parsowanie pojedynczej instrukcji dzieli się na kilka przypadków:
 instructionParser :: Parser Instruction
 instructionParser =
   try zeroOperandInstructionParser
-  <|> numberOperandInstructionParser
-  <|> labelParser
+  <|> naturalNumberParser
   <|> unescapedStringParser
-  <|> includeParser
+  <|> labelDefinitionParser
+  <|> includeFileParser
   <|> lineBreakParser
   <|> commentParser
 ```
 Czyli:
 * parsowanie instrukcji bezargumentowej
 * parsowanie liczby
-* parsowanie końca linii
-* parsowanie dołączenia pliku
-* parsowanie deklaracji etykiety
 * parsowanie literału stringa
+* parsowanie deklaracji etykiety
+* parsowanie dołączenia pliku
+* parsowanie końca linii
 * parsowanie komentarza
 
 EAS jak to assembler maszyny stosowej zawiera wiele rozkazów bezargumentowych.
@@ -233,24 +233,24 @@ zeroOperandInstructionParser =
 Oryginalnie EAS posiada tylko jeden rozkaz jednoargumentowy. 
 Jest tu umieszczenie liczby na stosie.
 Przy czym liczbą może być wartość podana wprost, wartośc literału znakowego lub adres etykiety.
+Ja rozszeżyłem to jeszcze o możliwość umieszczenie (ang. *pUt*) stringa na stosie.
 Dodatkowo posiada także możliwość dołączenia (ang. *incluDe*) pliku oraz zdefiniowania etykiety (ang. *Label*).
-Ja rozszeżyłem to jeszcze o możliwość umieszczenie (ang. *pUt*) stringa na stosie
 ```haskell
-numberOperandInstructionParser :: Parser Instruction
-numberOperandInstructionParser = N <$> (
+naturalNumberParser :: Parser Instruction
+naturalNumberParser = N <$> (
       naturalValueParser
   <|> (asciiCI "N" *> skipHorizontalSpace *> naturalValueParser)
   <|> (asciiCI "Number" *> endWordParser *> skipHorizontalSpace *> naturalValueParser)
   )
 
-labelParser :: Parser Instruction
-labelParser = L <$> (char '>' *> identifierParser <* char ':')
-
 unescapedStringParser :: Parser Instruction
 unescapedStringParser = U <$> stringParser
 
-includeParser :: Parser Instruction
-includeParser = D <$> (char '*' *> fileNameParser <* char '\n')
+labelDefinitionParser :: Parser Instruction
+labelDefinitionParser = L <$> (char '>' *> identifierParser <* char ':')
+
+includeFileParser :: Parser Instruction
+includeFileParser = D <$> (char '*' *> fileNameParser <* char '\n')
 ```
 
 Ponieważ w EAS znaki końca linii () są znaczące trzeba je parsować w sposób świadomy 
