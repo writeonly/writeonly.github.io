@@ -111,22 +111,20 @@ Nie jest to w zasadzie wymagane, ale zwykle MISCy to zwykle maszyny stosowe.
 Rozwiązuje to także problem adresowania (większość operacji wykonywanych na stosie to rozkazy 0 adresowe, ewentualnie 1 adresowe).
 
 Co ciekawe rzeczywiste procesory są rzadko budowane jako [maszyny stosowe](https://pl.wikipedia.org/wiki/Maszyna_stosowa).
-Prawdopodobnie najbardziej znanym procosorem stosowym był [Transputer](https://en.wikipedia.org/wiki/Transputer).
+Prawdopodobnie najbardziej znanym procesorem stosowym był [Transputer](https://en.wikipedia.org/wiki/Transputer).
 
-
-O wiele częściej procesory wirtualne jak **[JVM]**, Wirtualna Maszyna Perla czy **[WebAssembly]** są maszynami stosowymi.
+O wiele częściej maszynami stosowymi są maszyny wirtualne jak **[JVM]**, Wirtualna Maszyna Perla czy **[WebAssembly]**.
 Wiele języków ezoterycznych jak **[ETA]**  **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
+Istnieją też nieezoteryczne wysokopoziomowe języki stosowe (ang. stack-based) jak **[dc]**, **[Joy]**, **[Forth]**, **[Mouse]**, **[PostScript]** i **[RPL]**.
 
-Najprostrzy możliwi zestaw instrukcji dla maszyny stosowej został opisany jako [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)).
+Najprostszy możliwi zestaw instrukcji dla maszyny stosowej został opisany jako [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)).
 Zawiera on tylko 8 instrukcji.
 Ja jednak zdecydowałem się na inny zestaw istrukcji będacy językiem ezoterycznym **[ETA]**.
 Język **[ETA]** posiada także prosty assembler, **[EAS]**, zaimplementowany co prawda w Perlu,
 ale przy pomocy wyrażeń regularnych. 
 
 
-### EAS
-
-
+### ETA i EAS
 
 Jak już mowa o językach ezoterycznych.
 Naszym prostym assemblerem do sparsowania będzie **EAS**.
@@ -134,30 +132,12 @@ Naszym prostym assemblerem do sparsowania będzie **EAS**.
 
 Zarówno jak i **ETA** to języki stosowe (ang. stack-based).
 
-Istnieje też wiele nieezoterycznych języków 
-
-
-
-
-
-Minimalistyczny asembler stosowy bez makr.
-
-Głównie rozwiązywanie liczb i etykiet.
-
-Minimalizm osiąga się poprzez wykonywanie operacji na stosie.
-
-
-
-Języki stosowe stack-based 
-dc forth mouse postcript rpl joy
-
 
 https://pl.wikipedia.org/wiki/OSV
 
 Object Subject Verb
 
-https://en.wikipedia.org/wiki/Mouse_(programming_language)
-https://en.wikipedia.org/wiki/PostScript
+
 
 ## Struktura Asemblera
 
