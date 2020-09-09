@@ -2,10 +2,10 @@
 title:    'Wyrażenia regularne kontra parsery'
 author:   TheKamilAdam
 category: haskell-eta
-tags:     assembler misc parser lexer
+tags:     assembler cisc dsl misc parser lexer regexp risc rpn
 langs:    dc forth haskell joy mouse postscript rpl webassembly
 libs:     attoparsec megaparsec
-tools:    cabal etlas jvm misc
+tools:
 projects: helcam helpa helvm
 eso:      beatnik eas eta false funge piet whitespace
 redirect_from:
@@ -21,15 +21,31 @@ Tak, są to parsery.
 
 ## Rodzaje parserów
 
-Z grubsza najczęściej występujące parsery można podzielić na RL i LL
+Z grubsza najczęściej występujące parsery można podzielić na zstępująca (ang. *top-down parsers*) i wstępujące (ang. *bottom-up parsers*)
+Dla języków programowania głównymi przedstawicielami parserów zstępujących są parsery LL,
+a parserów wstępujących - parsery LR (które dalej dzielą się na kanoniczne parsery LR, parsery SLR, i parsery LALR)
+* Parsery LL czytają tekst od lewej i analizują także od lewej.
+* Parsery LR czytają tekst od lewej i analizują od prawej.
 
-Dla Haskella istnieją cztery popularke biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych)
+Historycznie pierwsze były parsery LL.
+Jednak parsery LR są wydajniejsze niż parsery LL.
+Dlatego parsery LR wyparły prawie całkowicie parsery LL z zastosowań profesjonalnych.
+Wadą parserów LR jest jednak to,
+że bardzo trudno pisać ręcznie, w przeciwieństwie do parserów LL,
+które wręcz idealnie pisze się ręcznie.
+Dlatego do implementowania języków **[DSL]** lepsze są parsery LL. 
 
+Dla Haskella istnieją cztery popularne biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych):
 * Happy & Alex
 * Parsec
 * MegaParsec
 * AttoParsec
 
+Z mniej popularnych można wymienić:
+* ReadP
+* Trifecta
+* FastParser
+* Earley
 
 ### Happy & Alex
 
@@ -39,62 +55,70 @@ Wadą pary Happy & Alex jest to,
 że trzeba napisać gramatykę.
 czyli nauczyć się nowego języka niewiele ładniejszego niż wyrażenia regularne.
 
-### Parsec
+### Parsec i MegaParsec
 
-Parsec jest to klasyczna biblioteka do pisania parserów.
-Pozwala Combinatory (ang. [Parser combinator](https://en.wikipedia.org/wiki/Parser_combinator))
-
-### MegaParsec
-
+Parsec jest to klasyczna haskellowa biblioteka do pisania parserów
+oraz klasyczny przedstawiciel biblioteki kombinatorów parserów (ang. *[Parser combinator](https://en.wikipedia.org/wiki/Parser_combinator)*)
+Biblioteki kombinatory parserów są dedykowane do ręcznego pisania parserów.
+Tak utworzone parsery są bardzo podobne do parserów LL.
 Parsec niestety nie jest już rozwijany.
 Zamiast tego jest rozwijana jego ulepszona wersja, czyli MegaParsec.
-
 
 ### AttoParsec
 AttoParsec to biblioteka oryginalnie pomyślana do parsowania logów na bieżąco.
 Jest szybsza niż MegaParsec czy Parsec oraz jako jedyna umożliwia parsowanie przyrastającego pliku linia po linii.
-Niestety jest o wiele uboższa w składni przez co jest uważana za dobrą do parsowania plików o prostrzej strukturze.
-Ubogość sładni przekłada się także na prostrzą strukturę samej biblioteki.
+Niestety jest też o wiele uboższa w składni,
+przez co jest uważana za dobrą do parsowania plików o prostszej strukturze.
+Ubogość składni przekłada się także na prostszą strukturę samej biblioteki.
 Dzięki czemu o wiele prościej się jej nauczyć.
 
-Skoro już wybrałem AttoParsec to przydałyby się jakieś logi do sparsowania.
-Logów jednak nie mam w zwiazku z tym będę parsować kod źródłowy napisany w EAS.
+## Tekst o prostej strukturze - Assembler
 
-## Wyzwanie - pseudo asembler
 
-Gramatyka assemblera jest mocno powiązana z typem [modelu programowym procesora](https://pl.wikipedia.org/wiki/Model_programowy_procesora) 
+
+
+
+Składnia assemblera jest mocno powiązana  [modelem programowym procesora](https://pl.wikipedia.org/wiki/Model_programowy_procesora) 
 (ang. *[Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)*, **[ISA]**)
-
-
 
 Trzy najczęściej spotykane typy modeli programowych procesora to:
 * CISC (ang. Complex Instruction Set Computing)
 * RISC (ang. Reduced Instruction Set Computing)
 * MISC (ang. Minimal Instruction Set Computing)
 
-
-CISC historycznie był pierwszym modelem.
+**[CISC]** historycznie był pierwszym modelem.
 Charakteryzował się skomplikowanymi rozkazami ze skomplikowanymi sposobami adresowania.
 Miało to ułatwić pisanie kompilatorów.
+Nie ułatwiło.
+Żyjącem przedstawicielem tego modelu jest x86.
+Także assembler mikroprocesora 8051 bywa uważany za przedstawiciela modelu CISC.
 
-RISC powstał jak reakcja na to że CISCi okazało się jednak ślepą uliczką.
-Skomplikowane rozkazy i sposoby adresowania nie Nie pomoagały jednak w pisaniu kompilatorów.
-W związku z tym postanowiono pójść w drugą skrajnośc upraszczając maksymalnie listę rozkazów oraz sposoby adresowania.
+**[RISC]** powstał jak reakcja na to,
+że CISCi okazało się jednak ślepą uliczką.
+Skomplikowane rozkazy i sposoby adresowania nie pomagały jednak w pisaniu kompilatorów.
+W związku z tym postanowiono pójść w drugą skrajność upraszczając maksymalnie listę rozkazów oraz sposoby adresowania.
 Wynikiem tego była prostsza jednostka arytmetyczno-logiczna.
-Zaoszczędzone tranzystory przeznaczano na wiekszą ilość rejestrów ogólnego przeznaczenia.
+Zaoszczędzone tranzystory przeznaczano na większą ilość rejestrów ogólnego przeznaczenia.
+Prawdopodobnie najpopularniejszym przedstawicielem tego modelu jest ARM.
+Także assembler mikroprocesorów AVR bywa uważany za przedstawiciela modelu RISC.
 
-MISC rozwijany niezależnie.
+**[MISC]** był rozwijany niezależnie.
 Charakteryzuje się bardzo małą ilością rozkazów.
-Niektóre assemblery MISC wyglądają wręcz jak języki ezoteryczne.
+Niektóre assemblery **[MISC]** wyglądają wręcz jak języki ezoteryczne.
 
 Nie jest to w zasadzie wymagane, ale zwykle MISCy to zwykle maszyny stosowe.
-Rozwiązuje to także problem adresowania (operacji wykonywanych na stosie to rozkazy 0 adresowe, ewentualnie 1 adresowe)
+Rozwiązuje to także problem adresowania (większość operacji wykonywanych na stosie to rozkazy 0 adresowe, ewentualnie 1 adresowe).
 
 Co ciekawe rzeczywiste procesory są rzadko budowane jako maszyny stosowe.
 O wiele częściej procesory wirtualne jak JVM, Wirtualna Maszyna Perla czy WebAssembly są maszynami stosowymi.
 Wiele języków ezoterycznych jak **[ETA]**  **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
 
-Teoretycznie najprostrzy możliwy assembler dla maszyny stosowej wystarczyło by żeby zawierał 8 prostych instrukcji. 
+Teoretycznie najprostszy możliwy assembler dla maszyny stosowej wystarczyłoby,
+żeby zawierał 8 prostych instrukcji (Zobacz [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)))
+
+
+
+
 
 
 Jak już mowa o językach ezoterycznych.
@@ -140,10 +164,11 @@ https://en.wikipedia.org/wiki/PostScript
 
 ## Struktura Asemblera
 
-* Parser asemblera, czyli EAS
+Cztery główne modułu programu to:
+* Parser asemblera EAS
 * Konsolidator (ang. Linker)
 * Reduktor (ang. Reducer) instrukcji
-* Generator kodu wynikowego, czyli ETA
+* Generator kodu wynikowego, czyli kodu ETA
 
 ```haskell
 assemblyIO :: String -> String -> IO (Either String String)
@@ -158,34 +183,38 @@ Następnie następuje redukcja instrukcji i generacja kodu docelowego.
 
 ### Parser asemblera
 
-
-
-Parsowanie liczb nieujemnych całkowitych
-Parsowanie etykiet
-Parsowanie identyfikatorów 
-
-
-Naszym tekstem do sparsowania jest
-Assembly Programming Language.
-Jest to prosta nakladna na języki WS, ETA i SQ.
-
+Pierwszym modyłem programu jest parser:
 ```haskell
 parseAssembler :: T.Text -> Either String InstructionList
 parseAssembler = parseOnly instructionListParser
 
 instructionListParser :: Parser InstructionList
-instructionListParser = skipManyComment *> skipHorizontalSpace *> many (instructionParser <* skipHorizontalSpace) -- <* endOfInput
+instructionListParser = skipManyComment *> skipHorizontalSpace *> many (instructionParser <* skipHorizontalSpace)
+```
+Parser pobiera zmienną typu `Text` i przypadku powodzenia zwraca listę sparsowanych instrukcji.
+W przypadku niepowodzenia zwraca mało intuicyjny komunikat błędu. 
 
+Parsowanie pojedynczej instrukcji dzieli się na kilka przypadków: 
+
+```haskell
 instructionParser :: Parser Instruction
 instructionParser =
   try zeroOperandInstructionParser
   <|> numberOperandInstructionParser
-  <|> rParser
-  <|> dParser
-  <|> lParser
-  <|> uParser
+  <|> labelParser
+  <|> unescapedStringParser
+  <|> includeParser
+  <|> lineBreakParser
   <|> commentParser
 ```
+Czyli:
+* parsowanie instrukcji bezargumentowej
+* parsowanie liczby
+* parsowanie końca linii
+* parsowanie dołączenia pliku
+* parsowanie deklaracji etykiety
+* parsowanie literału stringa
+* parsowanie komentarza
 
 EAS jak to assembler maszyny stosowej zawiera wiele rozkazów bezargumentowych.
 ```haskell
@@ -214,23 +243,23 @@ numberOperandInstructionParser = N <$> (
   <|> (asciiCI "Number" *> endWordParser *> skipHorizontalSpace *> naturalValueParser)
   )
 
-dParser :: Parser Instruction
-dParser = D <$> (char '*' *> fileNameParser <* char '\n')
-  
-lParser :: Parser Instruction
-lParser = L <$> (char '>' *> identifierParser <* char ':')
+labelParser :: Parser Instruction
+labelParser = L <$> (char '>' *> identifierParser <* char ':')
 
-uParser :: Parser Instruction
-uParser = U <$> stringParser
+unescapedStringParser :: Parser Instruction
+unescapedStringParser = U <$> stringParser
+
+includeParser :: Parser Instruction
+includeParser = D <$> (char '*' *> fileNameParser <* char '\n')
 ```
 
 Ponieważ w EAS znaki końca linii () są znaczące trzeba je parsować w sposób świadomy 
 ```haskell
-rParser :: Parser Instruction
-rParser = R <$ (skipMany1EndLine *> skipManyComment)
+lineBreakParser :: Parser Instruction
+lineBreakParser = R <$ (skipMany1EndLine *> skipManyComment)
 
 commentParser :: Parser Instruction
-commentParser = skipComment *> rParser
+commentParser = skipComment *> lineBreakParser
 
 skipManyComment :: Parser [()]
 skipManyComment = many (skipComment <* skipMany1EndLine)
