@@ -2,12 +2,12 @@
 title:    'Wyrażenia regularne kontra parsery'
 author:   TheKamilAdam
 category: haskell-eta
-tags:     assembler cisc dsl misc parser lexer regexp risc rpn
+tags:     assembler cisc dsl lexer misc parser regexp risc rpn
 langs:    dc forth haskell joy mouse perl postscript rpl webassembly
-libs:     attoparsec happy-alex megaparsec
+libs:     attoparsec happy-alex megaparsec parsec readp
 tools:
 projects: helcam helpa helvm
-eso:      beatnik eas eta false funge piet whitespace
+eso:      beatnik brainfuck eas eta false funge piet whitespace
 redirect_from:
   - attoparsec
   - haskell-eta/attoparsec
@@ -355,24 +355,41 @@ Jednocześnie AttoParsec posiada o wiele większe możliwości.
 Szkoda,
 że nie jest przeportowany do innych języków programowania niż **[Haskell]**.
 
+[dc]:                   /langs/dc
+[Forth]:                /langs/forth
 [Haskell]:              /langs/haskell
+[Joy]:                  /langs/joy
 [Perl]:                 /langs/perl
-[Haskellu]:             /langs/haskell
+[Mouse]:                /langs/mouse
+[PostScript]:           /langs/postscript
+[RPL]:                  /langs/rpl
+[WebAssembly]:          /langs/webassembly
 
-[AttoParsec]: /libs/attoparsec
-[Happy & Alex]: /libs/happy-alex
-[MegaParsec]: /libs/megaparsec
-[Parsec]: /libs/parsec
-[ReadP]:    /libs/readp
+[AttoParsec]:           /libs/attoparsec
+[Happy & Alex]:         /libs/happy-alex
+[MegaParsec]:           /libs/megaparsec
+[Parsec]:               /libs/parsec
+[ReadP]:                /libs/readp
 
 [HelCam]:               /projects/helcam
 [HelPA]:                /projects/helpa
 [HelVM]:                /projects/helvm
 
+[Beatnik]:              /eso/beatnik
 [BrainFucka]:           /eso/brainfuck
+[EAS]:                  /eso/eas
 [ETA]:                  /eso/eta
+[False]:                /eso/false
+[Funge]:                /eso/funge
+[Piet]:                 /eso/piet
+[WhiteScape]:           /eso/whitespace
 
-[assembler]:            /tags/assembler
-[interpreter]:          /tags/interpreter
+[asembler]:             /tags/assembler
+[CISC]:                 /tags/cisc
+[DSL]:                  /tags/dsl
+[lekser]:               /tags/lexer
+[MISC]:                 /tags/misc
 [parser]:               /tags/parser
-[parser]:               /tags/parser
+[regexp]:               /tags/regexp
+[RISC]:                 /tags/risc
+[RPN]:                  /tags/rpn
