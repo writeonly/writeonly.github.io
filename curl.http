@@ -1,0 +1,2 @@
+curl -v \
+-X GET www.writeonly.pl
