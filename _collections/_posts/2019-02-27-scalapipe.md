@@ -103,7 +103,7 @@ daje na wyjściu:
 
 ## Rozwiązanie - operator potoku
 
-Jednym z możliwych rozwiązań **wywołań cebulowych** jest operator potoku (ang. *pipe operator*) `|>`.
+Jednym z możliwych rozwiązań **wywołań cebulowych** jest operator potoku (ang. *pipe operator* lub *pipeline operator*) `|>`.
 Pozwala on na zapis:
 ```elixir
 data |> first_function |> second_function |> third_function
@@ -180,7 +180,7 @@ object ScalaPipeOps extends ScalaPipeOps
 
 Na szczęście nie musimy sami implementować operatora *ScalaPipe*,
 ponieważ istnieje on już w bibliotece **[Scalaz]**
-ale dla utrudnienia nazywa się **operator drozda** (ang. *Thrush combinator*).
+ale dla utrudnienia nazywa się **operator drozda** (ang. *Thrush combinator* lub *Thrush combinator*).
 Używając tego operatora z łatwością możemy zapisać:
 ```scala
 import scalaz.Scalaz._
