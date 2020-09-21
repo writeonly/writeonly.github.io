@@ -2,15 +2,15 @@
 title:    'Haskell Pipe operator i inne operatory'
 author:   TheKamilAdam
 category: haskell-eta
-tags:     assembler cisc dsl lexer misc parser regexp risc rpn
-langs:    dc forth haskell joy mouse perl postscript rpl webassembly
-libs:     attoparsec happy-alex megaparsec parsec readp
+tags:     
+langs:    haskell ocaml rust scala
+libs:     flow
 tools:
-projects: helcam helpa helvm
-eso:      beatnik brainfuck eas eta false funge piet whitespace
+projects: 
+eso:      
 redirect_from:
-  - attoparsec
-  - haskell-eta/attoparsec
+  - pipe-operators
+  - haskell-eta/pipe-operator
 ---
 
 
@@ -43,42 +43,85 @@ data |> first_function |> second_function |> third_function
 
 ## Haskell i kombinatory
 
+
+
+Haskell podobnie jak Scala czy OCaml nie używa żadnej magii tylko pozwala definiować operatory.
+
+
+
 https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Function.html
 
+
+
 ```haskell
-f3 (f2 (f1 d))
+f d = f3 (f2 (f1 d))
 ```
 
-
-### Operator dolara (ang. dollar operator)
-
+### Operator dolara (ang. *Dollar operator*)
+Operator dolara `($)` robi "apply forward" zwane też "pipe into".
+Definicja:
 ```haskell
 ($) :: (a -> b) -> (a -> b)
 ```
 
+Użycie:
 ```haskell
-f3 $ f2 $ f1 d
+f d = f3 $ f2 $ f1 d
 ```
 
+Powyższy zapis jest czytelniejszy niż zapis nawiasowy,
+jednak dalej wymaga czytania od prawej do lewej,
+co jest nienaturalne.
 
-Application operator. This operator is redundant, since ordinary application (f x) means the same as (f $ x). However, $ has low, right-associative binding precedence, so it sometimes allows parentheses to be omitted; for example:
-et ampersand
+### Operator et (ang. *Ampersand operator*)
+Operator et `(&)` robi "apply backward" zwane też "pipe from".
 
+Definicja:
 ```haskell
 a -> (a -> b) -> b 
 ```
 
+Użycie:
 ```haskell
-d & f1 & f2 & f3
+f d = d & f1 & f2 & f3
 ```
 
-#### Składanie funkcji (ang. Function composition)
-https://wiki.haskell.org/Function_composition
+Jest to czytelniejsza postać dla użytkowników języków obiektowych oraz języka **[Rust]**,
+jednak w Haskellu rzadko używana.
 
+### Operator kropki (ang. *Dot operator*)
+Operator kropki `(.)` służy do składania funkcji (ang. *[Function composition](https://wiki.haskell.org/Function_composition)*).
+
+Definicja:
 ```haskell
 (.) :: (b -> c) -> (a -> b) -> a -> c
 ```
+Użycie:
+```haskell
+f d = (f3 . f2 . f1) d
+```
 
+Jednak nie jest to,
+czego można by spodziewać się po programistach Haskella.
+Haskell pozwala na *[PointFree](https://wiki.haskell.org/Pointfree) Style*,
+czyli możliwość niezapisywania argumentów:
+```haskell
+f = f3 . f2 . f1
+```
+
+Styl PointFree bywa też nazywany stylem Pointless,
+ponieważ jest oskarżany o zaciemnianie kodu.
+
+### Pakiet Flow 
+
+Pakiet [Flow](https://hackage.haskell.org/package/flow-1.0.21/docs/Flow.html) pozwala używać operatorów znanych z innych języków programowania.
+Definiuje on dwa operatory aplikacji oraz dwa operatory kompozycji, które w uproszczeniu można wyjaśnić jako:
+```haskell
+(<|) = ($)      -- "apply forward"    or "pipe into"
+(|>) = (&)      -- "apply backward"   or "pipe from"
+(<.) = (.)      -- "compose backward" or "but first"
+(.>) = flip (.) -- "compose forward"  or "and then"
+```
 
 ## Inne operatory
 
@@ -215,4 +258,9 @@ Foldable1 ---> Traversable1     Apply --------> Applicative -> Alternative      
                                 Bind ---------> Monad -------> MonadPlus          Arrow
 
 https://hackage.haskell.org/package/semigroupoids
+```
+
+
+[OCcaml]:  /langs/ocaml
+[Scala]:   /langs/scala
 
