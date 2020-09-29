@@ -5,9 +5,6 @@ category: haskell-eta
 tags:     operator onion
 langs:    haskell ocaml rust scala
 libs:     scalaz zio
-tools:
-projects:
-eso:
 redirect_from:
   - pipe-operators
   - haskell-eta/pipe-operators
