@@ -31,7 +31,7 @@ someFunction someData = thirdFunction secondDate where
   firstData = firstFunction someData
 ```
 
-Niestety klauzura `where` może powodować dużą rozwlekłość kodu:
+Niestety klauzula `where` może powodować dużą rozwlekłość kodu:
 ```haskell
 f x = f9 x8 where 
   x8 = f8 x7
