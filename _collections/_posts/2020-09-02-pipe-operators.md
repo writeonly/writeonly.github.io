@@ -194,6 +194,7 @@ Samodzielnie (lub w zespole) należy ustalić,
 który ze styli jest najbardziej czytelny dla nas.
 
 [Haskell]:              /langs/haskell
+[Haskellu]:             /langs/haskell
 [OCcaml]:               /langs/ocaml
 [Scala]:                /langs/scala
 [Rust]:                 /langs/rust
