@@ -4,7 +4,7 @@ author:   TheKamilAdam
 category: haskell-eta
 tags:     operator onion
 langs:    haskell ocaml rust scala
-libs:     flow scalaz zio
+libs:     scalaz zio
 tools:
 projects:
 eso:
@@ -155,8 +155,8 @@ I użycie w **[Haskellu]** jakiego moglibyśmy się spodziewać:
 f d = (f3 . f2 . f1) d
 ```
 
-Jednak nie jest to,
-czego można by spodziewać się po programistach Haskella.
+Jednak nie jest to to,
+czego można by spodziewać się po programistach **[Haskella]**.
 Haskell pozwala na *[PointFree](https://wiki.haskell.org/Pointfree) Style*,
 czyli możliwość niezapisywania argumentów:
 ```haskell
@@ -194,6 +194,7 @@ Samodzielnie (lub w zespole) należy ustalić,
 który ze styli jest najbardziej czytelny dla nas.
 
 [Haskell]:              /langs/haskell
+[Haskella]:             /langs/haskell
 [Haskellu]:             /langs/haskell
 [OCaml]:                /langs/ocaml
 [Scala]:                /langs/scala
