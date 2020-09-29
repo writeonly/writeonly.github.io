@@ -91,11 +91,11 @@ Znajdują się one w module [Data.Function](https://hackage.haskell.org/package/
 
 Podobnie jak w przypadku języków **[Scala]** czy **[OCaml]**,
 w **[Haskell]** operatory te nie są częścią składni języka,
-tylko zdefiniowane tak jak funkcje.
+tylko zdefiniowane są tak jak funkcje.
 Dzięki temu,
 że te języki programowania mają elastyczną składnię można definiować własne operatory.
 
-W dalszej części artykułu będą poszukiwać czytelniejszej formy dla funkcji:
+W dalszej części artykułu będę poszukiwać czytelniejszej formy dla funkcji:
 ```haskell
 f x = f3 (f2 (f1 x))
 ```
