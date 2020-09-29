@@ -81,7 +81,7 @@ zwanego też w **[Scali]** operatorem drozda:
 ```scala
 def someFunction(someData: SomeDate): someData |> firstFunction |> secondFunction |> thirdFunction
 ```
-Pisałem o tym w artykule [Problem wywołań cebulowych w Scali](scalapipe).
+Pisałem o tym w artykule [Problem wywołań cebulowych w Scali](/scalapipe).
 
 ## Operatory aplikacji (i kombinacji)
 
@@ -195,8 +195,12 @@ który ze styli jest najbardziej czytelny dla nas.
 
 [Haskell]:              /langs/haskell
 [Haskellu]:             /langs/haskell
-[OCcaml]:               /langs/ocaml
+[OCaml]:                /langs/ocaml
 [Scala]:                /langs/scala
+[Scali]:                /langs/scala
 [Rust]:                 /langs/rust
+
+[scalaz]:               /libs/scalaz
+[zio]:                  /libs/zio
 
 [operator]:             /tags/operator
