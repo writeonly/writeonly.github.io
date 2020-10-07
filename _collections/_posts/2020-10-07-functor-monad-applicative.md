@@ -19,7 +19,7 @@ Trzy **[klasy typów]** **[Funktor]**, **[Monada]** i **[Aplikatyw]** są to pra
 [Funktor w Haskellu](https://hackage.haskell.org/package/base-4.14.0.0/docs/Data-Functor.html#t:Functor)
 jest prawdopodobnie najprostszą **[klasą typu]** do przetwarzania danych.
 
-Podstawą funktora jest metoda `fmap`:
+Podstawą **Funktora** jest metoda `fmap`:
 ```haskell
 fmap :: (a -> b) -> (f a -> f b)
 ```
@@ -42,6 +42,7 @@ Teraz:
 Przykłady użycia:
 ```haskell
 fmap (function1 data1)
+fmap $ function1 data1
 function1 <$> data1
 data1 <&> function1
 ```
