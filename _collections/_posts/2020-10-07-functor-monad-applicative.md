@@ -217,7 +217,7 @@ Posiada ona własną definicję [Funktora](https://hackage.haskell.org/package/s
 
 ## Podsumowanie
 
-Haskell jest wspaniałym językiem programowania,
+**[Haskell]** jest wspaniałym językiem programowania,
 ale niestety nie wszystko w nim jest idealne.
 Zmiany są jednak wprowadzane stopniowo,
 nawet jeśli wiąże się to ze złamaniem kompatybilności.
