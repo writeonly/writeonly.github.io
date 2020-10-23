@@ -2,9 +2,9 @@
 title:    'Leniwe ładowanie komentarzy z Disqus'
 author:   TheKamilAdam
 category: jekyll
-tags:     api css html lazy script
+tags:     api css github-pages html lazy script
 langs:    javascript 
-tools:    disqus
+tools:    disqus jekyll
 libs:     jquery minimal-mistake
 redirect_from:
   - lazy-disqus
@@ -18,13 +18,12 @@ nie mam możliwości samodzielnego zaimplementowania komentarzy.
 Jednak **[Minimal Mistakes]**,
 używany przeze mnie szablon,
 [proponuje kilka rozwiązań tego problemu](https://mmistakes.github.io/minimal-mistakes/docs/configuration/#comments).
-Są to zewnętrzne systemy komentarzy wystawiające publiczne [API] jak:
+Są to zewnętrzne systemy komentarzy wystawiające publiczne **[API]** jak:
 * **[Disqus]**
 * Discourse
 * komentarze Facebooka 
 * komentarze utterances  
 * Staticman
-
 
 Ja wybrałem **[Disqus]**.
 Głównie dlatego,
@@ -122,8 +121,8 @@ Dzięki niemu będziemy wiedzieć,
 czy już załadowaliśmy komentarze,
 czy jeszcze nie.
 
-Teraz potrzebujemy skryptu **[JavaScript]**, który załaduje nam [Disqus] na żądanie.
-Oczywiście ten skrypt też jest oparty o nieśmiertelne [jQuery]:
+Teraz potrzebujemy skryptu **[JavaScript]**, który załaduje nam **[Disqus]** na żądanie.
+Oczywiście ten skrypt też jest oparty o nieśmiertelne **[jQuery]**:
 {% raw %}
 ```javascript
 $(document).scroll(function(e) {
@@ -161,7 +160,7 @@ Znów robimy to za pomocą dyrektywy `include` w Jekyllu zawartej w instrukcji `
 Który ze sposób jest lepszy?
 Dla mnie `scroll` ponieważ nie chciało mi się stylować przycisku ładowania komentarzy :D
 
-Czy warto się tak męczyć dla [Disqus]?
+Czy warto się tak męczyć dla **[Disqus]**?
 Jeszcze nie wiem.
 Mam zamiar w najbliższym czasie przetestować też innych dostawców silników do komentarzy.
 
