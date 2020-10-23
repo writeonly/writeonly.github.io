@@ -172,6 +172,7 @@ Mam zamiar w najbliższym czasie przetestować też innych dostawców silników 
 [minimal mistakes]: /libs/minimal-mistakes
 
 [disqus]:           /tools/disqus
+[jekyll]:           /tools/jekyll
 
 [api]:              /tags/api
 [css]:              /tags/css

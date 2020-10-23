@@ -305,7 +305,7 @@ words_per_minute         : 100
 scripts:
   - /assets/js/main.min.js
   - /assets/js/app.js
-  - https://kit.fontawesome.com/4eee35f757.js
+#  - https://kit.fontawesome.com/4eee35f757.js
 
 ## Archives
 category_archive:
