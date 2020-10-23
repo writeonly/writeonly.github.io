@@ -28,9 +28,9 @@ sidebar-main:
       url: /privacy/
     - title: "Degustujaca Istota"
       url: https://www.degustujacaistota.pl/
-  - title: "Wyszukiwarki"
-    children:
-      - title: "Wyszukiwarka Jekyll"
-        url: /search-jekyll/
-      - title: "Wyszukiwarka Jekyll Prosta"
-        url: /search-jekyll-simple/
+#  - title: "Wyszukiwarki"
+#    children:
+#      - title: "Wyszukiwarka Jekyll"
+#        url: /search-jekyll/
+#      - title: "Wyszukiwarka Jekyll Prosta"
+#        url: /search-jekyll-simple/

@@ -1089,7 +1089,7 @@ pl: &DEFAULT_PL
   search_label_text          :
   posts_older                : "Starsze artykuły"
   posts_newer                : "Nowsze artykuły"
-  back_to_top                : "Wróc do góry"
+  back_to_top                : "Wróć do góry"
   go_to_comments             : "Idź do komentarzy"
   go_to_post                 : "Idź do artykułu"
 pl-PL:
