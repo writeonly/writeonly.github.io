@@ -299,6 +299,7 @@ gdzie nie trzeba tworzyć żadnej klasy,
 ale trzeba utworzyć obiekt singletonowy.
 Jeszcze lepiej jest w **[Kotlinie]**,
 gdzie nie trzeba tworzyć w ogóle obiektów.
+
 [Clojure]:       /langs/clojure
 [Common Lisp]:   /langs/common-lisp
 [Erlang]:        /langs/erlang

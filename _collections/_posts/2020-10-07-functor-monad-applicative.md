@@ -2,7 +2,7 @@
 title:    'Funktor, Monada i Aplikatywa'
 author:   TheKamilAdam
 category: haskell-eta
-tags:     applicative functor library operator monad type-class
+tags:     applicative functor library monad operator parser type-class
 langs:    haskell
 libs:     semigroupoids
 projects: helpa
@@ -77,7 +77,7 @@ Nothing
 Just "Haskell"
 ```
 
-W moim parserze języka **[ETA]** preferuje operator `(<$)`:
+W moim **[parserze]** języka **[ETA]** preferuje operator `(<$)`:
 ```haskell
 zeroOperandInstructionParser :: Parser Instruction
 zeroOperandInstructionParser =
@@ -169,7 +169,7 @@ includeFileParser = D <$> (char '*' *> fileNameParser <* char '\n')
 
 Nie zawsze było tak,
 że **[Aplikatywa]** był klasą bazową dla **[Monady]**.
-Aplikatywa została dodany później w związku z pracami nad parserami w **[Haskell]**.
+Aplikatywa została dodany później w związku z pracami nad **[parserami]** w **[Haskell]**.
 
 Z tego powodu niektóre operacje z **[Aplikatywy]** są zdupkiowane w **[Monadzie]**.
 Są to:
@@ -245,3 +245,5 @@ nawet jeśli wiąże się to ze złamaniem kompatybilności.
 [Monadę]:        /tags/monad
 [Monady]:        /tags/monad
 [Monadzie]:      /tags/monad
+[parserze]:      /tags/parser
+[parserami]:     /tags/parser
