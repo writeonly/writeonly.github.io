@@ -38,14 +38,15 @@ Jest nim leniwe ładowanie komentarzy z **[Disqus]**.
 ## Leniwe ładowanie komentarzy Disqus
 
 Są co najmniej dwa sposoby, żeby leniwie ładować komentarze:
-* `on click`  - po kliknięciu przycisku o nazwie np. `pokarz komentarze`.
+* `on click`  - po kliknięciu przycisku o nazwie np. `pokaż komentarze`.
 * `on scroll` - po przewinięciu na dół strony, gdzie zwykle są komentarze.
 
 ### Leniwe ładowanie komentarzy Disqus po kliknięciu przycisku
 
 Po pierwsze musimy zmodyfikować html.
 Do pliku `comments.html`, 
-pod częścią odpowiedzialny za klasyczny `disqus`, dodajemy `disqus_loader`
+pod częścią odpowiedzialną za klasyczny `disqus`,
+dodajemy `disqus_loader`
 {% raw %}
 ```html
     {% when "disqus" %}
@@ -157,7 +158,7 @@ Znów robimy to za pomocą dyrektywy `include` w Jekyllu zawartej w instrukcji `
 
 ## Podsumowanie
 
-Który ze sposób jest lepszy?
+Który ze sposobów jest lepszy?
 Dla mnie `scroll` ponieważ nie chciało mi się stylować przycisku ładowania komentarzy :D
 
 Czy warto się tak męczyć dla **[Disqus]**?
