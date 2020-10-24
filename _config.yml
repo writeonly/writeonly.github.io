@@ -261,7 +261,7 @@ google:
   search_engine_id       : "bf18084b82c20452c"
   instant_search         : false # false (default), true
 
-ad_sense                 : "ca-pub-8978320289517812"
+#ad_sense                 : "ca-pub-8978320289517812"
 
 ## Social Sharing
 og_image                 : "/favocon.ico"
