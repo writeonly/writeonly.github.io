@@ -305,12 +305,13 @@ words_per_minute         : 100
 scripts:
   - /assets/js/main.min.js
   - /assets/js/app.js
+#  - /assets/js/fontawesome/all.min.js
 #  - https://kit.fontawesome.com/4eee35f757.js
-  - /assets/js/fontawesome/all.min.js
+#  - https://kit.fontawesome.com/be57263b47.js
 
 ## Font Awesome
 fontawesome:
-  use                    : false #"sass" # "sass", "js"
+  use                    : "sass" # "sass", "js"
 
 ## Archives
 category_archive:
