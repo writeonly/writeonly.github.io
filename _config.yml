@@ -209,14 +209,14 @@ remote_theme             : twocolumn/minimal-mistakes@gh-pages
 title                    : "WriteOnly.pl"
 tagline                  : "WriteOnly Haskell, Scala, Jekyll, Git & Bash Blog"
 description: >-
-  Blog o programowaniu w językach Haskell, Eta, Scala Native i Scala.js
+  Blog o programowaniu w językach Haskell, Scala Native i Scala.js
   oraz generatorze stron Jekyll, systemie kontroli wersji Git i użyciu wiersza poleceń CLI
 url                      :
 author:
   twitter                : "TheKamilAdam"
   name                   : "Kamil Adam"
   avatar                 : "/assets/images/kamil.adam.jpg"
-  bio                    : "My awesome biography constrained to a sentence or two goes here."
+  bio                    : "Senior Java/Scala/Kotlin Developer"
 twitter:
   username               : "TheKamilAdam"
 facebook:
@@ -229,6 +229,7 @@ social:
     - https://www.facebook.com/WriteOnlyPL
     - https://www.instagram.com/degustujacaistota/
     - https://twitter.com/TheKamilAdam
+    - https://www.tumblr.com/blog/thekamiladam
 
 # External systems
 
@@ -260,6 +261,7 @@ search_provider          : "google"
 google:
   search_engine_id       : "bf18084b82c20452c"
   instant_search         : false # false (default), true
+  search_instant         : true # false (default), true
 
 ad_sense:
   ad_sense_id            : "ca-pub-8978320289517812"
@@ -286,7 +288,10 @@ footer:
       url                : "https://twitter.com/TheKamilAdam"
     - label              : "Tumblr"
       icon               : "fab fa-fw fa-tumblr"
-      url                : "https://www.tumblr.com/TheKamilAdam"
+      url                : "https://writeonly-pl.tumblr.com"
+    - label              : "Reddit"
+      icon               : "fab fa-fw fa-reddit"
+      url                : "https://www.reddit.com/user/WriteOnlyPL"
     - label              : "Dev.to"
       icon               : "fab fa-fw fa-dev"
       url                : "https://dev.to/kamiladam"
