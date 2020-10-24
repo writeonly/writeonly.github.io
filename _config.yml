@@ -307,6 +307,11 @@ scripts:
   - /assets/js/app.js
 #  - https://kit.fontawesome.com/4eee35f757.js
 
+## Font Awesome
+
+fontawesome:
+  use                    : "sass"
+
 ## Archives
 category_archive:
   type                   : collection
