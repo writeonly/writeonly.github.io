@@ -310,7 +310,7 @@ scripts:
 
 ## Font Awesome
 fontawesome:
-  use                    : js #"sass" # "sass", "js"
+  use                    : false #"sass" # "sass", "js"
 
 ## Archives
 category_archive:
