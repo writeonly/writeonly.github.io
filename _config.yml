@@ -306,7 +306,7 @@ scripts:
   - /assets/js/main.min.js
   - /assets/js/app.js
 #  - https://kit.fontawesome.com/4eee35f757.js
-  - /assets/js/fontawesome/all.js
+  - /assets/js/fontawesome/all.min.js
 
 ## Font Awesome
 fontawesome:
