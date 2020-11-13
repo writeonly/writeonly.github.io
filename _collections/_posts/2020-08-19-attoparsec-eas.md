@@ -224,7 +224,7 @@ naturalToChar index = ['h', 't', 'a', 'o', 'i', 'n', 's'] `genericIndex` index
 
 ## Podsumowanie
 
-AttoParsec jest prostą biblioteką.
+**[AttoParsec]** jest prostą biblioteką.
 Czy tak samo prostą jak wyrażenia regularne?
 Tego nie wiem,
 ale na pewno jest dużo czytelniejszy.
