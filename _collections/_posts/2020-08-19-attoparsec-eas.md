@@ -199,7 +199,7 @@ charToInstruction c = N $ Literal $ fromIntegral $ ord c
 ### Właściwy generator kodu docelowego
 
 Ponieważ wszystkie potrzebne operacje zostały już wykonane,
-to właściwy generator kodu docelowego zamienia naszą zredukowaną listę instrukcji na język **ETA**:
+to właściwy generator kodu docelowego zamienia naszą zredukowaną listę instrukcji na język **[ETA]**:
 ```haskell
 generateCode :: InstructionList -> String
 generateCode il = show . WhiteInstruction =<< il
