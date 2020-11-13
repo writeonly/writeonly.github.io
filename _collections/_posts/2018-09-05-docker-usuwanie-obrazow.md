@@ -3,7 +3,7 @@ title:    "Docker - usuwanie obrazów"
 author:   TheKamilAdam
 category: cli
 tags:     alias cli
-tools:    docker
+tools:    bash docker
 redirect_from:
   - docker-usuwanie-obrazow
   - cli/docker-usuwanie-obrazow
