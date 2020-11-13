@@ -228,7 +228,7 @@ naturalToChar index = ['h', 't', 'a', 'o', 'i', 'n', 's'] `genericIndex` index
 Czy tak samo prostą jak wyrażenia regularne?
 Tego nie wiem,
 ale na pewno jest dużo czytelniejszy.
-Jednocześnie AttoParsec posiada o wiele większe możliwości.
+Jednocześnie **[AttoParsec]** posiada o wiele większe możliwości.
 Szkoda,
 że nie jest przeportowany do innych języków programowania niż **[Haskell]**.
 
