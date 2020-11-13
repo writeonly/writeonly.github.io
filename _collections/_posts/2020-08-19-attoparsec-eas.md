@@ -13,7 +13,8 @@ redirect_from:
   - haskell-eta/attoparsec-eas
 ---
 
-W poprzednim poście 
+W poprzednim artykule [/attoparsec-eas] zdefiniowałem cele napisania prostego asemblera z języka **[EAS]** do ezoterycznego języka programowania [ETA].
+W tym artykule przyszła pora na implementację.
 
 ## Struktura asemblera, czyli programu asemblującego (montującego)
 
