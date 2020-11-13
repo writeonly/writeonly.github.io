@@ -33,7 +33,7 @@ To ciągle te same koncepcje i te same problemy pod nową postacią.
 Ale zaraz, zaraz.
 Przecież polimorfizm to część programowania obiektowego i poza programowaniem obiektowym polimorfizm jest niemożliwy.
 Z takim przynajmniej przeświadczeniem można w Polsce wyjść po niektórych uczelniach.
-No nie do końca jest to prawda.
+No ale nie do końca jest to prawda.
 
 Usłyszałem kiedyś od Jarka Pałki,
 że istnieje 6 rodzajów polimorfizmu.
