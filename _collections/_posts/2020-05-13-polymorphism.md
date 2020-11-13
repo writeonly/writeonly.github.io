@@ -109,6 +109,25 @@ W polimorfizmie strukturalnym także używa się dziedziczenia,
 ale bardziej do dziedziczenia pól lub jako wskazówkę dla programisty niż dlatego,
 że jest to wymagane przez kompilator lub interpreter.
 
+## Polimorfizm parametryczny (ang. *[parametric polymorphism]*)
+
+> Parametric polymorphism: when one or more types are not specified by name but by abstract symbols that can represent any type.
+
+Za [wikipedią].
+
+Czyli w wolnym tłumaczeniu:
+> Polimorfizm parametryczny: gdy jeden lub więcej typów nie jest określonych przez nazwę, ale przez abstrakcyjne symbole, które mogą reprezentować dowolny typ.
+
+Polimorfizm parametryczny został wymyślony w 1975 roku dla języka programowania **[Meta Language]**,
+który według legendy miał być statycznie typowaną wersją języka **[LISP]**.
+Polimorfizm parametryczny pozwolił na [programowanie uogólnione] (ang. *[generic programming]*) w statycznie typowanych językach programowania.
+
+Polimorfizm parametryczny można podzielić na dwa rodzaje:
+* Polimorfizm parametryczny oparty na szablonach w C++ i D - kod jest generowany podczas kompilacji dla każdego typu osobno.
+* Polimorfizm parametryczny oparty na typach (funkcja, metodach, klasach itd.) uogólnionych (ang. generic types) - dla wszystkich typów jest używany ten sam kod.
+
+
+
 ## [Wielometody] (ang. *multimethods*)
 
 Żeby wyjaśnić co to jest wielomatoda (Wielometoda),
@@ -150,23 +169,6 @@ Ponieważ trzeba sprawdzić większą ilość warunków,
 
 Co ciekawe *[Common Lisp Object System]*,
 czyli wielometody z **[Common Lisp]** są uważane za przykład funkcji uogólnionych (ang. *[generic function]*).
-
-## Polimorfizm parametryczny (ang. *[parametric polymorphism]*)
-
-> Parametric polymorphism: when one or more types are not specified by name but by abstract symbols that can represent any type.
-
-Za [wikipedią].
-
-Czyli w wolnym tłumaczeniu:
-> Polimorfizm parametryczny: gdy jeden lub więcej typów nie jest określonych przez nazwę, ale przez abstrakcyjne symbole, które mogą reprezentować dowolny typ.
-
-Polimorfizm parametryczny został wymyślony w 1975 roku dla języka programowania **[Meta Language]**,
-który według legendy miał być statycznie typowaną wersją języka **[LISP]**.
-Polimorfizm parametryczny pozwolił na [programowanie uogólnione] (ang. *[generic programming]*) w statycznie typowanych językach programowania.
-
-Polimorfizm parametryczny można podzielić na dwa rodzaje:
-* Polimorfizm parametryczny oparty na szablonach w C++ i D - kod jest generowany podczas kompilacji dla każdego typu osobno.
-* Polimorfizm parametryczny oparty na typach (funkcja, metodach, klasach itd.) uogólnionych (ang. generic types) - dla wszystkich typów jest używany ten sam kod.
 
 ## [Polimorfizm ad hoc] (ang. *[ad hoc polymorphism]*)
 
