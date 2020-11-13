@@ -1,5 +1,5 @@
 ---
-title:    'Sześć rodzajów polimorfizmu'
+title:    'Sześć rodzajów polimorfizmu - polimorfizm jakiego nie znamy z OOP'
 author:   TheKamilAdam
 category: programming
 tags:     dsl compiler fp interface interpreter monad protocol trait type-class
@@ -7,126 +7,18 @@ langs:    clojure common-lisp go haskell java javascript kotlin meta-language oc
 libs:     arrow cats scalaz
 tools:    bash
 redirect_from:
-  - polymorphism
-  - programming/polymorphism
+  - polymorphism-that-we-do-not-know
+  - programming/polymorphism-that-we-do-not-know
 ---
 
-Gdy dociera do mnie informacja o kolejnym wspaniałym języku programowania,
-którego warto się nauczyć,
-to pierwsze co robię to sprawdzam jak wygląda polimorfizm w tym języku programowania.
-
-* Jeśli język nie wspiera polimorfizmu to stwierdzam,
-że nie warto się go uczyć.
-Znam już C i nie mam zamiaru pisać małych programów, w których polimorfizm nie jest potrzebny.
-Znam też [Basha] do pisania prostych skryptów.
-Więc o ile nie jest to jakiś **[DSL]** to prawdopodobnie nie można się nauczyć nic ciekawego przy jego nauce.
-* Jeśli język wspiera polimorfizm z programowania obiektowego,
-czyli podtypowanie to nie widze sensu,
-żeby się go uczyć.
-Znam programowanie obiektowe z **[Javy]**, **[Kotlina]** i **[Scali]** czy **[Vali]**.
-Obiektowe języki programowania są bardzo podobne i różnią się tylko zwięzłością składni,
-szybkością działania i ilością dostępnych bibliotek.
-Nie ma w nich żadnych nowych idei.
-To ciągle te same koncepcje i te same problemy pod nową postacią.
-* Jeśli język wspiera inny rodzaj polimorfizmu to znaczy, że jest ciekawy i przy jego nauce można się czegoś nowego nauczyć.
-
-Ale zaraz, zaraz.
-Przecież polimorfizm to część programowania obiektowego i poza programowaniem obiektowym polimorfizm jest niemożliwy.
-Z takim przynajmniej przeświadczeniem można w Polsce wyjść po niektórych uczelniach.
-No ale nie do końca jest to prawda.
-
-Usłyszałem kiedyś od Jarka Pałki,
-że istnieje 6 rodzajów polimorfizmu.
-Niestety nie wymienił wszystkich rodzai.
-Od tego czasu postanowiłem zebrać je wszystkie razem.
-I są to:
-* Polimorfizm podtypowy
-* Polimorfizm strukturalny
-* Polimorfizm parametryczny
-* Wielometody (Multimetody)
-* Polimorfizm *ad hoc*
-* Inne rodzaje polimorfizmu :)
-
-Jednak nie mam pojęcia czy są to te rodzaje polimorfizmu,
-które Jarek Pałka miał na myśli.
-
-Polimorfizm można podzielić też na dwa rodzaje ze względu na czas wykonania:
-* Polimorfizm statyczny to polimorfizm czasu kompilacji rozwiązywany przez [kompilator].
-* Polimorfizm dynamiczny to polimorfizm czasu wykonania.
-
-Polimorfizm statyczny jest bezpieczniejszy i nie wprowadza opóźnień podczas działania aplikacji.
-Za to polimorfizm czasu wykonania jest potężniejszy.
-
-## Podtypowanie (ang. *[subtyping]*)
-
-> Subtyping (also called subtype polymorphism or inclusion polymorphism): when a name denotes instances of many different classes related by some common superclass.
-
-Za [wikipedią].
-
-Czyli w wolnym tłumaczeniu:
-> Podtypowanie (zwane również polimorfizmem podtypu lub polimorfizmem inkluzyjnym): gdy nazwa oznacza wystąpienie wielu różnych klas powiązanych przez jakąś wspólną nadklasę.
-
-Podtypowaniem jest powiązane z *nominalnym system typów* (ang. *[nominal type system]* lub *name-based type system*)
-zwanym też *równoważnością przez nazwę*.
-W nominalnym systemie typów jeden typ można zastosować w miejsce drugiego,
-jeśli implementują ten sam protokół (ang. *[protocol]*), interfejs (ang. *[interface]*) lub cechę (ang. [trait]).
-
-Często jest nazywany także dziedziczeniem.
-Jednak określenie dziedziczenie może być nieprecyzyjne,
-ponieważ może odnosić się zarówno do dziedziczenia metod,
-jak i dziedziczenia pól.
-
-Podtypowanie jest to główny rodzaj polimorfizmu używany w statycznych i obiektowych językach programowania takich jak **[Vala]**, **[Java]**, **[Kotlin]**, **[Scala]**, **[OCaml]** czy **[Pony]**.
-
-Główną zaletą podtypowania jest to,
-że jest prawdopodobnie najszybszym rodzajem polimorfizmu dynamicznego.
-Główną wadą jest to że jest to bardzo ograniczony rodzaj polimorfizmu.
-
-## Polimorfizm strukturalny (ang. *[row polymorphism]*)
-
-Polimorfizm strukturalny nazywany także polimorfizmem opartym na sygnaturach (ang. *signature-based polymorphism*) można podzielić na dwa podrodzaje:
-* Polimorfizm strukturalny w językach statycznie typowanych.
-* Polimorfizm strukturalny w językach dynamicznie typowanych.
-
-Polimorfizm strukturalny w językach statycznie typowanych jest powiązany z *strukturalnym system typów* (ang. *[structural type system]* lub *property-based type system*)
-zwanym też *równoważnością strukturalną*.
-W systemie typów strukturalnych dwa typy są równe,
-jeśli posiadają taki sam zestaw metod.
-Czyli żeby użyć jednego typu w miejsce drugiego wystarczy,
-że posiada on taki sam zestaw metod.
-Polimorfizm strukturalny jest używany jako polimorfizm pomocniczy w niektórych statycznych i obiektowych językach programowania jak **[Scala]**, **[OCaml]** lub **[Pony]**.
-Jest także używany jako główny rodzaj polimorfizmu w statycznych językach programowania **[Go]** i **[TypeScript]**.
-
-Polimorfizm strukturalny w językach dynamicznie typowanych jest powiązany z *kaczym typowaniem* (ang. *[duck typing]*).
-W takich językach programowania nie ma sprawdzania,
-czy typy są równe.
-Po prostu są wywoływane metody.
-Polimorfizm strukturalny z kaczym typowanie jest głównym sposobem polimorfizmu w dynamicznych i obiektowych językach programowania takich jak **[Perl]**, **[Ruby]**, **[Python]**, **[JavaScript]**.
-
-Ponieważ polimorfizm strukturalny działa często przez refleksję i wybiera metody po nazwie,
-jest wolniejsze niż podtypowanie.
-W polimorfizmie strukturalnym także używa się dziedziczenia,
-ale bardziej do dziedziczenia pól lub jako wskazówkę dla programisty niż dlatego,
-że jest to wymagane przez kompilator lub interpreter.
-
-## Polimorfizm parametryczny (ang. *[parametric polymorphism]*)
-
-> Parametric polymorphism: when one or more types are not specified by name but by abstract symbols that can represent any type.
-
-Za [wikipedią].
-
-Czyli w wolnym tłumaczeniu:
-> Polimorfizm parametryczny: gdy jeden lub więcej typów nie jest określonych przez nazwę, ale przez abstrakcyjne symbole, które mogą reprezentować dowolny typ.
-
-Polimorfizm parametryczny został wymyślony w 1975 roku dla języka programowania **[Meta Language]**,
-który według legendy miał być statycznie typowaną wersją języka **[LISP]**.
-Polimorfizm parametryczny pozwolił na [programowanie uogólnione] (ang. *[generic programming]*) w statycznie typowanych językach programowania.
-
-Polimorfizm parametryczny można podzielić na dwa rodzaje:
-* Polimorfizm parametryczny oparty na szablonach w C++ i D - kod jest generowany podczas kompilacji dla każdego typu osobno.
-* Polimorfizm parametryczny oparty na typach (funkcja, metodach, klasach itd.) uogólnionych (ang. generic types) - dla wszystkich typów jest używany ten sam kod.
-
-
+Wydawałoby się,
+że trzy rodzaje polimorfizmu,
+jakie są spotykane w obiektowych językach programowania
+i które opiswałem w artykule [Sześć rodzajów polimorfizmu - polimorfizm jaki znamy z OOP](/polymorphism-as-we-know-it),
+są wszystkim czego potrzebujemy do szczęścia,
+żeby pisać zwięzły kod.
+Czasem pojawi się tylko jakiś zgrzyt,
+gdzie trzeba zaimplementować wzorzec wizytator lub fakrykę.
 
 ## [Wielometody] (ang. *multimethods*)
 
@@ -169,6 +61,8 @@ Ponieważ trzeba sprawdzić większą ilość warunków,
 
 Co ciekawe *[Common Lisp Object System]*,
 czyli wielometody z **[Common Lisp]** są uważane za przykład funkcji uogólnionych (ang. *[generic function]*).
+Za to kursy **[Clojure]** są zgodne,
+że wielometody są odmianą polimorfizmu *ad hoc*.
 
 ## [Polimorfizm ad hoc] (ang. *[ad hoc polymorphism]*)
 
@@ -227,13 +121,14 @@ Za statyczny polimorfizm *ad hoc* są uważane także:
 ### Późne wiązanie i dynamiczny polimorfizm *ad hoc*
 
 Niektóre języki programowania jak np. **[SmallTalk]** posiadają podwójną wysyłkę (ang. *[double dispatch]*).
-Metody są tam polimorficzne nie tylko ze względu na obiekt, dla którego wywoływana jest funkcja,
+Metody są tam polimorficzne nie tylko ze względu na obiekt,
+dla którego wywoływana jest funkcja,
 ale także ze względu na argument.
 W tradycyjnych językach obiektowych można to zasymulować za pomocą wzorca [odwiedzający], (ang. *[visitor pattern]*).
 
 Za dynamiczny polimorfizm *ad hoc* są uważane także:
 * `implicit conversion` w **[Scali]**
-* Wielometody w języki **[Clojure]**
+* Wielometody w języki **[Clojure]** (ale wielometody w **[Common Lisp]** już nie)
 
 A teraz zagadka.
 Jeśli podwójna wysyłka i wielokrotna wysyłka są podrodzajami polimorfizmu *ad hoc*
