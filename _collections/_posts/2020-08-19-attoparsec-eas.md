@@ -19,10 +19,10 @@ W tym artykule przyszła pora na implementację.
 ## Struktura asemblera, czyli programu asemblującego (montującego)
 
 Cztery główne moduły asemblera to:
-* Parser asemblera EAS
+* Parser asemblera **[EAS]**
 * Konsolidator (ang. Linker)
 * Reduktor (ang. Reducer) instrukcji
-* Generator kodu wynikowego, czyli kodu ETA
+* Generator kodu wynikowego, czyli kodu **[ETA]**
 
 ```haskell
 assemblyIO :: String -> String -> IO (Either String String)
