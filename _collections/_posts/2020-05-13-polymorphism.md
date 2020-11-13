@@ -150,6 +150,9 @@ Wadą wielometod ich jest to,
 Ponieważ trzeba sprawdzić większą ilość warunków,
 żeby wywołać konkretną implementację.
 
+Co ciekawe *[Common Lisp Object System]*,
+czyli wielometody z **[Common Lisp]** są uważane za przykład funkcji uogólnionych (ang. *[generic function]*).
+
 ## Polimorfizm parametryczny (ang. *[parametric polymorphism]*)
 
 > Parametric polymorphism: when one or more types are not specified by name but by abstract symbols that can represent any type.
@@ -166,9 +169,6 @@ Polimorfizm parametryczny pozwolił na [programowanie uogólnione] (ang. *[gener
 Polimorfizm parametryczny można podzielić na dwa rodzaje:
 * Polimorfizm parametryczny oparty na szablonach w C++ i D - kod jest generowany podczas kompilacji dla każdego typu osobno.
 * Polimorfizm parametryczny oparty na typach (funkcja, metodach, klasach itd.) uogólnionych (ang. generic types) - dla wszystkich typów jest używany ten sam kod.
-
-Co ciekawe *[Common Lisp Object System]*,
-czyli wielometody z **[Common Lisp]** są uważane za przykład funkcji uogólnionych (ang. *[generic function]*).
 
 ## [Polimorfizm ad hoc] (ang. *[ad hoc polymorphism]*)
 
