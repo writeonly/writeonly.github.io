@@ -152,7 +152,7 @@ Oryginalny jest dostępny [tutaj](http://www.miketaylor.org.uk/tech/eta/src/eas)
 a mirror [tutaj](https://github.com/helvm/eta/blob/master/src/eas).
 Implementacja tego asemblera będzie tematem kolejnego artykułu. 
 
-*Update: Implementacja parsera (i całego programu montującego) jest dostępna w następnym artykule **[attoparsec-eas]***.
+*Update: Implementacja parsera (i całego programu montującego) jest dostępna w następnym artykule **[/attoparsec-eas]***.
 
 ## Podsumowanie
 
