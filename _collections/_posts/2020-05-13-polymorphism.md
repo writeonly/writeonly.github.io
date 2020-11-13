@@ -42,8 +42,8 @@ Od tego czasu postanowiłem zebrać je wszystkie razem.
 I są to:
 * Polimorfizm podtypowy
 * Polimorfizm strukturalny
-* Wielometody (Multimetody)
 * Polimorfizm parametryczny
+* Wielometody (Multimetody)
 * Polimorfizm *ad hoc*
 * Inne rodzaje polimorfizmu :)
 
@@ -66,14 +66,14 @@ Za [wikipedią].
 Czyli w wolnym tłumaczeniu:
 > Podtypowanie (zwane również polimorfizmem podtypu lub polimorfizmem inkluzyjnym): gdy nazwa oznacza wystąpienie wielu różnych klas powiązanych przez jakąś wspólną nadklasę.
 
-Podtypowanie jest powiązane *nominalny system typów* (ang. *[nominal type system]* lub *name-based type system*)
+Podtypowaniem jest powiązane z *nominalnym system typów* (ang. *[nominal type system]* lub *name-based type system*)
 zwanym też *równoważnością przez nazwę*.
 W nominalnym systemie typów jeden typ można zastosować w miejsce drugiego,
 jeśli implementują ten sam protokół (ang. *[protocol]*), interfejs (ang. *[interface]*) lub cechę (ang. [trait]).
 
 Często jest nazywany także dziedziczeniem.
 Jednak określenie dziedziczenie może być nieprecyzyjne,
-ponieważ może odnosić się zarówno do dziedziczenia method,
+ponieważ może odnosić się zarówno do dziedziczenia metod,
 jak i dziedziczenia pól.
 
 Podtypowanie jest to główny rodzaj polimorfizmu używany w statycznych i obiektowych językach programowania takich jak **[Vala]**, **[Java]**, **[Kotlin]**, **[Scala]**, **[OCaml]** czy **[Pony]**.
@@ -82,13 +82,11 @@ Główną zaletą podtypowania jest to,
 że jest prawdopodobnie najszybszym rodzajem polimorfizmu dynamicznego.
 Główną wadą jest to że jest to bardzo ograniczony rodzaj polimorfizmu.
 
-Polimorfizm ograniczeniowy
-
 ## Polimorfizm strukturalny (ang. *[row polymorphism]*)
 
 Polimorfizm strukturalny nazywany także polimorfizmem opartym na sygnaturach (ang. *signature-based polymorphism*) można podzielić na dwa podrodzaje:
-* Polimorfizm strukturalny w językach dynamicznie typowanych.
 * Polimorfizm strukturalny w językach statycznie typowanych.
+* Polimorfizm strukturalny w językach dynamicznie typowanych.
 
 Polimorfizm strukturalny w językach statycznie typowanych jest powiązany z *strukturalnym system typów* (ang. *[structural type system]* lub *property-based type system*)
 zwanym też *równoważnością strukturalną*.
