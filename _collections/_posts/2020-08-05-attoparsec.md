@@ -20,11 +20,19 @@ Tak, są to parsery.
 
 ## Rodzaje parserów
 
-Z grubsza najczęściej występujące parsery można podzielić na zstępujące (ang. *top-down parsers*) i wstępujące (ang. *bottom-up parsers*).
-Dla języków programowania głównymi przedstawicielami parserów zstępujących są parsery LL,
-a parserów wstępujących - parsery LR (które dalej dzielą się na kanoniczne parsery LR, parsery SLR, i parsery LALR).
-Parsery LL czytają tekst od lewej i analizują także od lewej.
-Parsery LR czytają tekst od lewej i analizują od prawej.
+Z grubsza najczęściej występujące parsery można podzielić na:
+* Parsery zstępujące (ang. *top-down parsers*).
+* parsery wstępujące (ang. *bottom-up parsers*).
+
+Dla języków programowania głównymi przedstawicielami parserów zstępujących są parsery LL, a parserów wstępujących - parsery LR.
+Głowna różnica to sposób czytania:
+* Parsery LL czytają tekst od lewej i analizują także od lewej.
+* Parsery LR czytają tekst od lewej i analizują od prawej.
+
+Parsery LR dzielą się dalej na:
+* Kanoniczne parsery LR.
+* Parsery SLR.
+* Parsery LALR.
 
 Historycznie pierwsze były parsery LL.
 Jednak parsery LR są wydajniejsze niż parsery LL.
