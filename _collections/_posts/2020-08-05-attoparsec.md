@@ -44,7 +44,7 @@ w przeciwieństwie do parserów LL,
 które wręcz idealnie pisze się ręcznie.
 Dlatego do implementowania prostych języków **[DSL]** lepsze są parsery LL. 
 
-Dla Haskella istnieją cztery popularne biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych):
+Dla **[Haskella]** istnieją cztery popularne biblioteki do pisania parserów (plus co najmniej drugie tyle mniej popularnych):
 * **[Happy & Alex]**
 * **[Parsec]**
 * **[MegaParsec]**
@@ -86,7 +86,7 @@ Dzięki czemu o wiele prościej się jej nauczyć.
 
 ## Tekst o prostej strukturze
 
-Ponieważ moim marzeniem jest skompilowanie C do BrainFucka.
+Ponieważ moim marzeniem jest skompilowanie C do **[BrainFucka]**.
 Jako przykład nie będziemy parsować logów,
 tylko plik z językiem asemblera.
 Wcześniej jednak zobaczmy rodzaje języków asemblera.
@@ -101,6 +101,7 @@ Trzy najczęściej spotykane typy modeli programowych procesora to:
 * RISC (ang. Reduced Instruction Set Computing)
 * MISC (ang. Minimal Instruction Set Computing)
 
+#### CISC
 **[CISC]** historycznie był pierwszym modelem.
 Charakteryzował się skomplikowanymi rozkazami ze skomplikowanymi sposobami adresowania.
 Miało to ułatwić pisanie kompilatorów.
@@ -108,6 +109,7 @@ Nie ułatwiło.
 Żyjącym przedstawicielem tego modelu jest x86.
 Także mikroprocesor 8051 bywa uważany za przedstawiciela modelu **[CISC]**.
 
+#### RISC
 **[RISC]** został stworzony jako reakcja na to,
 że model CISC okazał się jednak ślepą uliczką.
 Skomplikowane rozkazy i sposoby adresowania nie pomagały w pisaniu kompilatorów.
@@ -117,6 +119,7 @@ Zaoszczędzone tranzystory przeznaczano na większą ilość rejestrów ogólneg
 Prawdopodobnie najpopularniejszym przedstawicielem tego modelu jest ARM.
 Także mikroprocesory AVR bywają uważane za przedstawicieli modelu **[RISC]**.
 
+#### MISC
 **[MISC]** był rozwijany niezależnie.
 Charakteryzuje się bardzo małą ilością rozkazów.
 Niektóre języki assemblera **[MISC]** wyglądają wręcz jak języki ezoteryczne.
@@ -136,7 +139,7 @@ O wiele częściej maszynami stosowymi są maszyny wirtualne jak **[JVM]**, [Wir
 Wiele języków ezoterycznych jak **[ETA]**, **[False]**, **[Funge]**, **[Piet]**, **[WhiteSpace]** to języki stosowe.
 Istnieją też nieezoteryczne wysokopoziomowe języki stosowe (ang. stack-based) jak **[dc]**, **[Joy]**, **[Forth]**, **[Mouse]**, **[PostScript]** i **[RPL]**.
 
-Najprostszy możliwi zestaw instrukcji dla maszyny stosowej został opisany jako [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)).
+Najprostszy możliwy zestaw instrukcji dla maszyny stosowej został opisany jako [A Minimal CISC](http://homepage.divms.uiowa.edu/~jones/arch/cisc/)).
 Zawiera on tylko 8 instrukcji.
 Ja jednak zdecydowałem się na inny zestaw instrukcji będący językiem ezoterycznym **[ETA]**.
 
@@ -370,6 +373,7 @@ Kod interpretera **[ETA]** też jest dostępny na [GitHubie](https://github.com/
 [dc]:                   /langs/dc
 [Forth]:                /langs/forth
 [Haskell]:              /langs/haskell
+[Haskella]:             /langs/haskell
 [Joy]:                  /langs/joy
 [Perl]:                 /langs/perl
 [Mouse]:                /langs/mouse
@@ -397,7 +401,7 @@ Kod interpretera **[ETA]** też jest dostępny na [GitHubie](https://github.com/
 [False]:                /eso/false
 [Funge]:                /eso/funge
 [Piet]:                 /eso/piet
-[WhiteScape]:           /eso/whitespace
+[WhiteSpace]:           /eso/whitespace
 
 [asembler]:             /tags/assembler
 [CISC]:                 /tags/cisc
