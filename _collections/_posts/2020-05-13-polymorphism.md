@@ -144,7 +144,7 @@ Wielometod są najpotężniejszym ze wszystkich typów polimorfizmu.
 I w oparciu o wielometody można zbudować tradycyjny obiektowy polimorfizm.
 
 Wadą wielometod ich jest to,
-że są najpowolniejsze ze wszystkich rodzajów polimorfizmy.
+że są najpowolniejsze ze wszystkich rodzajów polimorfizmu.
 Ponieważ trzeba sprawdzić większą ilość warunków,
 żeby wywołać konkretną implementację.
 
