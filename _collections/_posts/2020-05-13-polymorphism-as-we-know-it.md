@@ -134,7 +134,7 @@ gdzie dla wszystkich typów jest używany ten sam kod.
 ## Podsumowanie
 
 W tym artykule krótko opisałem trzy rodzaje polimorfizmu kojarzone standardowo z obiektowymi językami programowania.
-Pozostałe trzy są opisane w kolejnym artykule [Sześć rodzajów polimorfizmu - polimorfizm jakiego nie znamy z OOP](/)
+Pozostałe trzy są opisane w kolejnym artykule [Sześć rodzajów polimorfizmu - polimorfizm jakiego nie znamy z OOP](/polymorphism-that-we-do-not-know)
 
 [Clojure]:       /langs/clojure
 [Common Lisp]:   /langs/common-lisp
