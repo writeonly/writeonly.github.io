@@ -2,7 +2,7 @@
 title:    'Sześć rodzajów polimorfizmu - polimorfizm jakiego nie znamy z OOP'
 author:   TheKamilAdam
 category: programming
-tags:     dsl compiler fp interface interpreter monad protocol trait type-class
+tags:     compiler fp interface interpreter monad protocol trait type-class
 langs:    clojure common-lisp go haskell java javascript kotlin meta-language ocaml perl pony racket ruby rust scala scheme smalltalk typescript vala
 libs:     arrow cats scalaz
 tools:    bash
