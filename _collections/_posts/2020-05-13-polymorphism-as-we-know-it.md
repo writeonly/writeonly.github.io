@@ -2,9 +2,9 @@
 title:    'Sześć rodzajów polimorfizmu - polimorfizm jaki znamy z OOP'
 author:   TheKamilAdam
 category: programming
-tags:     dsl compiler fp interface interpreter monad protocol trait type-class
-langs:    clojure common-lisp go haskell java javascript kotlin meta-language ocaml perl pony racket ruby rust scala scheme smalltalk typescript vala
-libs:     arrow cats scalaz
+tags:     dsl interface interpreter protocol trait
+langs:    go java javascript kotlin meta-language ocaml perl pony ruby scala smalltalk typescript vala
+libs:     
 tools:    bash
 redirect_from:
   - polymorphism-as-we-know-it
@@ -109,7 +109,7 @@ Ponieważ polimorfizm strukturalny działa często przez refleksję i wybiera me
 jest wolniejsze niż podtypowanie.
 W polimorfizmie strukturalnym także używa się dziedziczenia,
 ale bardziej do dziedziczenia pól lub jako wskazówkę dla programisty niż dlatego,
-że jest to wymagane przez kompilator lub interpreter.
+że jest to wymagane przez [kompilator] lub [interpreter].
 
 ## Polimorfizm parametryczny (ang. *[parametric polymorphism]*)
 
@@ -177,6 +177,7 @@ Pozostałe trzy są opisane w kolejnym artykule [Sześć rodzajów polimorfizmu 
 [Scalaz]:        /libs/scalaz
 
 [Dsl]:           /tags/dsl
+[interpreter]:   /tags/interpreter
 [Kompilator]:    /tags/compiler
 [klas typów]:    /tags/type-class
 
