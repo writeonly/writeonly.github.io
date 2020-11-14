@@ -3,7 +3,7 @@ title:    'Sześć rodzajów polimorfizmu - polimorfizm jakiego nie znamy z OOP'
 author:   TheKamilAdam
 category: programming
 tags:     compiler fp interface interpreter monad protocol trait type-class
-langs:    clojure common-lisp go haskell java javascript kotlin meta-language ocaml perl pony racket ruby rust scala scheme smalltalk typescript vala
+langs:    clojure common-lisp haskell java kotlin ocaml perl racket rust scala scheme smalltalk
 libs:     arrow cats scalaz
 tools:    bash
 redirect_from:
@@ -220,7 +220,7 @@ gdzie nie trzeba tworzyć w ogóle obiektów.
 [Ruby]:          /langs/ruby
 [Ruscie]:        /langs/rust
 [Rust]:          /langs/rust
-[SmallTack]:     /langs/smalltalk
+[SmallTalk]:     /langs/smalltalk
 [Scala]:         /langs/scala
 [Scali]:         /langs/scala
 [Scheme]:        /langs/scheme
