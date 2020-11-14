@@ -9,7 +9,7 @@ markdown                 : kramdown
 highlighter              : rouge
 
 ### Outputting
-permalink                : /:categories/:title/
+permalink                : /:categories/:title
 paginate_path            : /:num
 timezone                 : "Europe/Warsaw" # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
