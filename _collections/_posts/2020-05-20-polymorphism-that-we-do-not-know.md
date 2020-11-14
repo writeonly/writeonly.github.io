@@ -238,6 +238,7 @@ gdzie nie trzeba tworzyć w ogóle obiektów.
 [Dsl]:           /tags/dsl
 [Kompilator]:    /tags/compiler
 [klas typów]:    /tags/type-class
+[Klasy typów]:   /tags/type-class
 
 [Ad hoc polymorphism]:         https://en.wikipedia.org/wiki/Ad_hoc_polymorphism
 [Anemic domain model]:         https://en.wikipedia.org/wiki/Anemic_domain_model
