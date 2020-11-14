@@ -146,7 +146,7 @@ Co pozwala osiągnąć polimorfizm podobny do subtypingu i sprawia,
 że programowanie obiektowe jest możliwe w **[Haskellu]**.
 
 [Klasy typów] są możliwe do uzyskania także w innych językach programowania jak np.:
-* w **[Scali]** przy używaniu bibliotek **[Scalaz]**/**[Cats]**r
+* w **[Scali]** przy używaniu bibliotek **[Scalaz]**/**[Cats]**
 * w **[Kotlina]** przy używaniu biblioteki **[ARROW]**
 
 ### Wiadomo jakie wiązanie
