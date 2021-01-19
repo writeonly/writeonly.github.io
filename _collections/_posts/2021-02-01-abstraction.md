@@ -13,5 +13,9 @@ redirect_from:
 
 Abstrakcja kolekcji w Haskellu 
 
-Stak zamiast listy
+Stack zamiast listy
 hermetyzacja i abstrakcja
+
+ArithmeticStack zamiast Stack.
+
+Polimorficzny Stack i ArithmeticStack.
