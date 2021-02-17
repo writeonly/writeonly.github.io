@@ -19,3 +19,6 @@ hermetyzacja i abstrakcja
 ArithmeticStack zamiast Stack.
 
 Polimorficzny Stack i ArithmeticStack.
+
+Dwie implementacje 
+ListStack i SeqStack
