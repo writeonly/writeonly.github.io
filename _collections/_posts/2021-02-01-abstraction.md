@@ -82,7 +82,11 @@ insert' 0       symbol (_:xs) = symbol : xs
 insert' address symbol []     = def    : insert' (address-1) symbol []
 insert' address symbol (x:xs) = x      : insert' (address-1) symbol xs
 ```
-To
+
+O ile utworzenie listy i odczyt elementów są proste,
+o tyle zapis czegoś w liście wymaga trochę kody.
+Wymaga także przekopiowania fragmentu listy.
+W przypadku dodania nowego elementu na koniec wymaga przekopiowania całej listy :(
 
 ## Implementacja oparta na Sekwencji
 
