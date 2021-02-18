@@ -23,9 +23,21 @@ Polimorficzny Stack i ArithmeticStack.
 Dwie implementacje 
 ListStack i SeqStack
 
-## Implementacja Oparta na liście
+## Implementacja oparta na liście
+Najpierw implementacja oparta na liście.
+Była to dla mnie naturalna implementacja ponieważ list jest domyślną kolekcją danych w Haskellu.
+
 
 ```haskell
+{-# Language GeneralizedNewtypeDeriving #-}
+module HelVM.HelCam.Common.RAM.ListRAM (
+  RAM,
+  empty,
+  fromList,
+  load,
+  store
+) where
+
 import HelVM.HelCam.Common.Util
 
 import Data.Default
@@ -36,6 +48,11 @@ newtype RAM s = MakeRAM [s] deriving (Foldable)
 type DRAM s = D (RAM s)
 ```
 
+Eksportujamy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
+Dwa konstruktory oraz *getter* i *setter*.
+
+Następnie definiujemy dwie funkcje które niestety będziemy musieli przekopiowywać między implementacjami
+(Do poprawy w przyszłości):
 ```haskell
 load :: (Integral a, Default s) => RAM s -> a -> s
 load heap address = load' heap (fromIntegral address) ?: def
@@ -44,13 +61,14 @@ store :: (Integral a, Default s) => a -> s -> DRAM s
 store address = store' (fromIntegral address)
 ```
 
+I teraz rdzeń implementacji:
 ```haskell
 -- Core
-fromList :: Default s => [s] -> RAM s
-fromList = MakeRAM
-
 empty :: Default s => RAM s
 empty = MakeRAM []
+
+fromList :: Default s => [s] -> RAM s
+fromList = MakeRAM
 
 load' :: Default s => RAM s -> Int -> Maybe s
 load' (MakeRAM m) address = m !!? address
@@ -64,6 +82,7 @@ insert' 0       symbol (_:xs) = symbol : xs
 insert' address symbol []     = def    : insert' (address-1) symbol []
 insert' address symbol (x:xs) = x      : insert' (address-1) symbol xs
 ```
+To
 
 ## Implementacja oparta na Sekwencji
 
@@ -107,7 +126,7 @@ newtype RAM s = MakeRAM (IntMap s) deriving (Foldable)
 type DRAM s = D (RAM s)
 ```
 
-```
+```haskell
 -- Core
 fromList :: Default s => [s] -> RAM s
 fromList list = MakeRAM $ IntMap.fromList $ zip [0..] list
