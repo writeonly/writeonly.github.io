@@ -1,14 +1,14 @@
 ---
-title:    'Abstrakcja i Hermetyzacja w Haskellu'
+title:    'Hermetyzacja w Haskellu'
 author:   TheKamilAdam
-category: programming
-tags:     atd coproduct product
-langs:    java kotlin scala rust
-libs:     autovalue immutables lombok vavr
-tools:    jvm
+category: haskell-eta
+tags:     containers
+langs:    haskell
+libs:     containers
+eso:      subleq whitespace
 redirect_from:
-- 5-programming-languages
-- programming/5-programming-languages
+- encapsulation
+- haskell-eta/encapsulation
 ---
 
 Abstrakcja kolekcji w Haskellu 
@@ -23,7 +23,14 @@ Polimorficzny Stack i ArithmeticStack.
 Dwie implementacje 
 ListStack i SeqStack
 
-## Implementacja oparta na liście
+RAM
+
+## Implementacje
+
+Udało mi się napisać trzy implementacje. 
+Opartą na liscie, sekwencji i mapie.
+
+### Implementacja oparta na liście
 Najpierw implementacja oparta na liście.
 Była to dla mnie naturalna implementacja ponieważ list jest domyślną kolekcją danych w Haskellu.
 
@@ -41,40 +48,45 @@ module HelVM.HelCam.Common.RAM.ListRAM (
 import HelVM.HelCam.Common.Util
 
 import Data.Default
+```
 
+Eksportujamy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
+Dwa konstruktory oraz *mutatory*.
+
+Następnie definiujemy oba konstruktory:
+```haskell
 import Prelude hiding (empty, fromList)
 
 newtype RAM s = MakeRAM [s] deriving (Foldable)
 type DRAM s = D (RAM s)
-```
 
-Eksportujamy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
-Dwa konstruktory oraz *getter* i *setter*.
-
-Następnie definiujemy dwie funkcje które niestety będziemy musieli przekopiowywać między implementacjami
-(Do poprawy w przyszłości):
-```haskell
-load :: (Integral a, Default s) => RAM s -> a -> s
-load heap address = load' heap (fromIntegral address) ?: def
-
-store :: (Integral a, Default s) => a -> s -> DRAM s
-store address = store' (fromIntegral address)
-```
-
-I teraz rdzeń implementacji:
-```haskell
--- Core
+-- Constructors
 empty :: Default s => RAM s
 empty = MakeRAM []
 
 fromList :: Default s => [s] -> RAM s
 fromList = MakeRAM
+```
 
-load' :: Default s => RAM s -> Int -> Maybe s
-load' (MakeRAM m) address = m !!? address
+Następnie definiujemy dwa *mutatory*,
+które niestety będziemy musieli przekopiowywać między implementacjami
+(Do poprawy w przyszłości):
+```haskell
+-- Mutators
+load :: (Integral a, Default s) => RAM s -> a -> s
+load (MakeRAM m) address = index' m (fromIntegral address) ?: def
 
-store' :: Default s => Int -> s -> DRAM s
-store' address symbol (MakeRAM m) = MakeRAM $ insert' address symbol m
+store :: (Integral a, Default s) => a -> s -> DRAM s
+store address symbol (MakeRAM m) = MakeRAM $ insert' (fromIntegral address) symbol m
+```
+
+I teraz niskopoziomowe funkcje, 
+wymagane przez *mutatory*, 
+zależne od implementacji
+```haskell
+-- Private
+index' :: [s] -> Int -> Maybe s
+index' = (!!?)
 
 insert' :: Default s => Int -> s -> [s] -> [s]
 insert' 0       symbol []     = [symbol]
@@ -83,67 +95,78 @@ insert' address symbol []     = def    : insert' (address-1) symbol []
 insert' address symbol (x:xs) = x      : insert' (address-1) symbol xs
 ```
 
-O ile utworzenie listy i odczyt elementów są proste,
-o tyle zapis czegoś w liście wymaga trochę kody.
+O ile odczyt elementów z listy jest proste,
+o tyle zapis czegoś w liście wymaga trochę kodu.
 Wymaga także przekopiowania fragmentu listy.
-W przypadku dodania nowego elementu na koniec wymaga przekopiowania całej listy :(
+W przypadku dodania nowego elementu na koniec listy wymaga przekopiowania całej zawartości listy :(
 
-## Implementacja oparta na Sekwencji
+### Implementacja oparta na Sekwencji
 
 ```haskell
-import HelVM.HelCam.Common.Util
-
-import Data.Default
 import Data.Sequence as Seq
 
 newtype RAM s = MakeRAM (Seq s) deriving (Foldable)
 type DRAM s = D (RAM s)
-```
 
-```haskell
--- Core
-fromList :: Default s => [s] -> RAM s
-fromList = MakeRAM . Seq.fromList
-
+-- Constructors
 empty :: Default s => RAM s
 empty = MakeRAM Seq.empty
 
-load' :: Default s => RAM s -> Int -> Maybe s
-load' (MakeRAM h) address = h !? address
+fromList :: Default s => [s] -> RAM s
+fromList = MakeRAM . Seq.fromList
+```
 
-store' :: Default s => Int -> s -> DRAM s
-store' address symbol (MakeRAM m) = MakeRAM $ insert (Seq.length m) where
-  insert l
+```haskell
+-- Private
+index' :: Seq s -> Int -> Maybe s
+index' = (!?)
+
+insert' :: Default s => Int -> s -> Seq s -> Seq s
+insert' address symbol m = insert'' (Seq.length m) where
+  insert'' l
     | address < l  = Seq.update address symbol m
     | otherwise    = m <> Seq.replicate (address - l) def |> symbol
 ```
 
-## Implementacja oparta na Mapie
+### Implementacja oparta na Mapie
+
+Nie będzie to jednak zwykła mapa a IntMapa dedykowana do adresowania jej typem `Int`.
+Ograniczenie to wynika z tego 
 
 ```haskell
-import HelVM.HelCam.Common.Util
-
-import Data.Default
 import Data.IntMap as IntMap
 
 newtype RAM s = MakeRAM (IntMap s) deriving (Foldable)
 type DRAM s = D (RAM s)
-```
 
-```haskell
--- Core
-fromList :: Default s => [s] -> RAM s
-fromList list = MakeRAM $ IntMap.fromList $ zip [0..] list
-
+-- Constructors
 empty :: Default s => RAM s
 empty = MakeRAM IntMap.empty
 
-load' :: Default s => RAM s -> Int -> Maybe s
-load' (MakeRAM m) address = m !? address
-
-store' :: Default s => Int -> s -> DRAM s
-store' address symbol (MakeRAM m) = MakeRAM $ insert address symbol m
+fromList :: Default s => [s] -> RAM s
+fromList list = MakeRAM $ IntMap.fromList $ zip [0..] list
 ```
+
+Implementacje `index'` i `insert'` są banalnie proste
+```haskell
+-- Private
+index' :: IntMap s -> Int -> Maybe s
+index' = (!?)
+
+insert' :: Int -> s -> IntMap s -> IntMap s
+insert' = insert
+```
+
+Czy implementacja oparta na `IntMap` jest lepsza niż na `Seq`?
+Tego nie wiem.
+`IntMap` nie posiada tegoretycznych wartości w notacji dużego O.
+Z drugiej strony nawet jakby posiadał to może się to różnie przekładać na rzeczywiste rezultaty.
+Wszystko też zależy od ilości danych.
+Potrzebny byłby duży program w SubLequ.
+I porządne testy wydajnościowe
+
+Ważne jest to, że udało się z hermetyzować użycie Listy, Sekqencji i IntMapy
+
 
 ## Użycie
 
@@ -232,3 +255,6 @@ instance Evaluator (MockIO ()) where
     mockPutInt $ load memory address
     doInstruction (ic+3) memory
 ```
+
+## Podsumowanie
+
