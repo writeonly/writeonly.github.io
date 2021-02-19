@@ -2,7 +2,6 @@
 title:    'Hermetyzacja w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
-tags:     containers
 langs:    haskell
 libs:     containers
 eso:      subleq whitespace
@@ -10,6 +9,10 @@ redirect_from:
 - encapsulation
 - haskell-eta/encapsulation
 ---
+
+Hermetyzacja to cecha charakterystyczna obiektowych języków programowania.
+Co jednak nie znaczy,
+że hermetyzacja nie istnieje w Haskellu.
 
 Abstrakcja kolekcji w Haskellu 
 
@@ -28,7 +31,7 @@ RAM
 ## Implementacje
 
 Udało mi się napisać trzy implementacje. 
-Opartą na liscie, sekwencji i mapie.
+Opartą na liście, sekwencji i mapie.
 
 ### Implementacja oparta na liście
 Najpierw implementacja oparta na liście.
@@ -258,3 +261,12 @@ instance Evaluator (MockIO ()) where
 
 ## Podsumowanie
 
+Udało się ukryś szczegóły implementacyjne wewnątrz moduło i możemy dokonać wyboru między implementacjami zmieniając jedną linie:
+```haskell
+import HelVM.HelCam.Common.RAM.ListRAM as RAM
+import HelVM.HelCam.Common.RAM.SeqRAM as RAM
+import HelVM.HelCam.Common.RAM.IntMapRAM as RAM
+```
+Nie jest to jednak rozwiązanie idealne.
+Nie możemy zmieniać implementacji podczas działania programu.
+Także wstrzykiwanie różnych implementacji na potrzeby testów jest utrudnione
