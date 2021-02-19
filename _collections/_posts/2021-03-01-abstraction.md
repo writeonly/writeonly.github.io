@@ -1,5 +1,5 @@
 ---
-title:    'Hermetyzacja w Haskellu'
+title:    'Abstrakcja w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
@@ -13,10 +13,20 @@ redirect_from:
 Hermetyzacja to cecha charakterystyczna obiektowych języków programowania.
 Co jednak nie znaczy,
 że hermetyzacja nie istnieje w Haskellu.
-Hermetyzację podobna do klas z języków OOP osiąga się w Haskellu za pomocą modułów i jawnego eksportowania funkcji i typów.
 
-Jako przykład przedstawię trzy implementacje modułu emulującego Pamięć o dostępie swobodnym (RAM) dla interpreterów ezoterycznych językó programowania.
-Moduły są użyte w interpreterach języków SubLeq i WhiteSpace.
+Abstrakcja kolekcji w Haskellu 
+
+Stack zamiast listy
+hermetyzacja i abstrakcja
+
+ArithmeticStack zamiast Stack.
+
+Polimorficzny Stack i ArithmeticStack.
+
+Dwie implementacje 
+ListStack i SeqStack
+
+RAM
 
 ## Implementacje
 
@@ -25,11 +35,9 @@ Opartą na liście, sekwencji i mapie.
 
 ### Implementacja oparta na liście
 Najpierw implementacja oparta na liście.
-Była to dla mnie naturalna implementacja,
-ponieważ list jest domyślną kolekcją danych w Haskellu.
+Była to dla mnie naturalna implementacja ponieważ list jest domyślną kolekcją danych w Haskellu.
 
-Najpierw eksportujamy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
-Dwa konstruktory oraz *mutatory*.
+
 ```haskell
 {-# Language GeneralizedNewtypeDeriving #-}
 module HelVM.HelCam.Common.RAM.ListRAM (
@@ -44,8 +52,9 @@ import HelVM.HelCam.Common.Util
 
 import Data.Default
 ```
-Ponieważ dla wszystkich implementacji ten kod jest prawie identyczny,
-nie będę go już powtarzać.
+
+Eksportujamy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
+Dwa konstruktory oraz *mutatory*.
 
 Następnie definiujemy oba konstruktory:
 ```haskell
@@ -61,8 +70,6 @@ empty = MakeRAM []
 fromList :: Default s => [s] -> RAM s
 fromList = MakeRAM
 ```
-`empty` tworzy pusty `RAM` a `fromList` - ram wstępnie załadowany danymi.
-
 
 Następnie definiujemy dwa *mutatory*,
 które niestety będziemy musieli przekopiowywać między implementacjami
@@ -92,16 +99,12 @@ insert' address symbol (x:xs) = x      : insert' (address-1) symbol xs
 ```
 
 O ile odczyt elementów z listy jest proste,
-o tyle zapis elementu w liście wymaga trochę kodu.
+o tyle zapis czegoś w liście wymaga trochę kodu.
 Wymaga także przekopiowania fragmentu listy.
-W przypadku dodania nowego elementu na koniec listy wymaga przekopiowania całej zawartości listy.
-Czyli czas wstawiania to `O(n)`, gdzie `n` to wartość adresu.
-Nie jest to dobra implementacja, ale jej zaletą jest to,
-że nie zależy od zewnętrznych bibliotek.
+W przypadku dodania nowego elementu na koniec listy wymaga przekopiowania całej zawartości listy :(
 
 ### Implementacja oparta na Sekwencji
 
-Importujemy sekwencje jako `Seq` oraz definiujemy typ i dwa konstruktory do niego:
 ```haskell
 import Data.Sequence as Seq
 
@@ -116,12 +119,6 @@ fromList :: Default s => [s] -> RAM s
 fromList = MakeRAM . Seq.fromList
 ```
 
-Nastepnie przekopiowujemy kod,
-który powinien być wspólny,
-dwa *mutatory* `load` i `store`.
-(Do poprawy w przyszłości)
-
-Na koniec definiujemy funkcje zależne od implementacji:
 ```haskell
 -- Private
 index' :: Seq s -> Int -> Maybe s
@@ -133,11 +130,6 @@ insert' address symbol m = insert'' (Seq.length m) where
     | address < l  = Seq.update address symbol m
     | otherwise    = m <> Seq.replicate (address - l) def |> symbol
 ```
-
-Także tutaj kod zapisu to pare linii.
-Jednak tym razem nie musimy kopiować żadnych struktur.
-Sekwencja zajmie się tym za nas. 
-Jednocześnie gwarantując wydajność stawiania nowego elementu na poziomie `O(log n)`
 
 ### Implementacja oparta na Mapie
 
