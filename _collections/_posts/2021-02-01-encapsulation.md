@@ -12,15 +12,15 @@ redirect_from:
 
 Hermetyzacja to cecha charakterystyczna obiektowych języków programowania.
 Co jednak nie znaczy,
-że hermetyzacja nie istnieje w Haskellu.
-Hermetyzację podobną do klas z języków OOP osiąga się w Haskellu za pomocą modułów i jawnego eksportowania funkcji i typów.
+że hermetyzacja nie istnieje w **[Haskellu]**.
+Hermetyzację podobną do klas z języków OOP osiąga się w **[Haskellu]** za pomocą modułów i jawnego eksportowania funkcji i typów.
 
 Jako przykład przedstawię trzy implementacje modułu emulującego pamięć o dostępie swobodnym (RAM) dla interpreterów ezoterycznych języków programowania.
 Moduły są użyte w interpreterach języków **[SubLeq]** i **[WhiteSpace]**.
 
 ## Implementacje
 
-Implementacje są przedstawione w takiej kolejnosci jak powstawały wraz z poznawaniem Haskella.
+Implementacje są przedstawione w takiej kolejnosci jak powstawały wraz z poznawaniem **[Haskella]**.
 Oparte są na Liście, Sekwencji i IntMapie.
 
 ### Implementacja oparta na liście
