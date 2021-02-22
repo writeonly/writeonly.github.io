@@ -13,22 +13,23 @@ redirect_from:
 Hermetyzacja to cecha charakterystyczna obiektowych języków programowania.
 Co jednak nie znaczy,
 że hermetyzacja nie istnieje w Haskellu.
-Hermetyzację podobna do klas z języków OOP osiąga się w Haskellu za pomocą modułów i jawnego eksportowania funkcji i typów.
+Hermetyzację podobną do klas z języków OOP osiąga się w Haskellu za pomocą modułów i jawnego eksportowania funkcji i typów.
 
-Jako przykład przedstawię trzy implementacje modułu emulującego Pamięć o dostępie swobodnym (RAM) dla interpreterów ezoterycznych językó programowania.
-Moduły są użyte w interpreterach języków SubLeq i WhiteSpace.
+Jako przykład przedstawię trzy implementacje modułu emulującego pamięć o dostępie swobodnym (RAM) dla interpreterów ezoterycznych języków programowania.
+Moduły są użyte w interpreterach języków **[SubLeq]** i **[WhiteSpace]**.
 
 ## Implementacje
 
-Udało mi się napisać trzy implementacje. 
-Opartą na liście, sekwencji i mapie.
+Implementacje są przedstawione w takiej kolejnosci jak powstawały wraz z poznawaniem Haskella.
+Oparte są na Liście, Sekwencji i IntMapie.
 
 ### Implementacja oparta na liście
 Najpierw implementacja oparta na liście.
 Była to dla mnie naturalna implementacja,
 ponieważ list jest domyślną kolekcją danych w Haskellu.
+A ja na początku znałem tylko listę.
 
-Najpierw eksportujamy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
+Najpierw eksportujemy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
 Dwa konstruktory oraz *mutatory*.
 ```haskell
 {-# Language GeneralizedNewtypeDeriving #-}
@@ -61,7 +62,7 @@ empty = MakeRAM []
 fromList :: Default s => [s] -> RAM s
 fromList = MakeRAM
 ```
-`empty` tworzy pusty `RAM` a `fromList` - ram wstępnie załadowany danymi.
+Funkcja `empty` tworzy pusty `RAM` a `fromList` - ram wstępnie załadowany danymi.
 
 
 Następnie definiujemy dwa *mutatory*,
@@ -95,8 +96,10 @@ O ile odczyt elementów z listy jest proste,
 o tyle zapis elementu w liście wymaga trochę kodu.
 Wymaga także przekopiowania fragmentu listy.
 W przypadku dodania nowego elementu na koniec listy wymaga przekopiowania całej zawartości listy.
-Czyli czas wstawiania to `O(n)`, gdzie `n` to wartość adresu.
-Nie jest to dobra implementacja, ale jej zaletą jest to,
+Czyli czas wstawiania to `O(n)`,
+gdzie `n` to wartość adresu.
+Nie jest to dobra implementacja,
+ale jej zaletą jest to,
 że nie zależy od zewnętrznych bibliotek.
 
 ### Implementacja oparta na Sekwencji
@@ -116,7 +119,7 @@ fromList :: Default s => [s] -> RAM s
 fromList = MakeRAM . Seq.fromList
 ```
 
-Nastepnie przekopiowujemy kod,
+Następnie przekopiowujemy kod,
 który powinien być wspólny,
 dwa *mutatory* `load` i `store`.
 (Do poprawy w przyszłości)
@@ -137,12 +140,15 @@ insert' address symbol m = insert'' (Seq.length m) where
 Także tutaj kod zapisu to pare linii.
 Jednak tym razem nie musimy kopiować żadnych struktur.
 Sekwencja zajmie się tym za nas. 
-Jednocześnie gwarantując wydajność stawiania nowego elementu na poziomie `O(log n)`
+Jednocześnie gwarantując wydajność stawiania nowego elementu na poziomie `O(log n)`.
 
 ### Implementacja oparta na Mapie
 
 Nie będzie to jednak zwykła mapa a IntMapa dedykowana do adresowania jej typem `Int`.
-Ograniczenie to wynika z tego 
+Ograniczenie to wynika z tego,
+że zarówno Lista,
+jak i Sekwencja,
+także są indeksowane typem `Int`. 
 
 ```haskell
 import Data.IntMap as IntMap
@@ -158,7 +164,11 @@ fromList :: Default s => [s] -> RAM s
 fromList list = MakeRAM $ IntMap.fromList $ zip [0..] list
 ```
 
-Implementacje `index'` i `insert'` są banalnie proste
+Dla funkcji `fromList` trzeba napisać trochę kodu.
+Wynika to z tego,
+że `IntMap.fromList` przyjmuje pary indeks, wartość.
+
+Implementacje `index'` i `insert'` są banalnie proste:
 ```haskell
 -- Private
 index' :: IntMap s -> Int -> Maybe s
@@ -170,13 +180,14 @@ insert' = insert
 
 Czy implementacja oparta na `IntMap` jest lepsza niż na `Seq`?
 Tego nie wiem.
-`IntMap` nie posiada tegoretycznych wartości w notacji dużego O.
-Z drugiej strony nawet jakby posiadał to może się to różnie przekładać na rzeczywiste rezultaty.
+Typ `IntMap` nie ma podanych teoretycznych wartości w notacji dużego O.
+Z drugiej strony nawet jakby posiadał,
+to może się to różnie przekładać na rzeczywiste rezultaty.
 Wszystko też zależy od ilości danych.
-Potrzebny byłby duży program w SubLequ.
-I porządne testy wydajnościowe
+Potrzebny byłby duży program w języku **[SubLeq]**.
+I porządne testy wydajnościowe.
 
-Ważne jest to, że udało się z hermetyzować użycie Listy, Sekqencji i IntMapy
+Ważne jest to, że udało się z hermetyzować użycie Listy, Sekwencji i IntMapy
 
 
 ## Użycie
@@ -269,7 +280,7 @@ instance Evaluator (MockIO ()) where
 
 ## Podsumowanie
 
-Udało się ukryś szczegóły implementacyjne wewnątrz moduło i możemy dokonać wyboru między implementacjami zmieniając jedną linie:
+Udało się ukryć szczegóły implementacyjne wewnątrz modułu oraz możemy dokonać wyboru między implementacjami zmieniając jedną linie:
 ```haskell
 import HelVM.HelCam.Common.RAM.ListRAM as RAM
 import HelVM.HelCam.Common.RAM.SeqRAM as RAM
@@ -277,4 +288,6 @@ import HelVM.HelCam.Common.RAM.IntMapRAM as RAM
 ```
 Nie jest to jednak rozwiązanie idealne.
 Nie możemy zmieniać implementacji podczas działania programu.
-Także wstrzykiwanie różnych implementacji na potrzeby testów jest utrudnione
+Także wstrzykiwanie różnych implementacji na potrzeby testów jest utrudnione.
+
+
