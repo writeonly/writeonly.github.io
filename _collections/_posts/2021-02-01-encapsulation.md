@@ -290,4 +290,9 @@ Nie jest to jednak rozwiązanie idealne.
 Nie możemy zmieniać implementacji podczas działania programu.
 Także wstrzykiwanie różnych implementacji na potrzeby testów jest utrudnione.
 
+[Haskell]:              /langs/haskell
+[Haskella]:             /langs/haskell
+[Haskellu]:             /langs/haskell
 
+[SubLeq]:               /eso/subleq
+[WhiteSpace]:           /eso/whitespace
