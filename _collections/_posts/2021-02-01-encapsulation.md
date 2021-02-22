@@ -26,7 +26,7 @@ Oparte są na Liście, Sekwencji i IntMapie.
 ### Implementacja oparta na liście
 Najpierw implementacja oparta na liście.
 Była to dla mnie naturalna implementacja,
-ponieważ list jest domyślną kolekcją danych w Haskellu.
+ponieważ list jest domyślną kolekcją danych w **[Haskellu]**.
 A ja na początku znałem tylko listę.
 
 Najpierw eksportujemy typ `RAM` oraz nazwy czterech funkcji pracujących na tym typie.
