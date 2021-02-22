@@ -192,8 +192,8 @@ Ważne jest to, że udało się z hermetyzować użycie Listy, Sekwencji i IntMa
 
 ## Użycie
 
+Jako przykład interpreter języka **[SubLeq]**:
 ```haskell
-
 import HelVM.HelCam.Machines.SubLeq.Lexer
 import HelVM.HelCam.Machines.SubLeq.Symbol
 
