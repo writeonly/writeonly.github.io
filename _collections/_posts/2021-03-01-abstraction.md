@@ -41,7 +41,7 @@ import Data.Sequence as Seq
 type Address = Int
 ```
 
-Następnie 
+Następnie mamy abstrakcję.
 ```haskell
 load :: (Integral a, Default s, RAM s m) => m -> a -> s
 load memory address = index' memory (fromIntegral address) ?: def
@@ -83,3 +83,75 @@ instance (Default s) => RAM s (IntMap s) where
   insert'       = IntMap.insert
 ```
 
+## Użycie
+
+Nowy kod Type classy `Evaluator` wygląda następująco:
+```haskell
+class Evaluator r where
+  simpleEval :: Source -> r
+  simpleEval source = eval source defaultRAMType
+
+  simpleEvalIL :: SymbolList -> r
+  simpleEvalIL il = evalIL il defaultRAMType
+
+  eval :: Source -> RAMType -> r
+  eval source = evalIL $ tokenize source
+
+  evalIL :: SymbolList -> RAMType -> r
+  evalIL il ListRAMType   = doInstruction 0 (RAM.fromList il::SymbolList)
+  evalIL il SeqRAMType    = doInstruction 0 (RAM.fromList il::Seq Symbol)
+  evalIL il IntMapRAMType = doInstruction 0 (RAM.fromList il::IntMap Symbol)
+
+  doInstruction :: RAM Symbol m => Symbol -> m -> r
+  doInstruction ic memory
+    | ic  < 0   = doEnd
+    | src < 0   = doInputChar  dst ic memory
+    | dst < 0   = doOutputChar src ic memory
+    | otherwise = doInstruction ic' $ store dst diff memory
+      where
+        src  = load memory ic
+        dst  = load memory $ ic + 1
+        diff = load memory dst - load memory src :: Symbol
+        ic'
+          | diff <= 0 = (load memory $ ic + 2) :: Symbol
+          | otherwise = ic + 3
+
+  doEnd        :: r
+  doInputChar  :: RAM Symbol m => Symbol -> Symbol -> m -> r
+  doOutputChar :: RAM Symbol m => Symbol -> Symbol -> m -> r
+```
+Ponieważ odkryłem zapis `instance (TypeClassa1 t) => TypeClassa2 t where` możemy przy okazji przepisać implementacje Evaluator
+```haskell
+instance (WrapperIO m) => Evaluator (m ()) where
+  doEnd = pass
+
+  doInputChar address ic memory = do
+    value <- wGetInt
+    doInstruction (ic+3) $ store address value memory
+
+  doOutputChar address ic memory = do
+    wPutInt (load memory address :: Symbol)
+    doInstruction (ic+3) memory
+```
+
+
+Potrzebujemy jeszcze kostruktury (enuma) dającą możliwość wyboru implementacji: 
+```haskell
+module HelVM.HelCam.Common.Types.RAMType where
+
+data RAMType = ListRAMType | SeqRAMType | IntMapRAMType deriving (Eq, Read, Show)
+
+ramTypes :: [RAMType]
+ramTypes = [ListRAMType, SeqRAMType, IntMapRAMType]
+
+defaultRAMType :: RAMType
+defaultRAMType = IntMapRAMType
+
+computeRAMType :: String -> RAMType
+computeRAMType raw = valid $ readMaybe raw where
+  valid (Just value)  = value
+  valid Nothing = error $ "RAMType '" <> toText raw <> "' is not valid RAMType. Valid ramTypes are : " <> show ramTypes
+```
+
+
+## Alternatywy
