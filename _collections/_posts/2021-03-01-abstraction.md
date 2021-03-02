@@ -18,61 +18,68 @@ czyli interfejsy (w Javie), traity (w Scali) czy klasy czysto abstrakcyjne (w C+
 Czy Haskell ma odpowiednik interfejsów/traitów?
 Tak są to type classy. 
 
-{-# Language FlexibleInstances #-}
-module HelVM.HelCam.Common.RAM where
 
-import HelVM.HelCam.Machines.WhiteSpace.Instruction
+```haskell
+{-# Language FlexibleInstances     #-}
+{-# Language MultiParamTypeClasses #-}
+{-# Language AllowAmbiguousTypes   #-}
+```
 
-import HelVM.HelCam.Common.OrError
-import HelVM.HelCam.Common.Util
+```haskell
+module HelVM.HelCam.Common.RAM (
+  RAM,
+  HelVM.HelCam.Common.RAM.empty,
+  HelVM.HelCam.Common.RAM.fromList,
+  load,
+  store
+) where
 
 import Data.Default
 import Data.IntMap as IntMap
 import Data.Sequence as Seq
-import Data.Sequence (Seq (..))
 
-load :: Memory m => m -> Symbol -> Symbol
-load heap address = load' heap (fromIntegral address) ?: def
+type Address = Int
+```
 
-store :: Memory m => Symbol -> Symbol -> m -> m
-store address = store' (fromIntegral address)
+Następnie 
+```haskell
+load :: (Integral a, Default s, RAM s m) => m -> a -> s
+load memory address = index' memory (fromIntegral address) ?: def
 
-storeNum :: Memory m => Symbol -> Input -> m -> m
-storeNum address line = store address (readOrError line :: Symbol)
+store :: (Integral a, Default s, RAM s m) => a -> s -> m -> m
+store address = insert' (fromIntegral address)
 
-class (Semigroup m, Show m) => Memory m where
-fromList' :: [Symbol] -> m
-empty     :: m
-load'     :: m -> Index -> Maybe Symbol
-store'    :: Index -> Symbol -> m -> m
+class (Default s, Semigroup m) => RAM s m where
+  fromList :: [s] -> m
+  empty    :: m
+  index'   :: m -> Address -> Maybe s
+  insert'  :: Address -> s -> m -> m
+```
 
-instance Memory [Symbol] where
-fromList' = id
-empty     = []
-load'     = (!!?)
-store'    = insert'
+Ostateczna część to implementacja:
+```haskell
+instance (Default s) => RAM s [s] where
+  fromList = id
+  empty    = []
+  index'   = (!!?)
+  insert' 0       symbol []     = [symbol]
+  insert' 0       symbol (_:xs) = symbol : xs
+  insert' address symbol []     = def    : insert' (address-1) symbol []
+  insert' address symbol (x:xs) = x      : insert' (address-1) symbol xs
 
-insert' :: Default v => Int -> v -> [v] -> [v]
-insert' 0       value []     = [value]
-insert' 0       value (_:xs) = value : xs
-insert' address value []     = def   : insert' (address-1) value []
-insert' address value (x:xs) = x     : insert' (address-1) value xs
+instance (Default s) => RAM s (Seq s) where
+  fromList = Seq.fromList
+  empty    = Seq.fromList []
+  index'   = (Seq.!?)
+  insert' address symbol memory = insert'' (Seq.length memory) where
+    insert'' l
+      | address < l = Seq.update address symbol memory
+      | otherwise   = memory <> Seq.replicate (address - l) def |> symbol
 
-instance Memory (Seq Symbol) where
-fromList' = Seq.fromList
-empty     = Seq.fromList []
-load'     = (Seq.!?)
-store' address value heap = insert' (Seq.length heap) where
-insert' l
-| address < l  = Seq.update address value heap
-| address == l = heap |> value
-| otherwise    = heap <> Seq.replicate (address - l) def |> value
-
-instance Memory (IntMap Symbol) where
-fromList' list = IntMap.fromList $ Prelude.zip [0..] list
-empty  = IntMap.empty
-load'  = (IntMap.!?)
-store' = IntMap.insert
-
-
+instance (Default s) => RAM s (IntMap s) where
+  fromList list = IntMap.fromList $ Prelude.zip [0..] list
+  empty         = IntMap.empty
+  index'        = (IntMap.!?)
+  insert'       = IntMap.insert
+```
 
