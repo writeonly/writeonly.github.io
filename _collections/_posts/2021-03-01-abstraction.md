@@ -83,6 +83,8 @@ instance (Default s) => RAM s (IntMap s) where
   insert'       = IntMap.insert
 ```
 
+https://wiki.haskell.org/Multi-parameter_type_class
+
 ## Użycie
 
 Nowy kod Type classy `Evaluator` wygląda następująco:
@@ -120,6 +122,8 @@ class Evaluator r where
   doInputChar  :: RAM Symbol m => Symbol -> Symbol -> m -> r
   doOutputChar :: RAM Symbol m => Symbol -> Symbol -> m -> r
 ```
+
+
 Ponieważ odkryłem zapis `instance (TypeClassa1 t) => TypeClassa2 t where` możemy przy okazji przepisać implementacje Evaluator
 ```haskell
 instance (WrapperIO m) => Evaluator (m ()) where
@@ -155,3 +159,5 @@ computeRAMType raw = valid $ readMaybe raw where
 
 
 ## Alternatywy
+
+https://wiki.haskell.org/GHC/Type_families
