@@ -98,21 +98,30 @@ W przypadku języka OOP byłyby to trzy klasy konkretne opakowujące struktury.
 
 Nowy kod klasy typu `Evaluator` wygląda następująco:
 ```haskell
+batchSimpleEval :: Source -> Output
+batchSimpleEval = flip simpleEval emptyInput
+
+batchSimpleEvalIL :: SymbolList -> Output
+batchSimpleEvalIL = flip simpleEvalIL emptyInput
+
+simpleEval :: Evaluator r => Source -> r
+simpleEval source = eval source defaultRAMType
+
+simpleEvalIL :: Evaluator r => SymbolList -> r
+simpleEvalIL il = evalIL il defaultRAMType
+
+eval :: Evaluator r => Source -> RAMType -> r
+eval source = evalIL $ tokenize source
+
+evalIL :: Evaluator r => SymbolList -> RAMType -> r
+evalIL il ListRAMType   = start (RAM.fromList il::SymbolList)
+evalIL il SeqRAMType    = start (RAM.fromList il::Seq Symbol)
+evalIL il IntMapRAMType = start (RAM.fromList il::IntMap Symbol)
+
+start ::(RAM Symbol m, Evaluator r) => m -> r
+start = doInstruction 0
+
 class Evaluator r where
-  simpleEval :: Source -> r
-  simpleEval source = eval source defaultRAMType
-
-  simpleEvalIL :: SymbolList -> r
-  simpleEvalIL il = evalIL il defaultRAMType
-
-  eval :: Source -> RAMType -> r
-  eval source = evalIL $ tokenize source
-
-  evalIL :: SymbolList -> RAMType -> r
-  evalIL il ListRAMType   = doInstruction 0 (RAM.fromList il::SymbolList)
-  evalIL il SeqRAMType    = doInstruction 0 (RAM.fromList il::Seq Symbol)
-  evalIL il IntMapRAMType = doInstruction 0 (RAM.fromList il::IntMap Symbol)
-
   doInstruction :: RAM Symbol m => Symbol -> m -> r
   doInstruction ic memory
     | ic  < 0   = doEnd
@@ -132,6 +141,12 @@ class Evaluator r where
   doOutputChar :: RAM Symbol m => Symbol -> Symbol -> m -> r
 ```
 
+Czy w powyższym kodzie jest jeszcze hermatyzacja?
+Czy nie zgubiliśmy jej gdzieś?
+Uważam, że nie.
+Dalej mamy dostęp do `RAM` tylko za pomocą funkcji `load` i `store`.
+Dodatkowo możemy wybierać implementację na etapie działania programu,
+a nie na etapie kompilacji.
 
 Ponieważ odkryłem zapis `instance TypeClassa1 t => TypeClassa2 t where` możemy przy okazji przepisać implementacje type clasy `Evaluator`
 ```haskell
@@ -167,7 +182,6 @@ computeRAMType raw = valid $ readMaybe raw where
 ```
 
 ## Hermetyzacja
-Czy w powyższym kodzie jest jeszcze hermatyzacja?
 
 
 ## Podsumowanie
