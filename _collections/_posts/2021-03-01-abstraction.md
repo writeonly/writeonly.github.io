@@ -7,25 +7,25 @@ libs:     containers
 eso:      subleq whitespace
 tags:     abstraction interface oop trait typeclass
 redirect_from:
-- encapsulation
-- haskell-eta/encapsulation
+- abstraction
+- haskell-eta/abstraction
 ---
 
 Po [Hermetyzacji] pora na Abstrakcje.
 Abstrakcja ma w programowaniu wiele znaczeń.
-Jednak w tym artykule będzie mi chodzić o abstrakcję spotykaną w OOP,
-czyli interfejsy (w Javie), traity (w Scali) czy klasy czysto abstrakcyjne (w C++).
+Jednak w tym artykule będzie mi chodzić o abstrakcję spotykaną w [OOP],
+czyli [interfejsy] (w **[Javie]**),
+[traity] (w **[Scali]**) czy klasy czysto abstrakcyjne (w C++).
 Czy Haskell ma odpowiednik interfejsów/traitów?
-Tak są to type classy. 
+Tak są to [klasy typów] (ang. *Type Classy*). 
+Dzięki
 
+## Abstrakcja i klasy typów
 
 ```haskell
 {-# Language FlexibleInstances     #-}
 {-# Language MultiParamTypeClasses #-}
 {-# Language AllowAmbiguousTypes   #-}
-```
-
-```haskell
 module HelVM.HelCam.Common.RAM (
   RAM,
   HelVM.HelCam.Common.RAM.empty,
@@ -40,8 +40,10 @@ import Data.Sequence as Seq
 
 type Address = Int
 ```
+Na początku pliku znajdują deklarujemy które rozszeżenia kompilatora potrzebujemy.
+Nastepnie między w nawiasie przed `where` określany które funkcje będą publiczne.
 
-Następnie mamy abstrakcję.
+Teraz abstrakcja:
 ```haskell
 load :: (Integral a, Default s, RAM s m) => m -> a -> s
 load memory address = index' memory (fromIntegral address) ?: def
@@ -55,8 +57,15 @@ class (Default s, Semigroup m) => RAM s m where
   index'   :: m -> Address -> Maybe s
   insert'  :: Address -> s -> m -> m
 ```
+Funkcje `load` i `store` są tutaj normalnymi funkcjami,
+jednak w OOP ich odpowiednikiem byłyby metody finalne w klasie bazowej.
+Klasa typu `RAM` posiada cztery *metody abstrakcyjne*.
+Ale chyba najważniejszą żeczą jest że jest to klasa typów zdefiniowana dla dwóch parametrów.
+Pierwszy `s` to będzie `Symbol`,
+a drugi `m` konkretna struktura będąca pamięcią.
 
-Ostateczna część to implementacja:
+
+Druga część pliku to implementacja:
 ```haskell
 instance (Default s) => RAM s [s] where
   fromList = id
@@ -82,12 +91,12 @@ instance (Default s) => RAM s (IntMap s) where
   index'        = (IntMap.!?)
   insert'       = IntMap.insert
 ```
-
-https://wiki.haskell.org/Multi-parameter_type_class
+Mamy trzy implementacje klasy typu dla trzech różnych struktur.
+W przypadku języka OOP byłyby to trzy klasy konkretne opakowujące struktury.
 
 ## Użycie
 
-Nowy kod Type classy `Evaluator` wygląda następująco:
+Nowy kod klasy typu `Evaluator` wygląda następująco:
 ```haskell
 class Evaluator r where
   simpleEval :: Source -> r
@@ -124,7 +133,7 @@ class Evaluator r where
 ```
 
 
-Ponieważ odkryłem zapis `instance (TypeClassa1 t) => TypeClassa2 t where` możemy przy okazji przepisać implementacje Evaluator
+Ponieważ odkryłem zapis `instance TypeClassa1 t => TypeClassa2 t where` możemy przy okazji przepisać implementacje type clasy `Evaluator`
 ```haskell
 instance (WrapperIO m) => Evaluator (m ()) where
   doEnd = pass
@@ -157,7 +166,33 @@ computeRAMType raw = valid $ readMaybe raw where
   valid Nothing = error $ "RAMType '" <> toText raw <> "' is not valid RAMType. Valid ramTypes are : " <> show ramTypes
 ```
 
+## Hermetyzacja
+Czy w powyższym kodzie jest jeszcze hermatyzacja?
 
-## Alternatywy
 
-https://wiki.haskell.org/GHC/Type_families
+## Podsumowanie
+
+Czy rozwiązanie oparte na type klasach jest dobre?
+Jest na pewno proste.
+Nie musieliśmy definiować żadnych dodatkowych typów ani za pomocą `newtype` ani tym bardziej za pomocą `data`.
+Czy jest to rozwiązanie najlepsze?
+Czy jest jakaś alternatywa?
+Tak,
+są to *[rodziny typów]* (ang. *Type Families*).
+Podobno pozwanają użyskać lepsze 
+
+
+[Scali]:                /langs/scala
+[Javy]:                 /langs/java
+[Haskell]:              /langs/haskell
+
+[SubLeq]:               /eso/subleq
+[WhiteSpace]:           /eso/whitespace
+
+[oop]:                  /tags/oop
+
+[Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
+
+
+[Rodziny typów]: https://wiki.haskell.org/GHC/Type_families
+
