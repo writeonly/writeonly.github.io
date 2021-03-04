@@ -197,13 +197,19 @@ Podobno pozwanają użyskać lepsze
 
 
 [Scali]:                /langs/scala
+[Javie]:                /langs/java
 [Javy]:                 /langs/java
 [Haskell]:              /langs/haskell
 
 [SubLeq]:               /eso/subleq
 [WhiteSpace]:           /eso/whitespace
 
+[interfejsy]:                  /tags/interface
 [oop]:                  /tags/oop
+[traity]:                  /tags/oop
+[klasy typów]:          /tags/typeclass
+
+[Hermetyzacji]:         /encapsulation
 
 [Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
 
