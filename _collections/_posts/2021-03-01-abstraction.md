@@ -196,13 +196,13 @@ są to *[rodziny typów]* (ang. *Type Families*).
 Podobno pozwanają użyskać lepsze 
 
 
-[Scali]:                /langs/scala
-[Javie]:                /langs/java
-[Javy]:                 /langs/java
-[Haskell]:              /langs/haskell
+[Scali]:                       /langs/scala
+[Javie]:                       /langs/java
+[Javy]:                        /langs/java
+[Haskell]:                     /langs/haskell
 
-[SubLeq]:               /eso/subleq
-[WhiteSpace]:           /eso/whitespace
+[SubLeq]:                      /eso/subleq
+[WhiteSpace]:                  /eso/whitespace
 
 [interfejsy]:                  /tags/interface
 [oop]:                         /tags/oop
