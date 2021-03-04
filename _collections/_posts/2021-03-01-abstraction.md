@@ -205,11 +205,11 @@ Podobno pozwanają użyskać lepsze
 [WhiteSpace]:           /eso/whitespace
 
 [interfejsy]:                  /tags/interface
-[oop]:                  /tags/oop
-[traity]:                  /tags/oop
-[klasy typów]:          /tags/typeclass
+[oop]:                         /tags/oop
+[traity]:                      /tags/trait
+[klasy typów]:                 /tags/typeclass
 
-[Hermetyzacji]:         /encapsulation
+[Hermetyzacji]:                /encapsulation
 
 [Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
 
