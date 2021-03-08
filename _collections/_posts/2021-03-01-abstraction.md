@@ -213,5 +213,5 @@ Podobno pozwanają użyskać lepsze
 
 [Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
 
-[Rodziny typów]: https://wiki.haskell.org/GHC/Type_families
+[Rodziny typów]:               https://wiki.haskell.org/GHC/Type_families
 
