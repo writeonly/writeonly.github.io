@@ -1,5 +1,5 @@
 ---
-title:    'Abstrakcja w Haskellu'
+title:    'Abstrakcja w Haskellu, czyli klasy typów'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell java scala
@@ -220,4 +220,3 @@ Ja jednak chciałem ograniczyć do minimum tworzenie własnych typów.
 [Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
 
 [Rodziny typów]:               https://wiki.haskell.org/GHC/Type_families
-
