@@ -16,11 +16,12 @@ Abstrakcja ma w programowaniu wiele znaczeń.
 Jednak w tym artykule będzie mi chodzić o abstrakcję spotykaną w [OOP],
 czyli [interfejsy] (w **[Javie]**),
 [traity] (w **[Scali]**) czy klasy czysto abstrakcyjne (w C++).
-Czy Haskell ma odpowiednik interfejsów/traitów?
+Czy **[Haskell]** ma odpowiednik interfejsów/traitów?
 Tak są to [klasy typów] (ang. *Type Classy*). 
-Dzięki
+Dzięki nim możemy wybierać implementację podczas działąnia programu
 
 ## Abstrakcja i klasy typów
+Spójrzmy na moduł `HelVM.HelCam.Common.RAM`
 
 ```haskell
 {-# Language FlexibleInstances     #-}
