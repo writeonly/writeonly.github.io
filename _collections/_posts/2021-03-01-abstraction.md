@@ -18,11 +18,13 @@ czyli [interfejsy] (w **[Javie]**),
 [traity] (w **[Scali]**) czy klasy czysto abstrakcyjne (w C++).
 Czy **[Haskell]** ma odpowiednik interfejsów/traitów?
 Tak są to [klasy typów] (ang. *Type Classy*). 
-Dzięki nim możemy wybierać implementację podczas działąnia programu
+Dzięki nim możemy wybierać implementację podczas działania programu.
 
 ## Abstrakcja i klasy typów
-Spójrzmy na moduł `HelVM.HelCam.Common.RAM`
+Spójrzmy na moduł `HelVM.HelCam.Common.RAM`,
+dla czytelności podzielony na trzy listingi. 
 
+Najpierw deklaracje i importy:
 ```haskell
 {-# Language FlexibleInstances     #-}
 {-# Language MultiParamTypeClasses #-}
@@ -41,8 +43,9 @@ import Data.Sequence as Seq
 
 type Address = Int
 ```
-Na początku pliku znajdują deklarujemy które rozszeżenia kompilatora potrzebujemy.
-Nastepnie między w nawiasie przed `where` określany które funkcje będą publiczne.
+Na początku pliku deklarujemy,
+które rozszerzenia kompilatora potrzebujemy.
+Następnie między w nawiasie przed `where` określany które funkcje będą publiczne.
 
 Teraz abstrakcja:
 ```haskell
@@ -66,7 +69,7 @@ Pierwszy `s` to będzie `Symbol`,
 a drugi `m` konkretna struktura będąca pamięcią.
 
 
-Druga część pliku to implementacja:
+Ostatnia część pliku to implementacja:
 ```haskell
 instance (Default s) => RAM s [s] where
   fromList = id
@@ -94,6 +97,7 @@ instance (Default s) => RAM s (IntMap s) where
 ```
 Mamy trzy implementacje klasy typu dla trzech różnych struktur.
 W przypadku języka OOP byłyby to trzy klasy konkretne opakowujące struktury.
+W **[Haskellu]** nie ma potrzeby opakowywania struktur przy definiowaniu nowych zachowań.
 
 ## Użycie
 
@@ -149,7 +153,8 @@ Dalej mamy dostęp do `RAM` tylko za pomocą funkcji `load` i `store`.
 Dodatkowo możemy wybierać implementację na etapie działania programu,
 a nie na etapie kompilacji.
 
-Ponieważ odkryłem zapis `instance TypeClassa1 t => TypeClassa2 t where` możemy przy okazji przepisać implementacje type clasy `Evaluator`
+Ponieważ odkryłem zapis `instance TypeClassa1 t => TypeClassa2 t where`,
+teraz możemy przy okazji przepisać implementacje [klasy typu] `Evaluator`:
 ```haskell
 instance (WrapperIO m) => Evaluator (m ()) where
   doEnd = pass
@@ -163,8 +168,7 @@ instance (WrapperIO m) => Evaluator (m ()) where
     doInstruction (ic+3) memory
 ```
 
-
-Potrzebujemy jeszcze kostruktury (enuma) dającą możliwość wyboru implementacji: 
+Potrzebujemy jeszcze [kostruktury] (enuma) dającą możliwość wyboru implementacji: 
 ```haskell
 module HelVM.HelCam.Common.Types.RAMType where
 
@@ -176,25 +180,25 @@ ramTypes = [ListRAMType, SeqRAMType, IntMapRAMType]
 defaultRAMType :: RAMType
 defaultRAMType = IntMapRAMType
 
-computeRAMType :: String -> RAMType
-computeRAMType raw = valid $ readMaybe raw where
+parseRAMType :: String -> RAMType
+parseRAMType raw = valid $ readMaybe raw where
   valid (Just value)  = value
   valid Nothing = error $ "RAMType '" <> toText raw <> "' is not valid RAMType. Valid ramTypes are : " <> show ramTypes
 ```
-
-## Hermetyzacja
-
+Funkcji `parseRAMType` potrzebujemy,
+ponieważ `RAMType` będzie wybierany z poziomu linii poleceń
 
 ## Podsumowanie
 
 Czy rozwiązanie oparte na type klasach jest dobre?
 Jest na pewno proste.
 Nie musieliśmy definiować żadnych dodatkowych typów ani za pomocą `newtype` ani tym bardziej za pomocą `data`.
-Czy jest to rozwiązanie najlepsze?
 Czy jest jakaś alternatywa?
 Tak,
 są to *[rodziny typów]* (ang. *Type Families*).
-Podobno pozwanają użyskać lepsze 
+Czy jest to rozwiązanie najlepsze? Tego nie wiem.
+Podobno pozwalają uzyskać lepsze komunikaty o błędach,
+Ja jednak chciałem ograniczyć do minimum tworzenie własnych typów.
 
 
 [Scali]:                       /langs/scala
@@ -209,6 +213,7 @@ Podobno pozwanają użyskać lepsze
 [oop]:                         /tags/oop
 [traity]:                      /tags/trait
 [klasy typów]:                 /tags/typeclass
+[kostruktura]:                 /tags/coproduct
 
 [Hermetyzacji]:                /encapsulation
 
