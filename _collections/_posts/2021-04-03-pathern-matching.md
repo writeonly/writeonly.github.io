@@ -38,7 +38,10 @@ module HelVM.HelCam.Common.Memories.Stack (
 import Data.Sequence as Seq
 
 type Index = Int
+```
+Udostepniamy jedną
 
+```haskell
 select :: Stack s m => Index -> m -> s
 select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
   check (Just symbol) = symbol
@@ -47,7 +50,9 @@ select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
 
 ## Abstrakcja oparta na klasie typu
 
-Nasz stos będzie potrzebować 8 podstawowych metod
+Nasz stos będzie potrzebować 8 podstawowych metod.
+
+Podobnie jak dla klasy typów potrzebujemy klasy typów dla dwóch parametrów:
 
 ```haskell
 class (Semigroup m, Show m) => Stack s m where
@@ -139,6 +144,9 @@ move symbol i stack = tops <> middles <> bottoms where
 copy :: Stack Symbol m => Index -> m -> m
 copy i stack = push1 (select i stack ::Symbol) stack
 ```
+
+Czemu te funkcje są osobno?
+Dwuparametrowe
 
 ## Podsumowanie
 
