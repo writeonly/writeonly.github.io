@@ -1,5 +1,5 @@
 ---
-title:    'Abstrakcja w Haskellu, czyli klasy typów'
+title:    'Abstrakcja i dopasowanie do wzorców'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell java scala
@@ -10,6 +10,11 @@ redirect_from:
 - pattern-matching
 - haskell-eta/pattern-matching
 ---
+
+
+Ponieważ dopasowanie do wzorców działa na implementacji, 
+Trzeba opakować dopasowanie do wzorców w abstrakcje.
+
 
 ```haskell
 {-# Language AllowAmbiguousTypes   #-}
