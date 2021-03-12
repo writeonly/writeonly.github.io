@@ -52,6 +52,7 @@ class (Semigroup m, Show m) => Stack s m where
 ```
 
 
+Implementacja dla listy:
 ```haskell
 instance Show s => Stack s [s] where
   empty                              = []
@@ -66,6 +67,7 @@ instance Show s => Stack s [s] where
   pop2                        stack  = error $ "Empty stack " <> show stack
 ```
 
+Implementacja dla sekwencji:
 ```haskell
 instance Show s => Stack s (Seq s) where
   empty                                  = Seq.fromList []
@@ -80,5 +82,7 @@ instance Show s => Stack s (Seq s) where
   pop2                            stack  = error $ "Empty stack " <> show stack
 ```
 
+
 ## Podsumowanie
 
+Nie wyszło to tak dobrze jakbym chciał.
