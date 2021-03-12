@@ -39,6 +39,11 @@ import Data.Sequence as Seq
 
 type Index = Int
 ```
+Mamy jeden typ.
+Jedną klasę typów 
+i 9 funkcji.
+Jedna generyczna i osiem metod.
+
 
 Nastepnie kod który normalnie znalazł by się w klasie bazowej:
 ```haskell
