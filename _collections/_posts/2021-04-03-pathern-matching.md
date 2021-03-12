@@ -39,14 +39,16 @@ import Data.Sequence as Seq
 
 type Index = Int
 ```
-Udostepniamy jedną
 
+Nastepnie kod który normalnie znalazł by się w klasie bazowej:
 ```haskell
 select :: Stack s m => Index -> m -> s
 select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
   check (Just symbol) = symbol
   check  Nothing      = error $ "Empty stack " <> show stack <> " index " <> show i
 ```
+Udostepniamy jedną funkcę generyczną.
+Czmu tylko jedną? o ty później.
 
 ## Abstrakcja oparta na klasie typu
 
