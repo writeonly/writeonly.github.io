@@ -4,8 +4,8 @@ author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell java scala
 libs:     containers
-eso:      subleq whitespace
-tags:     abstraction interface oop trait typeclass
+eso:      eta subleq
+tags:     abstraction typeclass
 redirect_from:
 - pattern-matching
 - haskell-eta/pattern-matching
@@ -45,6 +45,8 @@ select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
 ```
 
 ## Abstrakcja oparta na klasie typu
+
+Nasz stos będzie potrzebować 8 podstawowych metod
 
 ```haskell
 class (Semigroup m, Show m) => Stack s m where
