@@ -2,7 +2,7 @@
 title:    'Abstrakcja i dopasowanie do wzorców'
 author:   TheKamilAdam
 category: haskell-eta
-langs:    haskell java scala
+langs:    haskell
 libs:     containers
 eso:      eta subleq
 tags:     abstraction typeclass sequence
@@ -103,6 +103,44 @@ instance Show s => Stack s (Seq s) where
 Mamy tu dwa nowe operatory `:<|` dla dopasowania do wzorców oraz `<|` dla dołączania do sekwencji.
 Jeśli operawalibyśmy na drugim końcu sekwencji należałoby użyć `:|>` i `|>`.
 
+## ETA
+
+```haskell
+{-# Language FlexibleContexts      #-}
+module HelVM.HelCam.Machines.ETA.StackOfSymbols where
+
+import HelVM.HelCam.Machines.ETA.EvaluatorUtil  
+
+import HelVM.HelCam.Common.Memories.Stack
+
+-- Arithmetic
+
+divMod :: Stack Symbol m => m -> m
+divMod stack = push2 (symbol' `mod` symbol ::Symbol) (symbol' `div` symbol ::Symbol) stack'
+  where (symbol, symbol', stack') = pop2 stack
+
+sub :: Stack Symbol m => m -> m
+sub stack = push1 (symbol' - symbol ::Symbol) stack'
+    where (symbol, symbol', stack') = pop2 stack
+
+-- Stack instructions
+
+halibut :: Stack Symbol m => m -> m
+halibut stack
+  | i <= 0     = copy (negate i) stack'
+  | otherwise  = move (0 ::Symbol) i stack'
+    where (i, stack') = pop1 stack
+
+move :: Stack Symbol m => Symbol -> Index -> m -> m
+move symbol i stack = tops <> middles <> bottoms where
+  (middles, stack')  = splitAt' symbol i stack
+  (tops, bottoms)    = splitAt' symbol 1 stack'
+
+copy :: Stack Symbol m => Index -> m -> m
+copy i stack = push1 (select i stack ::Symbol) stack
+```
+
 ## Podsumowanie
 
 Nie wyszło to tak dobrze jak chciałem.
+
