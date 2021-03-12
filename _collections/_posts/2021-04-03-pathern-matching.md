@@ -11,6 +11,7 @@ redirect_from:
 - haskell-eta/pattern-matching
 ---
 
+Abstrakcje i dopasowanie do wzorców są to pojęcia kłócące się.
 
 Ponieważ dopasowanie do wzorców działa na implementacji, 
 Trzeba opakować dopasowanie do wzorców w abstrakcje.
