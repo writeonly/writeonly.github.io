@@ -5,7 +5,7 @@ category: haskell-eta
 langs:    haskell java scala
 libs:     containers
 eso:      eta subleq
-tags:     abstraction typeclass
+tags:     abstraction typeclass sequence
 redirect_from:
 - pattern-matching
 - haskell-eta/pattern-matching
