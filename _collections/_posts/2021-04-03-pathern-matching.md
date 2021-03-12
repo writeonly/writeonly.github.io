@@ -39,6 +39,8 @@ select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
   check  Nothing      = error $ "Empty stack " <> show stack <> " index " <> show i
 ```
 
+## Abstrakcja oparta na klasie typu
+
 ```haskell
 class (Semigroup m, Show m) => Stack s m where
   empty    :: m
@@ -50,7 +52,11 @@ class (Semigroup m, Show m) => Stack s m where
   push2    :: s -> s -> m -> m
   pop2     :: m -> (s, s, m)
 ```
+Są tu dwie brzydkie metody `splitAt'` i `drop'`.
+Wynika to z tego że w każdej sygnaturze muszą być użyte oba typy generyczne.
+Niestety nie umiałem tego zrobić lepiej.
 
+## Implementacja oparta na liscie
 
 Implementacja dla listy:
 ```haskell
@@ -66,6 +72,10 @@ instance Show s => Stack s [s] where
   pop2    (symbol : symbol' : stack) = (symbol, symbol', stack)
   pop2                        stack  = error $ "Empty stack " <> show stack
 ```
+Mamy tu klasyczny patern matching dla list.
+Nic nadzwyczajnego
+
+## Implementacja oparta na sekwencji
 
 Implementacja dla sekwencji:
 ```haskell
@@ -82,6 +92,8 @@ instance Show s => Stack s (Seq s) where
   pop2                            stack  = error $ "Empty stack " <> show stack
 ```
 
+Mamy tu dwa nowe operatory `:<|` dla dopasowania do wzorców oraz `<|` dla dołączania do sekwencji.
+Jeśli operawalibyśmy na drugim końcu sekwencji należałoby użyć `:|>` i `|>`.
 
 ## Podsumowanie
 
