@@ -104,4 +104,4 @@ Jeśli operawalibyśmy na drugim końcu sekwencji należałoby użyć `:|>` i `|
 
 ## Podsumowanie
 
-Nie wyszło to tak dobrze jakbym chciał.
+Nie wyszło to tak dobrze jak chciałem.
