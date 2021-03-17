@@ -4,12 +4,20 @@ author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
 libs:     containers
+projects: helcam
 eso:      eta subleq
 tags:     abstraction typeclass sequence
 redirect_from:
 - pattern-matching
 - haskell-eta/pattern-matching
 ---
+
+Po hermetyzacji i abstrakcji RAMu dla interpretera **[HELCAM]** pora na stos.
+Stos, zwłaszcza stos arytmetyczny, jest strukturą używaną w wielu językach ezoterycznych.
+Więc warto wydzielić tą abstrakcję do osobnego modułu.
+
+
+
 
 Abstrakcje i dopasowanie do wzorców są to pojęcia kłócące się.
 
@@ -45,21 +53,22 @@ i 9 funkcji.
 Jedna generyczna i osiem metod.
 
 
-Nastepnie kod który normalnie znalazł by się w klasie bazowej:
+Następnie kod, który normalnie znalazłby się w klasie bazowej:
 ```haskell
 select :: Stack s m => Index -> m -> s
 select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
   check (Just symbol) = symbol
   check  Nothing      = error $ "Empty stack " <> show stack <> " index " <> show i
 ```
-Udostepniamy jedną funkcę generyczną.
-Czmu tylko jedną? o ty później.
+Udostępniamy jedną funkcję generyczną.
+Czemu tylko jedną?
+O ty później.
 
 ## Abstrakcja oparta na klasie typu
 
 Nasz stos będzie potrzebować 8 podstawowych metod.
 
-Podobnie jak dla klasy typów potrzebujemy klasy typów dla dwóch parametrów:
+Podobnie jak dla klasy typów **[RAM]** potrzebujemy klasy typów dla dwóch parametrów:
 
 ```haskell
 class (Semigroup m, Show m) => Stack s m where
@@ -73,12 +82,13 @@ class (Semigroup m, Show m) => Stack s m where
   pop2     :: m -> (s, s, m)
 ```
 Są tu dwie brzydkie metody `splitAt'` i `drop'`.
-Wynika to z tego że w każdej sygnaturze muszą być użyte oba typy generyczne.
+Wynika to z tego,
+że w każdej sygnaturze muszą być użyte oba typy generyczne.
 Niestety nie umiałem tego zrobić lepiej.
 
-## Implementacja oparta na liscie
+## Implementacja oparta na liście
 
-Implementacja dla listy:
+Najpierw prostsza implementacja dla listy:
 ```haskell
 instance Show s => Stack s [s] where
   empty                              = []
@@ -92,7 +102,7 @@ instance Show s => Stack s [s] where
   pop2    (symbol : symbol' : stack) = (symbol, symbol', stack)
   pop2                        stack  = error $ "Empty stack " <> show stack
 ```
-Mamy tu klasyczny patern matching dla list.
+Mamy tu klasyczne dopasowanie do wzorców dla list.
 Nic nadzwyczajnego
 
 ## Implementacja oparta na sekwencji
@@ -159,3 +169,4 @@ Dwuparametrowe
 
 Nie wyszło to tak dobrze jak chciałem.
 
+[HELCAM]: 
