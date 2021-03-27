@@ -12,12 +12,12 @@ redirect_from:
 - haskell-eta/pattern-matching
 ---
 
-Po hermetyzacji i abstrakcji RAMu dla interpretera **[HELCAM]** pora na stos.
-Stos, zwłaszcza stos arytmetyczny, jest strukturą używaną w wielu językach ezoterycznych.
+Po [hermetyzacji] i [abstrakcji] RAMu dla interpretera **[HELCAM]** pora na stos.
+Stos, zwłaszcza stos arytmetyczny, jest strukturą używaną w wielu interpreterach jezyków ezoterycznych.
 Więc warto wydzielić tą abstrakcję do osobnego modułu.
 
 
-
+Żeby zaimplementować stos będziemy potrzebować dopasowania do wzorców (ang. *[pattern matching]*)
 
 Abstrakcje i dopasowanie do wzorców są to pojęcia kłócące się.
 
