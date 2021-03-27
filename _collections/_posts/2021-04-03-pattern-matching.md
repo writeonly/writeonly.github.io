@@ -25,6 +25,7 @@ Ponieważ dopasowanie do wzorców działa na implementacji,
 Trzeba opakować dopasowanie do wzorców w abstrakcje.
 
 
+Najpier
 ```haskell
 {-# Language AllowAmbiguousTypes   #-}
 {-# Language FlexibleInstances     #-}
@@ -47,10 +48,12 @@ import Data.Sequence as Seq
 
 type Index = Int
 ```
-Mamy jeden typ.
-Jedną klasę typów 
+
+Najpier exporty.
+Jak się później okaże mamy tu jeden typ,
+jedną klasę typów (ang. *[TypeClass]*)
 i 9 funkcji.
-Jedna generyczna i osiem metod.
+Jedna generyczna i osiem metod (funkcje  klasie typów).
 
 
 Następnie kod, który normalnie znalazłby się w klasie bazowej:
@@ -68,7 +71,7 @@ O ty później.
 
 Nasz stos będzie potrzebować 8 podstawowych metod.
 
-Podobnie jak dla klasy typów **[RAM]** potrzebujemy klasy typów dla dwóch parametrów:
+Podobnie jak dla klasy typów **[RAM]** potrzebujemy klasy typów dla dwóch parametrów, symbolu i pamieci:
 
 ```haskell
 class (Semigroup m, Show m) => Stack s m where
@@ -83,7 +86,7 @@ class (Semigroup m, Show m) => Stack s m where
 ```
 Są tu dwie brzydkie metody `splitAt'` i `drop'`.
 Wynika to z tego,
-że w każdej sygnaturze muszą być użyte oba typy generyczne.
+że w każdej sygnaturze muszą być użyte oba parametry generyczne.
 Niestety nie umiałem tego zrobić lepiej.
 
 ## Implementacja oparta na liście
@@ -125,7 +128,7 @@ instance Show s => Stack s (Seq s) where
 Mamy tu dwa nowe operatory `:<|` dla dopasowania do wzorców oraz `<|` dla dołączania do sekwencji.
 Jeśli operawalibyśmy na drugim końcu sekwencji należałoby użyć `:|>` i `|>`.
 
-## ETA
+## Przykład użycia
 
 ```haskell
 {-# Language FlexibleContexts      #-}
@@ -169,4 +172,5 @@ Dwuparametrowe
 
 Nie wyszło to tak dobrze jak chciałem.
 
-[HELCAM]: 
+[HELCAM]: /projects/helcam
+
