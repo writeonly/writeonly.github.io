@@ -5,7 +5,7 @@ category: haskell-eta
 langs:    haskell
 libs:     containers
 projects: helcam
-eso:      eta subleq
+eso:      eta whitespace
 tags:     abstraction pattern-matching sequence type-class
 redirect_from:
 - pattern-matching
@@ -26,7 +26,7 @@ Trzeba opakować dopasowanie do wzorców w abstrakcje.
 
 # Abstrakcja i klasy typów
 
-Spójrzmy na moduł HelVM.HelCam.Common.Memories.Stack,
+Spójrzmy na moduł `HelVM.HelCam.Common.Memories.Stack`,
 dla czytelności podzielony na pięć listingów.
 
 Najpierw deklaracje i importy:
@@ -54,7 +54,7 @@ type Index = Int
 ```
 
 Jak się później okaże, eksporty zawierają jeden typ,
-jedną klasę typów (ang. *[TypeClass]*)
+jedną klasę typów (ang. *[Type Class]*)
 i 9 funkcji,
 jedna generyczna i osiem metod (funkcje klasie typów).
 
@@ -134,8 +134,14 @@ instance Show s => Stack s (Seq s) where
 Mamy tu dwa nowe operatory `:<|` dla dopasowania do wzorców oraz `<|` dla dołączania do sekwencji.
 Jeśli operawalibyśmy na drugim końcu sekwencji należałoby użyć `:|>` i `|>`.
 
-## Przykład użycia
+## Ograniczenia
 
+Tutaj pojawia się mały zgrzyt.
+Niestety nie potrafię zdefinioć niektórych funkcji generycznych dla parametru generycznego `Stack s m`.
+Na razie musimy zadoolić się mniej genrycznymi wersjami dla parametru `Stack Symbol m`.
+Funkcje te są zdefinioane w modułach `HelVM.HelCam.Machines.ETA.StackOfSymbols` oraz `HelVM.HelCam.Machines.WhiteSpace.StackOfSymbols`.
+
+Funkcje pomocnicze dla interpretera eso języka **[ETA]**:
 ```haskell
 {-# Language FlexibleContexts      #-}
 module HelVM.HelCam.Machines.ETA.StackOfSymbols where
@@ -171,8 +177,44 @@ copy :: Stack Symbol m => Index -> m -> m
 copy i stack = push1 (select i stack ::Symbol) stack
 ```
 
-Czemu te funkcje są osobno?
-Dwuparametrowe
+Funkcje pomocnicze dla interpretera eso języka **[WhiteSpace]**:
+```haskell
+{-# Language AllowAmbiguousTypes   #-}
+{-# Language FlexibleContexts      #-}
+{-# Language FlexibleInstances     #-}
+{-# Language MultiParamTypeClasses #-}
+module HelVM.HelCam.Machines.WhiteSpace.StackOfSymbols where
+
+import HelVM.HelCam.Machines.WhiteSpace.EvaluatorUtil
+import HelVM.HelCam.Machines.WhiteSpace.Instruction
+
+import HelVM.HelCam.Common.Memories.Stack
+
+-- Arithmetic
+
+binaryOp :: Stack Symbol m => BinaryOperator -> m -> m
+binaryOp op stack = push1 (doBinary op symbol symbol' ::Symbol) stack' where (symbol, symbol', stack') = pop2 stack
+
+-- Stack instructions
+
+swap :: Stack Symbol m => m -> m
+swap stack = push2 (symbol'::Symbol) symbol stack' where (symbol, symbol', stack') = pop2 stack
+
+discard :: Stack Symbol m => m -> m
+discard = drop' (0::Symbol) 1
+
+slide :: Stack Symbol m => Index -> m -> m
+slide i stack = push1 (symbol::Symbol) (drop' (0::Symbol) i stack') where (symbol, stack') = pop1 stack
+
+dup :: Stack Symbol m => m -> m
+dup = copy 0
+
+copy :: Stack Symbol m => Index -> m -> m
+copy i stack = push1 (select i stack ::Symbol) stack
+```
+
+Jak widać funkcja `copy :: Stack Symbol m => Index -> m -> m` jest w obu modułach,
+jednak nie potrafię niej w prosty sposób uogólnić.
 
 ## Przykład użycia
 Jako przykład użycia fragment modułu `HelVM.HelCam.Machines.ETA.Evaluator`:
@@ -209,13 +251,13 @@ class Evaluator r where
   doInputChar  :: Stack Symbol m => InstructionUnit -> m -> r
 ```
 
+
+## Podsumowanie
 Cel został osiągnięty.
 Struktura stosu została schowana za abstrakcją klasy typu `Stack`.
 Teraz można swobodnie wymieniać implementację między listą a sekwencją
 
-## Podsumowanie
-
-Kod nie wyszedł tak dobry jak chciałem.
+Jednak kod nie wyszedł tak dobry jak chciałem.
 Może to pora na użycie [Rodzin typów]?
 
 
@@ -225,18 +267,20 @@ Może to pora na użycie [Rodzin typów]?
 [Javy]:                        /langs/java
 [Haskell]:                     /langs/haskell
 
-[SubLeq]:                      /eso/subleq
+[ETA]:                         /eso/eta
 [WhiteSpace]:                  /eso/whitespace
 
 [interfejsy]:                  /tags/interface
 [oop]:                         /tags/oop
 [traity]:                      /tags/trait
-[klasy typów]:                 /tags/typeclass
+[klasy typów]:                 /tags/type-class
 [kostruktura]:                 /tags/coproduct
+[Type Class]:                  /tags/type-class
+[pattern matching]:            /tags/pattern-matching
 
 [HELCAM]:                      /projects/helcam
 
-[Abstrakcja]:                  /haskell-ata/abstraction
+[Abstrakcji]:                  /haskell-ata/abstraction
 [Hermetyzacji]:                /haskell-ata/encapsulation
 
 [Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
