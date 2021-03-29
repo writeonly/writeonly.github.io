@@ -6,7 +6,7 @@ langs:    haskell
 libs:     containers
 projects: helcam
 eso:      eta subleq
-tags:     abstraction typeclass sequence
+tags:     abstraction pattern-matching sequence type-class
 redirect_from:
 - pattern-matching
 - haskell-eta/pattern-matching
@@ -17,15 +17,19 @@ Stos, zwłaszcza stos arytmetyczny, jest strukturą używaną w wielu interprete
 Więc warto wydzielić tą abstrakcję do osobnego modułu.
 
 
-Żeby zaimplementować stos będziemy potrzebować dopasowania do wzorców (ang. *[pattern matching]*)
-
-Abstrakcje i dopasowanie do wzorców są to pojęcia kłócące się.
+Żeby zaimplementować stos będziemy potrzebować dopasowania do wzorców (ang. *[pattern matching]*),
+niestety abstrakcje i dopasowanie do wzorców są to pojęcia kłócące się.
 
 Ponieważ dopasowanie do wzorców działa na implementacji, 
 Trzeba opakować dopasowanie do wzorców w abstrakcje.
 
 
-Najpier
+# Abstrakcja i klasy typów
+
+Spójrzmy na moduł HelVM.HelCam.Common.Memories.Stack,
+dla czytelności podzielony na pięć listingów.
+
+Najpierw deklaracje i importy:
 ```haskell
 {-# Language AllowAmbiguousTypes   #-}
 {-# Language FlexibleInstances     #-}
@@ -49,14 +53,14 @@ import Data.Sequence as Seq
 type Index = Int
 ```
 
-Najpier exporty.
-Jak się później okaże mamy tu jeden typ,
+Jak się później okaże, eksporty zawierają jeden typ,
 jedną klasę typów (ang. *[TypeClass]*)
-i 9 funkcji.
-Jedna generyczna i osiem metod (funkcje  klasie typów).
+i 9 funkcji,
+jedna generyczna i osiem metod (funkcje klasie typów).
 
 
-Następnie kod, który normalnie znalazłby się w klasie bazowej:
+Następnie kod,
+który normalnie znalazłby się w klasie bazowej:
 ```haskell
 select :: Stack s m => Index -> m -> s
 select i stack = check $ HelVM.HelCam.Common.Memories.Stack.lookup i stack where
@@ -71,8 +75,8 @@ O ty później.
 
 Nasz stos będzie potrzebować 8 podstawowych metod.
 
-Podobnie jak dla klasy typów **[RAM]** potrzebujemy klasy typów dla dwóch parametrów, symbolu i pamieci:
-
+Podobnie jak dla klasy typów `RAM` potrzebujemy klasy typów dla dwóch parametrów,
+symbolu i pamieci:
 ```haskell
 class (Semigroup m, Show m) => Stack s m where
   empty    :: m
@@ -84,6 +88,7 @@ class (Semigroup m, Show m) => Stack s m where
   push2    :: s -> s -> m -> m
   pop2     :: m -> (s, s, m)
 ```
+
 Są tu dwie brzydkie metody `splitAt'` i `drop'`.
 Wynika to z tego,
 że w każdej sygnaturze muszą być użyte oba parametry generyczne.
@@ -105,8 +110,9 @@ instance Show s => Stack s [s] where
   pop2    (symbol : symbol' : stack) = (symbol, symbol', stack)
   pop2                        stack  = error $ "Empty stack " <> show stack
 ```
+
 Mamy tu klasyczne dopasowanie do wzorców dla list.
-Nic nadzwyczajnego
+Nic nadzwyczajnego.
 
 ## Implementacja oparta na sekwencji
 
@@ -168,9 +174,71 @@ copy i stack = push1 (select i stack ::Symbol) stack
 Czemu te funkcje są osobno?
 Dwuparametrowe
 
+## Przykład użycia
+Jako przykład użycia fragment modułu `HelVM.HelCam.Machines.ETA.Evaluator`:
+```haskell
+class Evaluator r where
+  next :: Stack Symbol m => InstructionUnit -> m -> r
+  next iu s = doInstruction t iu' s where (t, iu') = nextIU iu
+
+  doInstruction :: Stack Symbol m => Maybe Token -> InstructionUnit -> m -> r
+  -- IO instructions
+  doInstruction (Just O) iu s = doOutputChar iu s
+  doInstruction (Just I) iu s = doInputChar  iu s
+
+  -- Stack instructions
+  doInstruction (Just N) iu s = next iu' (push1 (symbol::Symbol) s) where (symbol, iu') = parseNumber iu
+  doInstruction (Just H) iu s = next iu $ halibut s
+
+  -- Arithmetic
+  doInstruction (Just S) iu s = next iu $ sub s
+  doInstruction (Just E) iu s = next iu $ Stack.divMod s
+
+  -- Control
+  doInstruction (Just R) iu s = next iu s
+  doInstruction (Just A) iu@(IU il ic) s = next iu (push1 (nextLabel il ic) s)
+  doInstruction (Just T) iu@(IU il _ ) s = transfer $ pop2 s where
+    transfer (_, 0, s') = next iu s'
+    transfer (0, _, _ ) = doEnd
+    transfer (l, _, s') = next (IU il $ findAddress il l) s'
+  doInstruction Nothing _ _  = doEnd
+
+  ----
+  doEnd :: r
+  doOutputChar :: Stack Symbol m => InstructionUnit -> m -> r
+  doInputChar  :: Stack Symbol m => InstructionUnit -> m -> r
+```
+
+Cel został osiągnięty.
+Struktura stosu została schowana za abstrakcją klasy typu `Stack`.
+Teraz można swobodnie wymieniać implementację między listą a sekwencją
+
 ## Podsumowanie
 
-Nie wyszło to tak dobrze jak chciałem.
+Kod nie wyszedł tak dobry jak chciałem.
+Może to pora na użycie [Rodzin typów]?
 
-[HELCAM]: /projects/helcam
 
+
+[Scali]:                       /langs/scala
+[Javie]:                       /langs/java
+[Javy]:                        /langs/java
+[Haskell]:                     /langs/haskell
+
+[SubLeq]:                      /eso/subleq
+[WhiteSpace]:                  /eso/whitespace
+
+[interfejsy]:                  /tags/interface
+[oop]:                         /tags/oop
+[traity]:                      /tags/trait
+[klasy typów]:                 /tags/typeclass
+[kostruktura]:                 /tags/coproduct
+
+[HELCAM]:                      /projects/helcam
+
+[Abstrakcja]:                  /haskell-ata/abstraction
+[Hermetyzacji]:                /haskell-ata/encapsulation
+
+[Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
+
+[Rodzin typów]:               https://wiki.haskell.org/GHC/Type_families
