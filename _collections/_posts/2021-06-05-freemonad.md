@@ -26,6 +26,8 @@ tranformacja naturalna
 
 ### Stackoverflow
 
+[Paweł Szulc - GETTING MORE MILEAGE FROM YOUR MONADS WITH MTL](https://www.youtube.com/watch?v=knK70T4X7YE)
+
 MOżemy mieć wiele transformatoróœ
 Jak mamy dużo monad i dużo transformatoró monad to może raknąć nam stosu.
 Bo stos na JVM jest za mały
