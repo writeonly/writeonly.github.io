@@ -113,31 +113,45 @@ Nazwałem to pirytowe testy (ang. *pyritec tests*)
 
 Rozważymy trzy sytuacje
 
+* ReducerSpec
+* AsmParserSpec
+* CodeGeneratorSpec
+* AssemblerSpec
 
-### Zwykłe testy
+### ReducerSpec czyli zwykłe testy parametryzowane
 
 ```haskell
-spec :: Spec
-spec = do 
-  describe "Examples" $ do
-    it "true"     $ do reduce trueIL           `shouldBe` trueIL
-    it "hello"    $ do reduce helloIL          `shouldBe` helloIL
-    it "pip"      $ do reduce pipIL            `shouldBe` pipILReduced
-    it "pip2"     $ do reduce pip2IL           `shouldBe` pip2ILReduced
-    it "reverse"  $ do reduce reverseIL        `shouldBe` reverseILReduced
-    it "function" $ do reduce functionIL       `shouldBe` functionIL
-    it "add"      $ do reduce addILLinked      `shouldBe` addILReduced
-    it "writestr" $ do reduce writeStrIL       `shouldBe` writeStrILReduced
-    it "hello2"   $ do reduce hello2ILLinked   `shouldBe` hello2ILReduced
-    it "hello4"   $ do reduce hello4ILLinked   `shouldBe` hello2ILReduced
-    it "writenum" $ do reduce writeNumILLinked `shouldBe` writeNumILReduced
-    it "multiply" $ do reduce multiplyIL       `shouldBe` multiplyILReduced
-    it "readnum"  $ do reduce readNumILLinked  `shouldBe` readNumILReduced
-    it "fact"     $ do reduce factILLinked     `shouldBe` factILReduced
-    it "bottles"  $ do reduce bottlesILLinked  `shouldBe` bottlesILReduced
-    it "euclid"   $ do reduce euclidIL         `shouldBe` euclidILReduced
+module HelVM.HelPA.Assemblers.EAS.ReducerSpec where
 
+import HelVM.HelPA.Assemblers.EAS.Reducer
+import HelVM.HelPA.Assemblers.EAS.TestData
+
+import Test.Hspec
+
+spec :: Spec
+spec = do
+  describe "reduce" $ do
+    forM_ [ ("true"     , trueIL           , trueIL)
+          , ("hello"    , helloIL          , helloIL)
+          , ("pip"      , pipIL            , pipILReduced)
+          , ("pip2"     , pip2IL           , pip2ILReduced)
+          , ("reverse"  , reverseIL        , reverseILReduced)
+          , ("function" , functionIL       , functionIL)
+          , ("add"      , addILLinked      , addILReduced)
+          , ("writestr" , writeStrIL       , writeStrILReduced)
+          , ("hello2"   , hello2ILLinked   , hello2ILReduced)
+          , ("hello4"   , hello4ILLinked   , hello2ILReduced)
+          , ("writenum" , writeNumILLinked , writeNumILReduced)
+          , ("multiply" , multiplyIL       , multiplyILReduced)
+          , ("readnum"  , readNumILLinked  , readNumILReduced)
+          , ("fact"     , factILLinked     , factILReduced)
+          , ("bottles"  , bottlesILLinked  , bottlesILReduced)
+          , ("euclid"   , euclidIL         , euclidILReduced)
+          ] $ \(fileName , ilLinked, ilReduced) -> do
+      it fileName $ do reduce ilLinked `shouldBe` ilReduced
 ```
+
+`forM_` zamienia nam zwykłe testy na testy parametryczne
 
 Testujemy funkcje `reduce` 
 
@@ -146,90 +160,50 @@ Testujemy funkcje `reduce`
 Inaczej porównanie musiało by wyglądać:
 
 ```haskell
-    it "reverse"  $ do shouldBe (reduce reverseIL) reverseILReduced
+      it fileName $ do shouldBe (reduce ilLinked) ilReduced
 ```
 
-### Złote testy
+
+### AsmParser - czyli czytanie inputu testów z pliku
 
 ```haskell
-  describe "Examples" $ do
-    it "true"     $ do generateCode trueIL            `shouldBeDo` readEtaFile "true"
-    it "hello"    $ do generateCode helloIL           `shouldBeDo` readEtaFile "hello"
-    it "pip"      $ do generateCode pipILReduced      `shouldBeDo` readEtaFile "pip"
-    it "pip2"     $ do generateCode pip2ILReduced     `shouldBeDo` readEtaFile "pip2"
-    it "reverse"  $ do generateCode reverseILReduced  `shouldBeDo` readEtaFile "reverse"
-    it "function" $ do generateCode functionIL        `shouldBeDo` readEtaFile "function"
-    it "add"      $ do generateCode addILReduced      `shouldBeDo` readEtaFile "add"
-    it "writestr" $ do generateCode writeStrILReduced `shouldBeDo` readEtaFile "writestr"
-    it "hello2"   $ do generateCode hello2ILReduced   `shouldBeDo` readEtaFile "hello2"
-    it "writenum" $ do generateCode writeNumILReduced `shouldBeDo` readEtaFile "writenum"
-    it "multiply" $ do generateCode multiplyILReduced `shouldBeDo` readEtaFile "multiply"
-    it "readnum"  $ do generateCode readNumILReduced  `shouldBeDo` readEtaFile "readnum"
-    it "fact"     $ do generateCode factILReduced     `shouldBeDo` readEtaFile "fact"
-    it "bottles"  $ do generateCode bottlesILReduced  `shouldBeDo` readEtaFile "bottles"
-    it "euclid"   $ do generateCode euclidILReduced   `shouldBeDo` readEtaFile "euclid"
-```
+module HelVM.HelPA.Assemblers.EAS.AsmParserSpec (spec) where
 
-Po lewej mamy generowanie kodu 
-Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
+import HelVM.HelPA.Assemblers.EAS.AsmParser
+import HelVM.HelPA.Assemblers.EAS.Instruction
+import HelVM.HelPA.Assemblers.EAS.FileUtil
+import HelVM.HelPA.Assemblers.EAS.TestData
 
-Tym razem musimy samodzielnie napisać asercję:
-```haskell
-infix 1 `shouldBeDo`
-shouldBeDo :: (HasCallStack, Show a, Eq a) => a -> IO a -> Expectation
-shouldBeDo action expected = shouldBe action =<< expected
-```
+import HelVM.HelPA.Assemblers.Expectations
 
-`infix 1 `shouldBeDo``  pozwala ustalić prirotytet operatora
+import HelVM.HelPA.Common.Value
 
-### Anty złote testy
+import Test.Hspec
+import Test.Hspec.Attoparsec
 
-```haskell
 spec :: Spec
 spec = do
-  describe "tokenize" $ do
-
-    describe "original ETA" $ do
-      it "hello"   $ do tokenize <$> readEtaFile "source/hello"   `shouldReturn` helloTL
-      it "hello2"  $ do tokenize <$> readEtaFile "source/hello2"  `shouldReturn` hello2TL
-      it "pip"     $ do tokenize <$> readEtaFile "source/pip"     `shouldReturn` pipTL
-      it "pip2"    $ do tokenize <$> readEtaFile "source/pip2"    `shouldReturn` pip2TL
-      it "fact"    $ do tokenize <$> readEtaFile "source/fact"    `shouldReturn` factTL
-      it "bottles" $ do tokenize <$> readEtaFile "source/bottles" `shouldReturn` bottlesTL
-      it "crlf"    $ do tokenize <$> readEtaFile "source/crlf"    `shouldReturn` crlfTL
+  describe "parseFromFile" $ do
+    forM_ [ ("true"     , trueIL)
+          , ("hello"    , helloIL)
+          , ("pip"      , pipIL)
+          , ("pip2"     , pip2IL)
+          , ("reverse"  , reverseIL)
+          , ("function" , functionIL)
+          , ("writestr" , writeStrIL)
+          , ("hello2"   , hello2IL <> [D "writestr.eas"])
+          , ("hello3"   , hello2IL <> [D "writestr.eas"])
+          , ("hello4"   , hello4IL <> [D "writestr.eas"])
+          , ("writenum" , writeNumIL)
+          , ("multiply" , multiplyIL)
+          , ("readnum"  , readNumIL)
+          , ("fact"     , factIL   <> [D "readnum.eas",D "writenum.eas",D "multiply.eas",D "writestr.eas"])
+          , ("bottles"  , bottlesIL)
+          , ("euclid"   , euclidIL)
+          ] $ \(fileName , il) -> do
+      let parseFromFile = parseAssembler <$> readFileText (buildAbsolutePathToEasFile fileName)
+      it fileName $ do parseFromFile `shouldParseReturn` il
 ```
-
-
-
-```haskell
-spec :: Spec
-spec = do
-  describe "Files" $ do
-    it "true"     $ do linkFile "true"     `shouldParseReturn` trueIL
-    it "hello"    $ do linkFile "hello"    `shouldParseReturn` helloIL
-    it "pip"      $ do linkFile "pip"      `shouldParseReturn` pipIL
-    it "pip2"     $ do linkFile "pip2"     `shouldParseReturn` pip2IL
-    it "reverse"  $ do linkFile "reverse"  `shouldParseReturn` reverseIL
-    it "function" $ do linkFile "function" `shouldParseReturn` functionIL
-    it "writestr" $ do linkFile "writestr" `shouldParseReturn` writeStrIL
-    it "hello2"   $ do linkFile "hello2"   `shouldParseReturn` hello2ILLinked
-    it "hello3"   $ do linkFile "hello3"   `shouldParseReturn` hello2ILLinked
-    it "hello4"   $ do linkFile "hello4"   `shouldParseReturn` hello4ILLinked
-    it "writenum" $ do linkFile "writenum" `shouldParseReturn` writeNumIL
-    it "multiply" $ do linkFile "multiply" `shouldParseReturn` multiplyIL
-    it "readnum"  $ do linkFile "readnum"  `shouldParseReturn` readNumIL
-    it "fact"     $ do linkFile "fact"     `shouldParseReturn` factILLinked
-    it "bottles"  $ do linkFile "bottles"  `shouldParseReturn` bottlesILLinked
-    it "euclid"   $ do linkFile "euclid"   `shouldParseReturn` euclidIL
-
-----
-
-linkFile :: String -> ParsedIO InstructionList
-linkFile fileName = linkLibIO SourcePath {dirPath = "examples/eas/", filePath = buildEtaFileName fileName}
-```
-
-`linkFile` Wczytuje plik źródłowy i linkuje do niego szystkie potrzebne biblioteki.
-
 
 ```haskell
 infix 1 `shouldParseReturn`
@@ -237,46 +211,100 @@ shouldParseReturn :: (Show a, Eq a) => ParsedIO a -> a -> Expectation
 shouldParseReturn action = shouldReturn (joinEitherToIO action)
 ```
 
-`ParsedIO` to pomocniczy typ przydatny przy używaniu attoparsec
+`infix 1` pozwala ustalić prirotytet operatora
 
+Jeszcze tylko typy
 ```haskell
 type ParsedIO a = IO (Parsed a)
-
 type Parsed a = Either String a
 ```
 
-### Podwójnie złote testy
-
-Tutaj wszystkie testy wygenerujemy na podstaie tablicy:
 
 ```haskell
-spec :: Spec
-spec = do
-  describe "raw" $ do
-    forM_ [ "hello"
-          , "hello2"
-          , "pip"
-          , "pip2"
-          , "fact"
-          , "bottles"
-          , "crlf"
-          ] $ \filename -> do
-       it filename $ do (show . readTokens <$> readEtaFile ("source/" <> filename)) `pyriticShouldBe` readEtaFile ("raw/" <> filename)
+joinEitherToIO :: ParsedIO a -> IO a
+joinEitherToIO io = eitherToIO =<< io
+
+eitherToIO :: Parsed a -> IO a
+eitherToIO (Right value)  = return value
+eitherToIO (Left message) = fail message
 ```
 
-jest to możliwe ponieważ plik wejścioy i wyjściowy nazywają się tak samo.
-Różnią się tylko folderem i rozszerzeniem
+
+
+
+### CodeGeneratorSpec czyli złote testy
 
 ```haskell
-infix 1 `pyriticShouldBe`
-pyriticShouldBe :: (HasCallStack, Show a, Eq a) => IO a -> IO a -> Expectation
-pyriticShouldBe action expected = join $ liftA2 shouldBe action expected
-```
+module HelVM.HelPA.Assemblers.EAS.CodeGeneratorSpec (spec) where
 
-```haskell
+import HelVM.HelPA.Assemblers.EAS.CodeGenerator
+import HelVM.HelPA.Assemblers.EAS.TestData
+import HelVM.HelPA.Assemblers.EAS.FileUtil
+
+import HelVM.HelPA.Assemblers.Expectations
+
+import Test.Hspec
+
 spec :: Spec
 spec = do
-  describe "Files" $ do
+  describe "generateCode" $ do
+    forM_ [ ("true"     , trueIL)
+          , ("pip"      , pipILReduced)
+          , ("pip2"     , pip2ILReduced)
+          , ("reverse"  , reverseILReduced)
+          , ("function" , functionIL)
+          , ("add"      , addILReduced)
+          , ("writestr" , writeStrILReduced)
+          , ("hello2"   , hello2ILReduced)
+          , ("hello4"   , hello2ILReduced)
+          , ("writenum" , writeNumILReduced)
+          , ("multiply" , multiplyILReduced)
+          , ("readnum"  , readNumILReduced)
+          , ("fact"     , factILReduced)
+          , ("bottles"  , bottlesILReduced)
+          , ("euclid"   , euclidILReduced)
+          ] $ \(fileName , ilReduced) -> do
+      it fileName $ do generateCode ilReduced `goldenShouldBe` buildAbsolutePathToEtaFile fileName
+```
+
+Po lewej mamy generowanie kodu 
+Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
+
+Tym razem musimy samodzielnie napisać asercję:
+```haskell
+infix 1 `goldenShouldBe`
+goldenShouldBe :: String -> String -> Golden String
+goldenShouldBe actualOutput fileName =
+  Golden {
+    output = actualOutput,
+    encodePretty = show,
+    writeToFile = writeFile,
+    readFromFile = readFile,
+    goldenFile = ".output" </> "golden" </> fileName,
+    actualFile = Just (".output" </> "actual" </> fileName),
+    failFirstTime = False
+  }
+
+```
+
+
+### AssemblerSpec czyli podwójnie złote testy
+
+```haskell
+module HelVM.HelPA.Assemblers.EAS.AssemblerSpec where
+
+import HelVM.HelPA.Assemblers.EAS.Assembler
+import HelVM.HelPA.Assemblers.EAS.FileUtil
+
+import HelVM.HelPA.Assemblers.Expectations
+
+import HelVM.HelPA.Common.API
+
+import Test.Hspec
+
+spec :: Spec
+spec = do
+  describe "assembleFile" $ do
     forM_ [ "true"
           , "hello"
           , "pip"
@@ -288,26 +316,50 @@ spec = do
           , "hello2"
           , "hello3"
           , "hello4"
+--          , "writenum"
           , "multiply"
+--          , "readnum"
           , "fact"
           , "bottles"
           , "euclid"
-          ] $ \filename -> do
-      it filename $ do assembleFile filename `pyriticShouldParse` readEtaFile filename
-
-----
-
-assembleFile :: String -> ParsedIO String
-assembleFile fileName = assemblyIO SourcePath {dirPath = easDir, filePath = buildAbsoluteEtaFileName fileName}
+          ] $ \fileName -> do
+      let assembleFile = assemblyIO SourcePath {dirPath = easDir, filePath = buildAbsolutePathToEasFile fileName}    
+      it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
 
-I pomocnicza funkcja do porównywania 
 ```haskell
-infix 1 `pyriticShouldParse`
-pyriticShouldParse :: (Show a, Eq a) => ParsedIO a -> IO a -> Expectation
-pyriticShouldParse action expected = join $ liftA2 shouldParse action expected
+infix 1 `goldenShouldParseReturn`
+goldenShouldParseReturn :: ParsedIO String -> String -> WrappedGoldenIO String
+goldenShouldParseReturn = goldenShouldReturn . joinEitherToIO
 ```
 
+```haskell
+goldenShouldReturn' :: IO String -> String -> GoldenIO String
+goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
+
+type GoldenIO a = IO (Golden a)
+```
+
+Niestety to nie zadziała
+
+```haskell
+infix 1 `goldenShouldReturn`
+goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
+goldenShouldReturn actualOutputIO = WrappedGoldenIO . goldenShouldReturn' actualOutputIO
+
+newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
+```
+
+Potrzebujemy jeszcze tylko implementacji czyli instancji
+
+```haskell  
+instance Eq str => Example (WrappedGoldenIO str) where
+  type Arg (WrappedGoldenIO str) = ()
+  evaluateExample wrapped params action callback = evaluateExample' =<< unWrappedGoldenIO wrapped where
+    evaluateExample' golden = evaluateExample golden params action callback
+```
+
+BTW to co widzimy powyrzej to chyba rodziny typów (ang. Family Types)
 
 ## czas - czy to nie jest za wolne
 
@@ -323,6 +375,8 @@ Konwencja anrzucona przez stack, podtrzymywana przez
 * folder src
 * folder test z plikiem Spec.hs
 * folder app z plikiem Main.hs
+
+
 
 ## Łamanie konwencji
 
@@ -342,5 +396,31 @@ main = do
   hspec $ timeThese config Spec.spec
 ```
 
-## Czy to napewno były złote testy Złote testy według HSpec
+## PS udao mi sicakowicie pozbyć `do natation` z kodu produkcyjnego
+
+```haskell
+instance WrapperIO m => Evaluator (m ()) where
+  doEnd = pass
+
+  doInputChar iu s = doInputChar' =<< wGetChar where
+    doInputChar' char = next iu $ push1 (ord char) s
+
+  doOutputChar iu s = wPutChar (chr symbol) *> next iu s' where (symbol, s') = pop1 s
+```
+
+
+```bash
+Slow examples:
+1.010878967s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[28:9]
+        interact/SeqStackType/bottles
+1.213947573s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[30:9]
+        monadic/SeqStackType/bottles
+
+Finished in 11.3053 seconds
+```
+
+
+
+
+
 
