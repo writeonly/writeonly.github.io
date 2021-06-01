@@ -113,12 +113,24 @@ Nazwałem to pirytowe testy (ang. *pyritec tests*)
 
 Rozważymy trzy sytuacje
 
+* AsmParser
+* Reducer
+* CodeGenerator
+
+* Assembler
+
+
+
 * ReducerSpec
 * AsmParserSpec
 * CodeGeneratorSpec
 * AssemblerSpec
 
 ### ReducerSpec czyli zwykłe testy parametryzowane
+
+Moduł `ReducerSpec` testuje funkcę `Reducer.reduce`.
+Funkcja `reduce` zmienia wewnętrzną reprezentację na prostszą tłumacząc skomplikowane instrukcje na prossze
+Naszą testowaną funkcją jest `Reducer.reduce :: InstructionList -> InstructionList`, która zamienia listę instrukcji w zredukowaną listę instrukcji.
 
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.ReducerSpec where
@@ -151,21 +163,68 @@ spec = do
       it fileName $ do reduce ilLinked `shouldBe` ilReduced
 ```
 
-`forM_` zamienia nam zwykłe testy na testy parametryczne
+`forM_` zamienia nam zwykłe testy na testy parametryczne.
 
-Testujemy funkcje `reduce` 
+Nastepnie mamy listę krotek.
+Pierwszy element krotki zawiera nazwę testu, drugi - listę instrukcji do zredukowania, trzeci - zredukowaną listę instrukcji.
 
-``shouldBe`` to funkcja assercja
+`shouldBe` to funkcja assercja.
+Dzięki grawisom funkcja może być użyta jak operator.
+Bez grafisów trzeba by zapisać
 
-Inaczej porównanie musiało by wyglądać:
+```haskell
+shouldBe :: (HasCallStack, Show a, Eq a) => a -> a -> Expectation
+```
 
+Inaczej porównanie musiało by wyglądać tak:
 ```haskell
       it fileName $ do shouldBe (reduce ilLinked) ilReduced
 ```
 
-
 ### AsmParser - czyli czytanie inputu testów z pliku
 
+Moduł `AsmParserSpec` testuje funkcję `AsmParser.parseAssembler`.
+Funkcja `parseAssembler :: Text -> Parsed InstructionList` parsuje plik w języku `EAS` i zwraca listę instrukcji.
+Ponieważ parsowanie może się nie udać lista instrukcji opakowana jest w typ `Parsed`, który ma postać:
+```haskell
+type Parsed a = Either String a
+```
+
+Ponieważ jednak nie będziemy pracować na typie `Text`, a na `IO Text` naszym ostatecznym typem do porównania będzie 
+`IO (Parsed InstructionList)` czyli dokładniej `IO (Either String InstructionList)`. który dla wygody nazwę ParsedIO:
+
+
+Biblioteka [HSpec] nie posiada oczywiście asercji dla typu `IO (Either String a)`,
+ale posiada asercję `shouldReturn` dla typu `IO a`:
+```haskell
+shouldReturn :: (HasCallStack, Show a, Eq a) => IO a -> a -> Expectation
+```
+Jedyne co musimy zrobić to tylko zamienić `IO (Either String a)` na `IO a`
+
+Najpierw zamieniamy `Either String a` na `IO a`
+```haskell
+eitherToIO :: Parsed a -> IO a
+eitherToIO (Right value)  = return value
+eitherToIO (Left message) = fail message
+
+```
+
+A potem możemy dodać do tego składanie (flatmapowanie) `IO (IO a)` na `IO a` 
+```haskell
+joinEitherToIO :: ParsedIO a -> IO a
+joinEitherToIO io = eitherToIO =<< io
+```
+
+Teraz możemy wszystko opakować w nową asercję:
+```haskell
+infix 1 `shouldParseReturn`
+shouldParseReturn :: (Show a, Eq a) => ParsedIO a -> a -> Expectation
+shouldParseReturn action = shouldReturn (joinEitherToIO action)
+```
+
+`infix 1` pozwala ustalić prirotytet operatora
+
+Ostatecznie testy wygląda następująco:
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.AsmParserSpec (spec) where
 
@@ -205,35 +264,33 @@ spec = do
       it fileName $ do parseFromFile `shouldParseReturn` il
 ```
 
+
+### CodeGeneratorSpec - czyli złote testy
+
+`CodeGeneratorSpec` testuje funkcję `CodeGenerator.generateCode`.
+funkcja `generateCode :: InstructionList -> String` generuje kod w języku `ETA` na podstawie wewnętrzej reprezejtacji. 
+Wyniku wygenerowanego w `generateCode` nie będziemy porównywać z wartościami zapisanymi w testach tylko ze złotymi plikami.
+
+
+Tym razem musimy samodzielnie napisać asercję:
 ```haskell
-infix 1 `shouldParseReturn`
-shouldParseReturn :: (Show a, Eq a) => ParsedIO a -> a -> Expectation
-shouldParseReturn action = shouldReturn (joinEitherToIO action)
+infix 1 `goldenShouldBe`
+goldenShouldBe :: String -> String -> Golden String
+goldenShouldBe actualOutput fileName =
+  Golden {
+    output = actualOutput,
+    encodePretty = show,
+    writeToFile = writeFile,
+    readFromFile = readFile,
+    goldenFile = ".output" </> "golden" </> fileName,
+    actualFile = Just (".output" </> "actual" </> fileName),
+    failFirstTime = False
+  }
+
 ```
 
-`infix 1` pozwala ustalić prirotytet operatora
 
-Jeszcze tylko typy
-```haskell
-type ParsedIO a = IO (Parsed a)
-type Parsed a = Either String a
-```
-
-
-```haskell
-joinEitherToIO :: ParsedIO a -> IO a
-joinEitherToIO io = eitherToIO =<< io
-
-eitherToIO :: Parsed a -> IO a
-eitherToIO (Right value)  = return value
-eitherToIO (Left message) = fail message
-```
-
-
-
-
-### CodeGeneratorSpec czyli złote testy
-
+Kod testu wygląda następująco
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.CodeGeneratorSpec (spec) where
 
@@ -267,28 +324,20 @@ spec = do
       it fileName $ do generateCode ilReduced `goldenShouldBe` buildAbsolutePathToEtaFile fileName
 ```
 
+Tablica zawiera krotki (tuple).
+Pierwszy element krotki to nazwa pliku,
+drugi element krotki to uproszczona reprezentacja wewnętrzna
 Po lewej mamy generowanie kodu 
 Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
 
-Tym razem musimy samodzielnie napisać asercję:
-```haskell
-infix 1 `goldenShouldBe`
-goldenShouldBe :: String -> String -> Golden String
-goldenShouldBe actualOutput fileName =
-  Golden {
-    output = actualOutput,
-    encodePretty = show,
-    writeToFile = writeFile,
-    readFromFile = readFile,
-    goldenFile = ".output" </> "golden" </> fileName,
-    actualFile = Just (".output" </> "actual" </> fileName),
-    failFirstTime = False
-  }
 
-```
 
 
 ### AssemblerSpec czyli podwójnie złote testy
+
+Pora na przetestowanie wszstkiego razem
+
+`AssemblerSpec` testuje `Assembler.assembly`
 
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.AssemblerSpec where
@@ -323,7 +372,7 @@ spec = do
           , "bottles"
           , "euclid"
           ] $ \fileName -> do
-      let assembleFile = assemblyIO SourcePath {dirPath = easDir, filePath = buildAbsolutePathToEasFile fileName}    
+      let assembleFile = assembly SourcePath {dirPath = easDir, filePath = buildAbsolutePathToEasFile fileName}    
       it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
 
@@ -419,7 +468,23 @@ Slow examples:
 Finished in 11.3053 seconds
 ```
 
+```bash
+1.128178606s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[70:9]
+        interact/ListStackType/bottles
+1.083167682s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[72:9]
+        monadic/ListStackType/bottles
+1.04183862s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[74:9]
+        logging/ListStackType/bottles
+1.266628515s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[70:9]
+        interact/SeqStackType/bottles
+1.120756983s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[72:9]
+        monadic/SeqStackType/bottles
+1.118947099s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[74:9]
+        logging/SeqStackType/bottles
 
+Finished in 24.1430 seconds
+1252 examples, 0 failures
+```
 
 
 
