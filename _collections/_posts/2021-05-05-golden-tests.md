@@ -81,17 +81,11 @@ Jako prosty przykład do testów wybrałem EAS z projektu [HelPA].
 
 EAS skłąda się z trzech głównych modułów
 * AsmParser - frontend asemblera - czyli parser
-* Reducer - frontend backendu asemblera 
-* CodeGenerator - backendu backendu asemblera - czyli generator języka [ETA]
+* Reducer - frontend backendu asemblera - 
+* CodeGenerator - właściwy backend asemblera - czyli generator języka [ETA]
 
+Oraz jednego modłu zbierającego to wszystko razem
 * Assembler
-
-
-
-* ReducerSpec
-* AsmParserSpec
-* CodeGeneratorSpec
-* AssemblerSpec
 
 ### ReducerSpec czyli zwykłe testy parametryzowane
 
