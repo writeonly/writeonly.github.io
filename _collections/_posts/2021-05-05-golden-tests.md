@@ -185,31 +185,35 @@ Inaczej porównanie musiało by wyglądać tak:
 ### AsmParser - czyli czytanie inputu testów z pliku
 
 Moduł `AsmParserSpec` testuje funkcję `AsmParser.parseAssembler`.
-Funkcja `parseAssembler :: Text -> Parsed InstructionList` parsuje plik w języku `EAS` i zwraca listę instrukcji.
+Funkcja `parseAssembler :: Text -> Parsed InstructionList` parsuje plik w języku [EAS] i zwraca listę instrukcji.
 Ponieważ parsowanie może się nie udać lista instrukcji opakowana jest w typ `Parsed`, który ma postać:
 ```haskell
 type Parsed a = Either String a
 ```
 
-Ponieważ jednak nie będziemy pracować na typie `Text`, a na `IO Text` naszym ostatecznym typem do porównania będzie 
-`IO (Parsed InstructionList)` czyli dokładniej `IO (Either String InstructionList)`. który dla wygody nazwę ParsedIO:
-
+Ponieważ jednak nie będziemy pracować na typie `Text`,
+a na typie `IO Text` to naszym ostatecznym typem do porównania będzie `IO (Parsed InstructionList)`,
+czyli dokładniej `IO (Either String InstructionList)`. 
+Który dla wygody nazwę ParsedIO:
+```haskell
+type ParsedIO a = IO (Parsed a)
+```
 
 Biblioteka [HSpec] nie posiada oczywiście asercji dla typu `IO (Either String a)`,
 ale posiada asercję `shouldReturn` dla typu `IO a`:
 ```haskell
 shouldReturn :: (HasCallStack, Show a, Eq a) => IO a -> a -> Expectation
 ```
-Jedyne co musimy zrobić to tylko zamienić `IO (Either String a)` na `IO a`
+Jedyne co musimy zrobić to tylko zamienić `IO (Either String a)` na `IO a`.
 
 Najpierw zamieniamy `Either String a` na `IO a`
 ```haskell
 eitherToIO :: Parsed a -> IO a
-eitherToIO (Right value)  = return value
+eitherToIO (Right value)  = pure value
 eitherToIO (Left message) = fail message
 ```
 
-A potem możemy dodać do tego składanie (flatmapowanie) `IO (IO a)` na `IO a` 
+A następnie możemy dodać do tego składanie (flatMapowanie) `IO (IO a)` na `IO a` 
 ```haskell
 joinEitherToIO :: ParsedIO a -> IO a
 joinEitherToIO io = eitherToIO =<< io
@@ -222,9 +226,9 @@ shouldParseReturn :: (Show a, Eq a) => ParsedIO a -> a -> Expectation
 shouldParseReturn action = shouldReturn (joinEitherToIO action)
 ```
 
-`infix 1` pozwala ustalić priorytet operatora
+`infix 1` pozwala ustalić priorytet operatora.
 
-Ostatecznie testy wygląda następująco:
+Ostatecznie test wygląda następująco:
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.AsmParserSpec (spec) where
 
@@ -264,12 +268,11 @@ spec = do
       it fileName $ do parseFromFile `shouldParseReturn` il
 ```
 
-
 ### CodeGeneratorSpec - czyli złote testy
 
 Moduł `CodeGeneratorSpec` testuje funkcję `CodeGenerator.generateCode`.
 Funkcja `generateCode :: InstructionList -> String` generuje kod w języku [ETA] na podstawie listy instrukcji. 
-Wyniku wygenerowanego w `generateCode` nie będziemy porównywać z wartościami zapisanymi w testach tylko ze złotym plikiem.
+Wyniku wygenerowanego z `generateCode` nie będziemy porównywać z wartościami zapisanymi w testach tylko ze złotym plikiem.
 
 Tym razem musimy samodzielnie napisać asercję:
 ```haskell
@@ -325,16 +328,20 @@ Tablica zawiera krotki (tuple).
 Pierwszy element krotki to nazwa pliku,
 drugi element krotki to lista instrukcji ze zredukowanymi rozkazami.
 Po lewej mamy generowanie kodu.
-Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
-
-
-
+Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**.
 
 ### AssemblerSpec czyli podwójnie złote testy
 
 Pora na przetestowanie wszystkiego razem.
 Moduł `AssemblerSpec` testuje funkcję `Assembler.assembleFile`.
 Funkcja `assembleFile :: SourcePath -> ParsedIO String` generuje kod w języku [ETA] na podstawie ścieżki do pliku [EAS].
+
+```haskell
+data SourcePath = SourcePath
+  { dirPath :: String
+  , filePath :: String
+  }
+```
 
 `AssemblerSpec` testuje `Assembler.assembly`
 
