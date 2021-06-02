@@ -12,39 +12,19 @@ redirect_from:
 - haskell-eta/golden-tests
 ---
 
-Characterization test
-
 
 Niestety napisałem brzydkie testy z wykorzystaniem HUnit.
 
+A mówili Pisz specyfikacje a nie testy
 
 
 IHMO największą zaletą HSpec jest generacja modułu Spec
 
 
 
-Pisz specyfikacje a nie testy
 
 
 
-
-Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. Dlaczego o tym mówimy? Bo pokazywali nam to na konferencjach. A czemu nam to pokazywali? Bo piramida ładnie wygląda na slajdach.
-Chyba widziałem wszystkie możliwe ułożenia testów (za wyjątkiem piramid):
-
-Pracowałem w firmach gdzie istniały tylko testy manualne.
-Widziałem firmę gdzie istniały tylko testy manualne i jednostkowe, bo testerzy nie mieli czasu pisać testów systemowo-akceptacyjnych.
-Pracowałem w firmie gdzie nie dało się powiedzieć czy jest więcej jednostkowych czy systemowo-akceptacyjnych bo programiści pisali swoje testy, a testerzy swoje.
-Pracowałem w firmie gdzie była niechęć do testów jednostkowych, a programiści i testerzy wspólnie pisali testy integracyjno-akceptacyjne
-Co do samych definicji to nie widziałem żadnego porządnego papieru, który określałby co to jest jednostka. Metoda/funkcja? Klasa/moduł? Pakiet? Mikroserwis? Mikroserwis z własną bazą danych? Wszystkie te sprzeczne definicje można spotkać na konferencjach. Niektórzy wprost mówią że definicje się zmieniły odkąd mamy mikroserwisy. Jeśli ktoś ma uznany papier z porządną definicją z chęcią przeczytam.
-
-Które testy osobiście uważam za najlepsze? Te które są szybkie, ale jednocześnie testują maksymalnie dużo kodu. Dla mnie takimi testami są testy na poziomie mikroserwisu z prawdziwą bazą danych postawioną w dockerze. Jeśli czegoś w prosty sposób nie da się postawić w dockerze to mockuję. Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
-
-
-Jak już mamy te testu to w którym miejscu należy je umieścić?
-Pracujac wiele lat z w Javie  z Mavenem przywykłem do bardzo rozbudowanej i sztywnej hierarchi folderów.
-Taką samą chierarcię folderów używa Gradle.
-W Haskellu nie ma sztywnych wskazuwek które foldery należy używać.
-Generat
 
 
 
@@ -445,6 +425,26 @@ Teraz małe testy jednostkowe są spowalnaiczem przy refaktoryzacji.
 Dodatkowym prolemem jest to,
 że często nie wiadomo co powinien wygenerować assembler.
 Jedyną wyrocznią może być wykonanie kody przez interpreter.
+
+Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. Dlaczego o tym mówimy? Bo pokazywali nam to na konferencjach. A czemu nam to pokazywali? Bo piramida ładnie wygląda na slajdach.
+Chyba widziałem wszystkie możliwe ułożenia testów (za wyjątkiem piramid):
+
+Pracowałem w firmach gdzie istniały tylko testy manualne.
+Widziałem firmę gdzie istniały tylko testy manualne i jednostkowe, bo testerzy nie mieli czasu pisać testów systemowo-akceptacyjnych.
+Pracowałem w firmie gdzie nie dało się powiedzieć czy jest więcej jednostkowych czy systemowo-akceptacyjnych bo programiści pisali swoje testy, a testerzy swoje.
+Pracowałem w firmie gdzie była niechęć do testów jednostkowych, a programiści i testerzy wspólnie pisali testy integracyjno-akceptacyjne
+Co do samych definicji to nie widziałem żadnego porządnego papieru, który określałby co to jest jednostka. Metoda/funkcja? Klasa/moduł? Pakiet? Mikroserwis? Mikroserwis z własną bazą danych? Wszystkie te sprzeczne definicje można spotkać na konferencjach. Niektórzy wprost mówią że definicje się zmieniły odkąd mamy mikroserwisy. Jeśli ktoś ma uznany papier z porządną definicją z chęcią przeczytam.
+
+Które testy osobiście uważam za najlepsze? Te które są szybkie, ale jednocześnie testują maksymalnie dużo kodu. Dla mnie takimi testami są testy na poziomie mikroserwisu z prawdziwą bazą danych postawioną w dockerze. Jeśli czegoś w prosty sposób nie da się postawić w dockerze to mockuję. Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
+
+
+Jak już mamy te testu to w którym miejscu należy je umieścić?
+Pracujac wiele lat z w Javie  z Mavenem przywykłem do bardzo rozbudowanej i sztywnej hierarchi folderów.
+Taką samą chierarcię folderów używa Gradle.
+W Haskellu nie ma sztywnych wskazuwek które foldery należy używać.
+Generat
+
+
 
 
 ## Czas - czy to nie jest za wolne
