@@ -6,7 +6,7 @@ langs:    haskell
 libs:     attoparsec hspec hunit taste 
 projects: helma helpa
 eso:      eas eta whitespace
-tags:     framework testing
+tags:     applicative do-notation framework functor monad testing
 redirect_from:
 - golden-tests
 - haskell-eta/golden-tests
@@ -531,19 +531,24 @@ instance WrapperIO m => Evaluator (m ()) where
 ```
 
 
-[Haskell]: /langs/haskell
+[Haskell]:     /langs/haskell
 
-[HelMA]: /projects/helma
-[HelPA]: /projects/helpa
+[HelMA]:       /projects/helma
+[HelPA]:       /projects/helpa
 
-[AttoParsec]: /libs/attoparsec
-[HSpec]: /libs/hspec
-[HUnit]: /libs/hunit
-[Taste]: /libs/taste
+[AttoParsec]:  /libs/attoparsec
+[HSpec]:       /libs/hspec
+[HUnit]:       /libs/hunit
+[Taste]:       /libs/taste
 
-[EAS]: /eso/eas
-[ETA]: /eso/eta
+[EAS]:         /eso/eas
+[ETA]:         /eso/eta
 [WhiteSpace]:  /eso/whitespace
+[WSA]:         /eso/wsa
 
-[Type Class]: /tags/type-class
+[Applicative]: /tags/applicative
+[Do notation]: /tags/do-notation
+[Functor]:     /tags/functor
+[Monad]:       /tags/monad
+[Type Class]:  /tags/type-class
 [Type Family]: /tags/type-family
