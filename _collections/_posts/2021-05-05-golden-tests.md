@@ -206,7 +206,6 @@ Najpierw zamieniamy `Either String a` na `IO a`
 eitherToIO :: Parsed a -> IO a
 eitherToIO (Right value)  = return value
 eitherToIO (Left message) = fail message
-
 ```
 
 A potem możemy dodać do tego składanie (flatmapowanie) `IO (IO a)` na `IO a` 
@@ -222,7 +221,7 @@ shouldParseReturn :: (Show a, Eq a) => ParsedIO a -> a -> Expectation
 shouldParseReturn action = shouldReturn (joinEitherToIO action)
 ```
 
-`infix 1` pozwala ustalić prirotytet operatora
+`infix 1` pozwala ustalić priorytet operatora
 
 Ostatecznie testy wygląda następująco:
 ```haskell
@@ -268,9 +267,8 @@ spec = do
 ### CodeGeneratorSpec - czyli złote testy
 
 `CodeGeneratorSpec` testuje funkcję `CodeGenerator.generateCode`.
-funkcja `generateCode :: InstructionList -> String` generuje kod w języku `ETA` na podstawie wewnętrzej reprezejtacji. 
-Wyniku wygenerowanego w `generateCode` nie będziemy porównywać z wartościami zapisanymi w testach tylko ze złotymi plikami.
-
+Funkcja `generateCode :: InstructionList -> String` generuje kod w języku `ETA` na podstawie listy instrukcji. 
+Wyniku wygenerowanego w `generateCode` nie będziemy porównywać z wartościami zapisanymi w testach tylko ze złotym plikiem.
 
 Tym razem musimy samodzielnie napisać asercję:
 ```haskell
@@ -286,11 +284,9 @@ goldenShouldBe actualOutput fileName =
     actualFile = Just (".output" </> "actual" </> fileName),
     failFirstTime = False
   }
-
 ```
 
-
-Kod testu wygląda następująco
+Kod testu wygląda następująco:
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.CodeGeneratorSpec (spec) where
 
@@ -326,8 +322,8 @@ spec = do
 
 Tablica zawiera krotki (tuple).
 Pierwszy element krotki to nazwa pliku,
-drugi element krotki to uproszczona reprezentacja wewnętrzna
-Po lewej mamy generowanie kodu 
+drugi element krotki to lista instrukcji ze zredukoanymi rozkazami.
+Po lewej mamy generowanie kodu.
 Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
 
 
@@ -339,6 +335,45 @@ Pora na przetestowanie wszstkiego razem
 
 `AssemblerSpec` testuje `Assembler.assembly`
 
+
+
+
+
+```haskell
+infix 1 `goldenShouldParseReturn`
+goldenShouldParseReturn :: ParsedIO String -> String -> WrappedGoldenIO String
+goldenShouldParseReturn = goldenShouldReturn . joinEitherToIO
+```
+
+```haskell
+goldenShouldReturn' :: IO String -> String -> GoldenIO String
+goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
+
+type GoldenIO a = IO (Golden a)
+```
+
+Niestety to nie zadziała
+
+```haskell
+infix 1 `goldenShouldReturn`
+goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
+goldenShouldReturn actualOutputIO = WrappedGoldenIO . goldenShouldReturn' actualOutputIO
+
+newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
+```
+
+Potrzebujemy jeszcze tylko implementacji klasy typu, czyli instancji:
+
+```haskell
+instance Eq str => Example (WrappedGoldenIO str) where
+  type Arg (WrappedGoldenIO str) = ()
+  evaluateExample wrapped params action callback = evaluateExample' =<< unWrappedGoldenIO wrapped where
+    evaluateExample' golden = evaluateExample golden params action callback
+```
+
+BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
+
+Cały test wygląda następująco:
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.AssemblerSpec where
 
@@ -375,40 +410,6 @@ spec = do
       let assembleFile = assembly SourcePath {dirPath = easDir, filePath = buildAbsolutePathToEasFile fileName}    
       it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
-
-```haskell
-infix 1 `goldenShouldParseReturn`
-goldenShouldParseReturn :: ParsedIO String -> String -> WrappedGoldenIO String
-goldenShouldParseReturn = goldenShouldReturn . joinEitherToIO
-```
-
-```haskell
-goldenShouldReturn' :: IO String -> String -> GoldenIO String
-goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
-
-type GoldenIO a = IO (Golden a)
-```
-
-Niestety to nie zadziała
-
-```haskell
-infix 1 `goldenShouldReturn`
-goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
-goldenShouldReturn actualOutputIO = WrappedGoldenIO . goldenShouldReturn' actualOutputIO
-
-newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
-```
-
-Potrzebujemy jeszcze tylko implementacji czyli instancji
-
-```haskell  
-instance Eq str => Example (WrappedGoldenIO str) where
-  type Arg (WrappedGoldenIO str) = ()
-  evaluateExample wrapped params action callback = evaluateExample' =<< unWrappedGoldenIO wrapped where
-    evaluateExample' golden = evaluateExample golden params action callback
-```
-
-BTW to co widzimy powyrzej to chyba rodziny typów (ang. Family Types)
 
 ## czas - czy to nie jest za wolne
 
