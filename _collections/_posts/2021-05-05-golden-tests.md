@@ -5,7 +5,7 @@ category: haskell-eta
 langs:    haskell
 libs:     attoparsec hspec hunit taste 
 projects: helma helpa
-eso:      eta whitespace
+eso:      eas eta whitespace
 tags:     framework testing
 redirect_from:
 - golden-tests
@@ -343,33 +343,52 @@ data SourcePath = SourcePath
   }
 ```
 
-`AssemblerSpec` testuje `Assembler.assembly`
+Ponieważ funkcja `Assembler.assembleFile` zwraca monadę `IO` potrzebujemy assercji działającej dla 
 
+Potrzebujemy assercji 
 
-
-
-
-```haskell
-infix 1 `goldenShouldParseReturn`
-goldenShouldParseReturn :: ParsedIO String -> String -> WrappedGoldenIO String
-goldenShouldParseReturn = goldenShouldReturn . joinEitherToIO
-```
+goldenShouldBe :: String -> String -> Golden String
 
 ```haskell
-goldenShouldReturn' :: IO String -> String -> GoldenIO String
-goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
-
 type GoldenIO a = IO (Golden a)
 ```
 
-Niestety to nie zadziała
+A następnie asercję:
+```haskell
+goldenShouldReturn' :: IO String -> String -> GoldenIO String
+goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
+```
 
+Normalne testy zwracają
+
+Złote testy zwracają `Golden a`
+
+nasze testy zwracają `Golden (IO String)` i  nie działą. 
+Dlaczego?
+
+Potrzebujemy jeszcze implementacji (instancji) klasy typu:
+```haskell
+instance Eq str => Example (GoldenIO str) where
+  type Arg (GoldenIO str) = ()
+  evaluateExample wrapped params action callback = evaluateExample' =<< unWrappedGoldenIO wrapped where
+    evaluateExample' golden = evaluateExample golden params action callback
+```
+BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
+
+
+Niestety to nie zadziała.
+
+Rozwiązaniem jest utworzenie nowego typu
+
+```haskell
+newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
+```
+
+Oraz 
 ```haskell
 infix 1 `goldenShouldReturn`
 goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
 goldenShouldReturn actualOutputIO = WrappedGoldenIO . goldenShouldReturn' actualOutputIO
-
-newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
 ```
 
 Potrzebujemy jeszcze tylko implementacji klasy typu, czyli instancji:
@@ -380,8 +399,6 @@ instance Eq str => Example (WrappedGoldenIO str) where
   evaluateExample wrapped params action callback = evaluateExample' =<< unWrappedGoldenIO wrapped where
     evaluateExample' golden = evaluateExample golden params action callback
 ```
-
-BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
 
 Cały test wygląda następująco:
 ```haskell
@@ -410,9 +427,7 @@ spec = do
           , "hello2"
           , "hello3"
           , "hello4"
---          , "writenum"
           , "multiply"
---          , "readnum"
           , "fact"
           , "bottles"
           , "euclid"
@@ -420,6 +435,17 @@ spec = do
       let assembleFile = assembly SourcePath {dirPath = easDir, filePath = buildAbsolutePathToEasFile fileName}    
       it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
+
+## A gdzie testu jednostkowe?
+
+A gdzie piramida testów?
+Nie wierzę w testy jednostkowe.
+Były przydatne na początku do testowania.
+Teraz małe testy jednostkowe są spowalnaiczem przy refaktoryzacji.
+Dodatkowym prolemem jest to,
+że często nie wiadomo co powinien wygenerować assembler.
+Jedyną wyrocznią może być wykonanie kody przez interpreter.
+
 
 ## czas - czy to nie jest za wolne
 
@@ -499,4 +525,6 @@ Finished in 24.1430 seconds
 
 
 
+[EAS]: /eas
+[ETA]: /eta
 
