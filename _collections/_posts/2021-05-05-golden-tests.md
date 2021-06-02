@@ -542,14 +542,14 @@ instance WrapperIO m => Evaluator (m ()) where
 [HUnit]:        /libs/hunit
 [Taste]:        /libs/taste
 
-[EAS]:         /eso/eas
-[ETA]:         /eso/eta
-[WhiteSpace]:  /eso/whitespace
-[WSA]:         /eso/wsa
+[EAS]:          /eso/eas
+[ETA]:          /eso/eta
+[WhiteSpace]:   /eso/whitespace
+[WSA]:          /eso/wsa
 
-[Applicative]: /tags/applicative
-[Do notation]: /tags/do-notation
-[Functor]:     /tags/functor
-[Monad]:       /tags/monad
-[Type Class]:  /tags/type-class
-[Type Family]: /tags/type-family
+[Applicative]:  /tags/applicative
+[Do notation]:  /tags/do-notation
+[Functor]:      /tags/functor
+[Monad]:        /tags/monad
+[Type Class]:   /tags/type-class
+[Type Family]:  /tags/type-family
