@@ -359,14 +359,13 @@ goldenShouldReturn' :: IO String -> String -> GoldenIO String
 goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
 ```
 
-Normalne testy zwracają
+* Normalne testy zwracają
+* Złote testy zwracają `Golden a`
+* Nasze testy zwracają `Golden (IO String)` i nie działą. 
 
-Złote testy zwracają `Golden a`
-
-nasze testy zwracają `Golden (IO String)` i  nie działą. 
 Dlaczego?
-
-Potrzebujemy jeszcze implementacji (instancji) klasy typu:
+Ponieważ cośtam cośtam przyjmuje klase typu `Example`
+W związku z czym potrzebujemy implementacji (instancji) klasy typu `Example`:
 ```haskell
 instance Eq str => Example (GoldenIO str) where
   type Arg (GoldenIO str) = ()
@@ -376,23 +375,24 @@ instance Eq str => Example (GoldenIO str) where
 BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
 
 
-Niestety to nie zadziała.
+Niestety to także nie zadziała i dostaniemy błąd:
+```bash
 
-Rozwiązaniem jest utworzenie nowego typu
+```
 
+Rozwiązaniem jest utworzenie nowego typu:
 ```haskell
 newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
 ```
 
-Oraz 
+Nowej asercji: 
 ```haskell
 infix 1 `goldenShouldReturn`
 goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
 goldenShouldReturn actualOutputIO = WrappedGoldenIO . goldenShouldReturn' actualOutputIO
 ```
 
-Potrzebujemy jeszcze tylko implementacji klasy typu, czyli instancji:
-
+Oraz nowej instancji klasy typu `Example`:
 ```haskell
 instance Eq str => Example (WrappedGoldenIO str) where
   type Arg (WrappedGoldenIO str) = ()
@@ -400,7 +400,7 @@ instance Eq str => Example (WrappedGoldenIO str) where
     evaluateExample' golden = evaluateExample golden params action callback
 ```
 
-Cały test wygląda następująco:
+Dzięki temu możemy napisać złoty test end-to-end:
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.AssemblerSpec where
 
@@ -436,7 +436,7 @@ spec = do
       it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
 
-## A gdzie testu jednostkowe?
+## A gdzie testy jednostkowe?
 
 A gdzie piramida testów?
 Nie wierzę w testy jednostkowe.
@@ -447,7 +447,11 @@ Dodatkowym prolemem jest to,
 Jedyną wyrocznią może być wykonanie kody przez interpreter.
 
 
-## czas - czy to nie jest za wolne
+## Czas - czy to nie jest za wolne
+
+Jesli rezygnujemy z testów jednostkowych na rzecz testów integracyjnych to najważniejsze jest pytanie o czas.
+Czy testy integracyjne nie wykonują się za wolno?
+
 
 Czytamy te wszystkie wartości z plików. 
 Czy to nie jest za wolne?
@@ -482,29 +486,8 @@ main = do
   hspec $ timeThese config Spec.spec
 ```
 
-## PS udao mi sicakowicie pozbyć `do natation` z kodu produkcyjnego
-
-```haskell
-instance WrapperIO m => Evaluator (m ()) where
-  doEnd = pass
-
-  doInputChar iu s = doInputChar' =<< wGetChar where
-    doInputChar' char = next iu $ push1 (ord char) s
-
-  doOutputChar iu s = wPutChar (chr symbol) *> next iu s' where (symbol, s') = pop1 s
-```
-
-
-```bash
-Slow examples:
-1.010878967s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[28:9]
-        interact/SeqStackType/bottles
-1.213947573s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[30:9]
-        monadic/SeqStackType/bottles
-
-Finished in 11.3053 seconds
-```
-
+### Wyniki
+Kilka testów jest ewidentnie wolniejszych:
 ```bash
 1.128178606s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[70:9]
         interact/ListStackType/bottles
@@ -518,10 +501,36 @@ Finished in 11.3053 seconds
         monadic/SeqStackType/bottles
 1.118947099s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[74:9]
         logging/SeqStackType/bottles
+```
 
+Całość testów trochę trwa:
+```
 Finished in 24.1430 seconds
+```
+Ilość testów jest jednak spora:
+```
 1252 examples, 0 failures
 ```
+
+Rozwiązaniem może być pozbycie się części testów.
+W tej chwili testuje wszystkie kombinacje parametrów na wszystkich przykładowych programach w esojęzykach.
+Drogim rozwiązaniem może być podzielenie testów na dwazestawy
+* Szybko wykonujące się testy dymne (ang. smoke test)
+* Pozostałe testy
+
+## PS udało mi sicakowicie pozbyć `do natation` z kodu produkcyjnego
+
+```haskell
+instance WrapperIO m => Evaluator (m ()) where
+  doEnd = pass
+
+  doInputChar iu s = doInputChar' =<< wGetChar where
+    doInputChar' char = next iu $ push1 (ord char) s
+
+  doOutputChar iu s = wPutChar (chr symbol) *> next iu s' where (symbol, s') = pop1 s
+```
+
+
 
 
 
