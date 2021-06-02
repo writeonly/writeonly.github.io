@@ -531,15 +531,16 @@ instance WrapperIO m => Evaluator (m ()) where
 ```
 
 
-[Haskell]:     /langs/haskell
+[Haskell]:      /langs/haskell
 
-[HelMA]:       /projects/helma
-[HelPA]:       /projects/helpa
+[HelMA]:        /projects/helma
+[HelPA]:        /projects/helpa
 
-[AttoParsec]:  /libs/attoparsec
-[HSpec]:       /libs/hspec
-[HUnit]:       /libs/hunit
-[Taste]:       /libs/taste
+[AttoParsec]:   /libs/attoparsec
+[HSpec]:        /libs/hspec
+[HSpec.Golden]: /libs/hspec-golden
+[HUnit]:        /libs/hunit
+[Taste]:        /libs/taste
 
 [EAS]:         /eso/eas
 [ETA]:         /eso/eta
