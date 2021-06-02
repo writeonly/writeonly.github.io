@@ -21,14 +21,6 @@ A mówili Pisz specyfikacje a nie testy
 IHMO największą zaletą HSpec jest generacja modułu Spec
 
 
-
-
-
-
-
-
-
-
 ## Haskell i złote testy
 
 
@@ -84,18 +76,13 @@ Użyłem tego frameworku w HelMA, ale ostatecznie wszystkie testy przepisałem n
 
 ## Złote testy w  i HelMA i HelPA
 
-Ja jednak nie zdecydowałem się na złote testy.
-uznałem że framework do złotych testów za bardzo narzuca mi formę
 
-Jednak zdecydowałem się przenieść długich sekwencji kodu do plików.
-Nazwałem to pirytowe testy (ang. *pyritec tests*)
+Jako prosty przykład do testów wybrałem EAS z projektu [HelPA].
 
-
-Rozważymy trzy sytuacje
-
-* AsmParser
-* Reducer
-* CodeGenerator
+EAS skłąda się z trzech głównych modułów
+* AsmParser - frontend asemblera - czyli parser
+* Reducer - frontend backendu asemblera 
+* CodeGenerator - backendu backendu asemblera - czyli generator języka [ETA]
 
 * Assembler
 
