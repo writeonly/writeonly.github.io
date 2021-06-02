@@ -128,10 +128,11 @@ Rozważymy trzy sytuacje
 
 ### ReducerSpec czyli zwykłe testy parametryzowane
 
-Moduł `ReducerSpec` testuje funkcę `Reducer.reduce`.
-Funkcja `reduce` zmienia wewnętrzną reprezentację na prostszą tłumacząc skomplikowane instrukcje na prossze
-Naszą testowaną funkcją jest `Reducer.reduce :: InstructionList -> InstructionList`, która zamienia listę instrukcji w zredukowaną listę instrukcji.
+Moduł `ReducerSpec` testuje funkcję `Reducer.reduce`.
+Funkcją `Reducer.reduce :: InstructionList -> InstructionList` zamienia listę instrukcji w zredukowaną listę instrukcji.
+Redukcja polega na zamianie `wysokopoziomowych` instrukcji na ich `niskopoziomowe` odpowiedniki możliwe do zapisania w języku [ETA].
 
+Test wygląda następująco:
 ```haskell
 module HelVM.HelPA.Assemblers.EAS.ReducerSpec where
 
@@ -266,8 +267,8 @@ spec = do
 
 ### CodeGeneratorSpec - czyli złote testy
 
-`CodeGeneratorSpec` testuje funkcję `CodeGenerator.generateCode`.
-Funkcja `generateCode :: InstructionList -> String` generuje kod w języku `ETA` na podstawie listy instrukcji. 
+Moduł `CodeGeneratorSpec` testuje funkcję `CodeGenerator.generateCode`.
+Funkcja `generateCode :: InstructionList -> String` generuje kod w języku [ETA] na podstawie listy instrukcji. 
 Wyniku wygenerowanego w `generateCode` nie będziemy porównywać z wartościami zapisanymi w testach tylko ze złotym plikiem.
 
 Tym razem musimy samodzielnie napisać asercję:
@@ -322,7 +323,7 @@ spec = do
 
 Tablica zawiera krotki (tuple).
 Pierwszy element krotki to nazwa pliku,
-drugi element krotki to lista instrukcji ze zredukoanymi rozkazami.
+drugi element krotki to lista instrukcji ze zredukowanymi rozkazami.
 Po lewej mamy generowanie kodu.
 Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
 
@@ -331,7 +332,9 @@ Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**
 
 ### AssemblerSpec czyli podwójnie złote testy
 
-Pora na przetestowanie wszstkiego razem
+Pora na przetestowanie wszystkiego razem.
+Moduł `AssemblerSpec` testuje funkcję `Assembler.assembleFile`.
+Funkcja `assembleFile :: SourcePath -> ParsedIO String` generuje kod w języku [ETA] na podstawie ścieżki do pliku [EAS].
 
 `AssemblerSpec` testuje `Assembler.assembly`
 
