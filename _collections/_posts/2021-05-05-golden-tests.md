@@ -79,15 +79,15 @@ Użyłem tego frameworku w HelMA, ale ostatecznie wszystkie testy przepisałem n
 
 Jako prosty przykład do testów wybrałem EAS z projektu [HelPA].
 
-EAS skłąda się z trzech głównych modułów
-* AsmParser - frontend asemblera - czyli parser
-* Reducer - frontend backendu asemblera - 
-* CodeGenerator - właściwy backend asemblera - czyli generator języka [ETA]
+Asembler [EAS] składa się z trzech głównych modułów:
+* `AsmParser` - frontend asemblera
+* `Reducer` - frontend backendu asemblera
+* `CodeGenerator` - właściwy backend asemblera
+* `Assembler` - moduł który skłąda to wszystko razem
 
-Oraz jednego modłu zbierającego to wszystko razem
-* Assembler
 
-### ReducerSpec czyli zwykłe testy parametryzowane
+
+### ReducerSpec, czyli parametryzowane testy 
 
 Moduł `ReducerSpec` testuje funkcję `Reducer.reduce`.
 Funkcją `Reducer.reduce :: InstructionList -> InstructionList` zamienia listę instrukcji w zredukowaną listę instrukcji.
