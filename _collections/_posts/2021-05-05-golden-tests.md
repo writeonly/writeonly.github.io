@@ -295,23 +295,18 @@ Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**.
 
 Pora na przetestowanie wszystkiego razem.
 Moduł `AssemblerSpec` testuje funkcję `Assembler.assembleFile`.
-Funkcja `assembleFile :: SourcePath -> ParsedIO String` generuje kod w języku [ETA] na podstawie ścieżki do pliku [EAS].
-
+Funkcja `assembleFile :: SourcePath -> ParsedIO String` generuje kod w języku [ETA] na podstawie zmiennej `SourcePath`.
+Typ `SourcePath` ma postać:
 ```haskell
 data SourcePath = SourcePath
-  { dirPath :: String
-  , filePath :: String
+  { dirPath :: String  -- ścieżka do folderu z bibliotekami z kodem w EAS
+  , filePath :: String -- ścieżka do pliku z kodem w EAS
   }
 ```
 
 Ponieważ funkcja `Assembler.assembleFile` zwraca monadę `IO` potrzebujemy asercji działającej dla typu `IO (Golden String)`.
 
-Potrzebujemy assercji 
-
-goldenShouldBe :: String -> String -> Golden String
-
-
-W tym celu najpierw tworzymy typ:
+W tym celu (dla prostrzego zapisu) tworzymy alias typu:
 ```haskell
 type GoldenIO a = IO (Golden a)
 ```
@@ -321,10 +316,7 @@ A następnie asercję:
 goldenShouldReturn' :: IO String -> String -> GoldenIO String
 goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
 ```
-Jednak to nie zadziała, z powodu niezgodności typów.
-* Normalne asercje zwracają typ `IO()`.
-* Złote testy zwracają - `Golden a`.
-* Nasze testy zwracają - `Golden (IO String)` i nie działają.
+Jednak ta asercja nie zadziała, z powodu niezgodności typów.
 
 ```haskell
 hs/test/HelVM/HelPA/Assemblers/EAS/AssemblerSpec.hs:39:7: error:
@@ -356,8 +348,13 @@ hs/test/HelVM/HelPA/Assemblers/EAS/AssemblerSpec.hs:39:7: error:
 ```
 
 Dlaczego?
-Ponieważ cośtam cośtam przyjmuje klasę typu `Example`
-W związku, z czym potrzebujemy implementacji (instancji) klasy typu `Example`:
+Otóż:
+* Normalne asercje zwracają typ `IO ()`.
+* Złote testy zwracają - `Golden a`.
+* Nasze testy zwracają - `Golden (IO String)`.
+
+Problemem jest brak implementacji (instancji) klasy typu `Example` dla `Golden (IO String)`
+W związku, spróbujmy ją napisać:
 ```haskell
 instance Eq str => Example (GoldenIO str) where
   type Arg (GoldenIO str) = ()
@@ -367,7 +364,7 @@ instance Eq str => Example (GoldenIO str) where
 BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
 
 
-Niestety to także nie zadziała i dostaniemy mniej wiecej błąd:
+Niestety to także nie zadziała i dostaniemy mniej więcej błąd:
 ```bash
 hs/test/HelVM/HelPA/Assemblers/Expectations.hs:87:1: error: [-Worphans, -Werror=orphans]
     Orphan instance: instance Eq str => Example (GoldenIO str)
@@ -378,8 +375,13 @@ hs/test/HelVM/HelPA/Assemblers/Expectations.hs:87:1: error: [-Worphans, -Werror=
 87 | instance Eq str => Example (GoldenIO str) where
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...
 ```
+Wynika to z tego,
+że w tej chwili mamy osieroconą instancję klasy typu `Example`.
+Instancje klas typów dla typu danych możemy tworzyć tylko w modułach:
+* gdzie zdefiniowana jest ta klasa typu;
+* gdzie zdefiniowany jest typ danych.
 
-Rozwiązaniem jest utworzenie nowego typu:
+Ponieważ nie mamy wpływu na klasę typu musimy utworzyć nowy typ danych opakowujący `GoldenIO`:
 ```haskell
 newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
 ```
