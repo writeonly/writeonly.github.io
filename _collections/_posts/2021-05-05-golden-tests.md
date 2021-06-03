@@ -83,7 +83,7 @@ Asembler [EAS] składa się z trzech głównych modułów:
 * `AsmParser` - frontend asemblera
 * `Reducer` - frontend backendu asemblera
 * `CodeGenerator` - właściwy backend asemblera
-* `Assembler` - moduł który skłąda to wszystko razem
+* `Assembler` - moduł, który składa to wszystko razem.
 
 
 
@@ -143,7 +143,7 @@ Inaczej porównanie musiało by wyglądać tak:
       it fileName $ do shouldBe (reduce ilLinked) ilReduced
 ```
 
-### AsmParser - czyli czytanie inputu testów z pliku
+### AsmParser, czyli czytanie danych testowych z pliku
 
 Moduł `AsmParserSpec` testuje funkcję `AsmParser.parseAssembler`.
 Funkcja `parseAssembler :: Text -> Parsed InstructionList` parsuje plik w języku [EAS] i zwraca listę instrukcji.
@@ -229,7 +229,7 @@ spec = do
       it fileName $ do parseFromFile `shouldParseReturn` il
 ```
 
-### CodeGeneratorSpec - czyli złote testy
+### CodeGeneratorSpec, czyli złote testy
 
 Moduł `CodeGeneratorSpec` testuje funkcję `CodeGenerator.generateCode`.
 Funkcja `generateCode :: InstructionList -> String` generuje kod w języku [ETA] na podstawie listy instrukcji. 
@@ -291,7 +291,7 @@ drugi element krotki to lista instrukcji ze zredukowanymi rozkazami.
 Po lewej mamy generowanie kodu.
 Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**.
 
-### AssemblerSpec czyli podwójnie złote testy
+### AssemblerSpec, czyli złote testy z czytaniem danych testowych z pliku
 
 Pora na przetestowanie wszystkiego razem.
 Moduł `AssemblerSpec` testuje funkcję `Assembler.assembleFile`.
@@ -304,12 +304,14 @@ data SourcePath = SourcePath
   }
 ```
 
-Ponieważ funkcja `Assembler.assembleFile` zwraca monadę `IO` potrzebujemy assercji działającej dla 
+Ponieważ funkcja `Assembler.assembleFile` zwraca monadę `IO` potrzebujemy asercji działającej dla typu `IO (Golden String)`.
 
 Potrzebujemy assercji 
 
 goldenShouldBe :: String -> String -> Golden String
 
+
+W tym celu najpierw tworzymy typ:
 ```haskell
 type GoldenIO a = IO (Golden a)
 ```
@@ -319,14 +321,43 @@ A następnie asercję:
 goldenShouldReturn' :: IO String -> String -> GoldenIO String
 goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
 ```
+Jednak to nie zadziała, z powodu niezgodności typów.
+* Normalne asercje zwracają typ `IO()`.
+* Złote testy zwracają - `Golden a`.
+* Nasze testy zwracają - `Golden (IO String)` i nie działają.
 
-* Normalne testy zwracają
-* Złote testy zwracają `Golden a`
-* Nasze testy zwracają `Golden (IO String)` i nie działą. 
+```haskell
+hs/test/HelVM/HelPA/Assemblers/EAS/AssemblerSpec.hs:39:7: error:
+    • Couldn't match type ‘Arg
+                             (HelVM.HelPA.Assemblers.Expectations.GoldenIO String)’
+                     with ‘()’
+      Expected type: hspec-core-2.8.2:Test.Hspec.Core.Spec.Monad.SpecM
+                       () ()
+        Actual type: SpecWith
+                       (Arg (HelVM.HelPA.Assemblers.Expectations.GoldenIO String))
+    • In a stmt of a 'do' block:
+        it fileName
+          $ do assemble
+                 `goldenShouldParseReturn`
+                   buildAbsolutePathToEtaFile ("assembleFile" </> fileName)
+      In the expression:
+        do let assemble = assembleFile ...
+           it fileName
+             $ do assemble
+                    `goldenShouldParseReturn`
+                      buildAbsolutePathToEtaFile ("assembleFile" </> fileName)
+      In the second argument of ‘($)’, namely
+        ‘\ fileName
+           -> do let ...
+                 it fileName $ do ...’
+   |
+39 |       it fileName $ do assemble `goldenShouldParseReturn` buildAbsolutePathToEtaFile ("assembleFile" </> fileName)
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
 
 Dlaczego?
-Ponieważ cośtam cośtam przyjmuje klase typu `Example`
-W związku z czym potrzebujemy implementacji (instancji) klasy typu `Example`:
+Ponieważ cośtam cośtam przyjmuje klasę typu `Example`
+W związku, z czym potrzebujemy implementacji (instancji) klasy typu `Example`:
 ```haskell
 instance Eq str => Example (GoldenIO str) where
   type Arg (GoldenIO str) = ()
@@ -336,9 +367,16 @@ instance Eq str => Example (GoldenIO str) where
 BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
 
 
-Niestety to także nie zadziała i dostaniemy błąd:
+Niestety to także nie zadziała i dostaniemy mniej wiecej błąd:
 ```bash
-
+hs/test/HelVM/HelPA/Assemblers/Expectations.hs:87:1: error: [-Worphans, -Werror=orphans]
+    Orphan instance: instance Eq str => Example (GoldenIO str)
+    To avoid this
+        move the instance declaration to the module of the class or of the type, or
+        wrap the type with a newtype and declare the instance on the new type.
+   |
+87 | instance Eq str => Example (GoldenIO str) where
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...
 ```
 
 Rozwiązaniem jest utworzenie nowego typu:
@@ -346,7 +384,7 @@ Rozwiązaniem jest utworzenie nowego typu:
 newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
 ```
 
-Nowej asercji: 
+I nowej asercji: 
 ```haskell
 infix 1 `goldenShouldReturn`
 goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
