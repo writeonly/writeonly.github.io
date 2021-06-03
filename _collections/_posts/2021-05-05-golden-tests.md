@@ -3,7 +3,8 @@ title:    'Złote testy'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
-libs:     attoparsec hspec hunit taste 
+libs:     attoparsec hspec hunit taste
+tools:    stack
 projects: helma helpa
 eso:      eas eta whitespace
 tags:     applicative do-notation framework functor monad testing
@@ -353,7 +354,7 @@ Otóż:
 * Złote testy zwracają - `Golden a`.
 * Nasze testy zwracają - `Golden (IO String)`.
 
-Problemem jest brak implementacji (instancji) klasy typu `Example` dla `Golden (IO String)`
+Problemem jest brak instancji (implementacji) klasy typu `Example` dla `Golden (IO String)`
 W związku, spróbujmy ją napisać:
 ```haskell
 instance Eq str => Example (GoldenIO str) where
@@ -375,25 +376,26 @@ hs/test/HelVM/HelPA/Assemblers/Expectations.hs:87:1: error: [-Worphans, -Werror=
 87 | instance Eq str => Example (GoldenIO str) where
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...
 ```
+
 Wynika to z tego,
 że w tej chwili mamy osieroconą instancję klasy typu `Example`.
 Instancje klas typów dla typu danych możemy tworzyć tylko w modułach:
-* gdzie zdefiniowana jest ta klasa typu;
+* gdzie zdefiniowana jest klasa typu;
 * gdzie zdefiniowany jest typ danych.
 
-Ponieważ nie mamy wpływu na klasę typu musimy utworzyć nowy typ danych opakowujący `GoldenIO`:
+Ponieważ nie mamy wpływu na klasę typu to musimy utworzyć nowy typ danych opakowujący typ `GoldenIO`:
 ```haskell
 newtype WrappedGoldenIO a = WrappedGoldenIO { unWrappedGoldenIO :: GoldenIO a }
 ```
 
-I nowej asercji: 
+Nową asercję:
 ```haskell
 infix 1 `goldenShouldReturn`
 goldenShouldReturn :: IO String -> String -> WrappedGoldenIO String
 goldenShouldReturn actualOutputIO = WrappedGoldenIO . goldenShouldReturn' actualOutputIO
 ```
 
-Oraz nowej instancji klasy typu `Example`:
+Oraz nową instancji klasy typu `Example`:
 ```haskell
 instance Eq str => Example (WrappedGoldenIO str) where
   type Arg (WrappedGoldenIO str) = ()
@@ -437,33 +439,42 @@ spec = do
       it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
 
-## A gdzie testy jednostkowe?
+## Piramida testów, a gdzie testy jednostkowe?
 
-A gdzie piramida testów?
-Nie wierzę w testy jednostkowe.
-Były przydatne na początku do testowania.
-Teraz małe testy jednostkowe są spowalnaiczem przy refaktoryzacji.
-Dodatkowym prolemem jest to,
+Ogólnie to nie wierzę w testy jednostkowe.
+Testy jednostkowe były dla mnie przydatne na początku do testowania.
+Teraz małe testy jednostkowe są spowalniaczem przy refaktoryzacji.
+Dodatkowym problemem jest to,
 że często nie wiadomo co powinien wygenerować assembler.
 Jedyną wyrocznią może być wykonanie kody przez interpreter.
 
-Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. Dlaczego o tym mówimy? Bo pokazywali nam to na konferencjach. A czemu nam to pokazywali? Bo piramida ładnie wygląda na slajdach.
-Chyba widziałem wszystkie możliwe ułożenia testów (za wyjątkiem piramid):
+Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. 
+Dlaczego o tym mówimy? 
+Bo pokazywali nam to na konferencjach. 
+A czemu nam to pokazywali? Bo piramida ładnie wygląda na slajdach.
+Chyba widziałem wszystkie możliwe ułożenia testów (z wyjątkiem piramid):
+* Pracowałem w firmach, gdzie istniały tylko testy manualne.
+* Widziałem firmę gdzie istniały tylko testy manualne i jednostkowe, bo testerzy nie mieli czasu pisać testów systemowo-akceptacyjnych.
+* Pracowałem w firmie gdzie nie dało się powiedzieć czy jest więcej jednostkowych czy systemowo-akceptacyjnych bo programiści pisali swoje testy, a testerzy swoje.
+* Pracowałem w firmie gdzie była niechęć do testów jednostkowych, a programiści i testerzy wspólnie pisali testy integracyjno-akceptacyjne
 
-Pracowałem w firmach gdzie istniały tylko testy manualne.
-Widziałem firmę gdzie istniały tylko testy manualne i jednostkowe, bo testerzy nie mieli czasu pisać testów systemowo-akceptacyjnych.
-Pracowałem w firmie gdzie nie dało się powiedzieć czy jest więcej jednostkowych czy systemowo-akceptacyjnych bo programiści pisali swoje testy, a testerzy swoje.
-Pracowałem w firmie gdzie była niechęć do testów jednostkowych, a programiści i testerzy wspólnie pisali testy integracyjno-akceptacyjne
-Co do samych definicji to nie widziałem żadnego porządnego papieru, który określałby co to jest jednostka. Metoda/funkcja? Klasa/moduł? Pakiet? Mikroserwis? Mikroserwis z własną bazą danych? Wszystkie te sprzeczne definicje można spotkać na konferencjach. Niektórzy wprost mówią że definicje się zmieniły odkąd mamy mikroserwisy. Jeśli ktoś ma uznany papier z porządną definicją z chęcią przeczytam.
+Co do samych definicji to nie widziałem żadnego porządnego papieru,
+który określałby co to jest jednostka. 
+Metoda/funkcja? 
+Klasa/moduł?
+Pakiet?
+Mikroserwis?
+Mikroserwis z własną bazą danych?
+Wszystkie te sprzeczne definicje można spotkać na konferencjach.
+Niektórzy wprost mówią,
+że definicje się zmieniły odkąd mamy mikroserwisy.
+Jeśli ktoś ma uznany papier z porządną definicją to z chęcią przeczytam.
 
-Które testy osobiście uważam za najlepsze? Te które są szybkie, ale jednocześnie testują maksymalnie dużo kodu. Dla mnie takimi testami są testy na poziomie mikroserwisu z prawdziwą bazą danych postawioną w dockerze. Jeśli czegoś w prosty sposób nie da się postawić w dockerze to mockuję. Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
-
-
-Jak już mamy te testu to w którym miejscu należy je umieścić?
-Pracujac wiele lat z w Javie  z Mavenem przywykłem do bardzo rozbudowanej i sztywnej hierarchi folderów.
-Taką samą chierarcię folderów używa Gradle.
-W Haskellu nie ma sztywnych wskazuwek które foldery należy używać.
-Generat
+Które testy osobiście uważam za najlepsze?
+Te które są szybkie, ale jednocześnie testują maksymalnie dużo kodu.
+Dla mnie takimi testami są testy na poziomie mikroserwisu z prawdziwą bazą danych postawioną w dockerze.
+Jeśli czegoś w prosty sposób nie da się postawić w dockerze to mockuję.
+Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
 
 
 
@@ -482,7 +493,13 @@ Z pomocą przychodzi nam tu biblioteka hspec-slow
 Cabal domyślnie nie tworzy folderów na kod i testy.
 Za to 
 
-Konwencja anrzucona przez stack, podtrzymywana przez 
+Jak już mamy te testu to w którym miejscu należy je umieścić?
+Pracujac wiele lat z w Javie  z Mavenem przywykłem do bardzo rozbudowanej i sztywnej hierarchi folderów.
+Taką samą chierarcię folderów używa Gradle.
+W Haskellu nie ma sztywnych wskazuwek które foldery należy używać.
+Generat
+
+Konwencja narzucona przez [stack], podtrzymywana przez 
 * folder src
 * folder test z plikiem Spec.hs
 * folder app z plikiem Main.hs
