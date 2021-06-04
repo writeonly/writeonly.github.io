@@ -5,14 +5,26 @@ category: haskell-eta
 langs:    haskell
 libs:     attoparsec hspec hunit taste
 projects: helma helpa
-eso:      brainfuck eas eta
+eso:      brainfuck eas eta wsa
 tags:     applicative do-notation framework functor monad testing
 redirect_from:
 - golden-tests
 - haskell-eta/golden-tests
 ---
 
-Zainspirowany wpisem o złotych testach na [4programers]() postanowiłem dodać je do swojego projektu w **[Haskellu]**.
+Zainspirowany wpisem o złotych testach na [4programers](https://4programmers.net/Mikroblogi/View/90241) postanowiłem dodać je do swojego projektu w **[Haskellu]**.
+
+Dlaczego w ogóle złote testy?
+Złote testy są dobre dla legacy projektów,
+gdzie nie wiemy,
+co zwrócą testowane funkcje.
+Ja,
+pisząc od początku nowy kod,
+powinienem dobrze wiedzieć co i kiedy może zostać zwrócone.
+Jednak tak nie jest.
+O ile tak jest dla prostych przypadków,
+o tyle dla długich fragmentów kodu w ezoterycznych asemblerach jak [EAS] czy [WSA] nie mam pojęcia co zostanie wygenerowane.
+Tutaj idealnie sprawdzają się złote testy.
 
 Niestety [HUnit] nie wspiera złotych testów, 
 ale już wcześniej byłem zdecydowany na migrację do frameworka testowego [HSpec].
@@ -29,29 +41,17 @@ Jeśli jednak ktoś wolałby złote testy we frameworku [taste] znalazłem dwa t
 
 A jako przykład użycia polecam projekt [Husk Schema](https://justinethier.github.io/husk-scheme/).
 
-Dlaczego w ogóle złote testy?
-Złote testy są dobre dla legacy projektów,
-gdzie nie wiemy,
-co zwrócą testowane funkcje.
-Ja,
-pisząc od początku nowy,
-kod powinienem dobrze wiedzieć co i kiedy może zostać zwrócone.
-
-Jednak tak nie jest.
-O ile tak jest dla prostych przypadków,
-o tyle dla długich fragmentów eso
-
-
-
 ## Złote testy w projekcie HelPA
 
 Jako prosty przykład do testów wybrałem asembler [EAS] z projektu [HelPA].
 
-Asembler [EAS] składa się z trzech głównych modułów:
-* `AsmParser` - frontend asemblera
-* `Reducer` - frontend backendu asemblera
-* `CodeGenerator` - właściwy backend asemblera
+Asembler [EAS] składa się z czterech głównych modułów:
+* `AsmParser` - frontend asemblera, który parsuje plik z językiem asemblerowym.
+* `Reducer` - frontend backendu asemblera, który redukuje skomplikowane instrukcje do prostych instrukcji.
+* `CodeGenerator` - właściwy backend asemblera, który generuje kod w języku ezoterycznym.
 * `Assembler` - moduł, który składa to wszystko razem.
+
+A więc po kolej.
 
 ### ReducerSpec, czyli parametryzowane testy 
 
@@ -401,11 +401,11 @@ spec = do
 
 ## Testy jednostkowe kontra testy integracyjne
 
+Po tym wszystkim rodzą się dwa pytania:
+* Co z piramidą testów i testami jednostkowymi?
+* Na ile to jest szybkie?
+
 ### Gdzie testy jednostkowe i piramida testów?
-
-Czy to są testy jednostkowe?
-Czytamy te wszystkie wartości z plików.
-
 
 Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. 
 Dlaczego o tym mówimy? 
@@ -431,19 +431,16 @@ Jeśli ktoś ma uznany papier z porządną definicją to z chęcią przeczytam.
 
 Które testy osobiście uważam za najlepsze?
 Te które są szybkie, ale jednocześnie testują maksymalnie dużo kodu.
-Dla mnie takimi testami są testy na poziomie mikroserwisu z prawdziwą bazą danych postawioną w dockerze.
+Dla mnie takimi testami dla większości aplikacji webowych są testy na poziomie mikroserwisu z prawdziwą bazą danych postawioną w dockerze.
 Jeśli czegoś w prosty sposób nie da się postawić w dockerze to mockuję.
 Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
 
+Tutaj jednak, na szczęście, nie mamy aplikacji webowej z http i bazą danych.
+Mamy aplikację pracującą na plikach i to na plikach powinniśmy ją testować.
 
-Mam teorię że piramida testów zos
-
-Ogólnie to nie wierzę w testy jednostkowe.
-Testy jednostkowe były dla mnie przydatne na początku do testowania.
-Teraz małe testy jednostkowe są spowalniaczem przy refaktoryzacji.
-Dodatkowym problemem jest to,
-że często nie wiadomo co powinien wygenerować assembler.
-Jedyną wyrocznią może być wykonanie kody przez interpreter.
+Nie mówię że testy jednostkowe są całkiem złe.
+Testy jednostkowe były dla mnie przydatne na początku pisania.
+Ale teraz małe testy jednostkowe są spowalniaczem przy refaktoryzacji.
 
 ### Czas, czyli czy to nie jest za wolne.
 
@@ -478,7 +475,6 @@ musimy zmienić plik `hs/test/Spec.hs` na
 {-# OPTIONS_GHC -F -pgmF hspec-discover -optF --module-name=Spec #-}
 ```
 
-### Wyniki
 W projekcie [HelPA] nie ma żadnych testów dłuższych niż jedna sekunda.
 Jednak w projekcie [HelMA] kilka takich testów się znalazło: 
 ```bash
@@ -495,6 +491,7 @@ Jednak w projekcie [HelMA] kilka takich testów się znalazło:
 1.118947099s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[74:9]
         logging/SeqStackType/bottles
 ```
+W zasadzie jest to jeden test wywoływany sześciokrotnie z różnymi parametrami.
 
 Całość testów trochę trwa:
 ```
@@ -510,7 +507,6 @@ W tej chwili testuje wszystkie kombinacje parametrów na wszystkich przykładowy
 Drugim rozwiązaniem może być podzielenie testów na dwa zestawy:
 * Szybko wykonujące się testy dymne (ang. smoke test)
 * Pozostałe testy
-
 
 
 ## Złote testy - czy warto?
