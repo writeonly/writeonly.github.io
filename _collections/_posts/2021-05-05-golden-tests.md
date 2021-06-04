@@ -6,7 +6,7 @@ langs:    haskell
 libs:     attoparsec hspec hunit taste
 projects: helma helpa
 eso:      brainfuck eas eta wsa
-tags:     applicative do-notation framework functor monad testing
+tags:     framework monad testing
 redirect_from:
 - golden-tests
 - haskell-eta/golden-tests
@@ -14,7 +14,7 @@ redirect_from:
 
 Zainspirowany wpisem o złotych testach na [4programmers](https://4programmers.net/Mikroblogi/View/90241) postanowiłem dodać je do swojego projektu w **[Haskellu]**.
 
-Dlaczego w ogóle złote testy?
+Dlaczego w ogóle złote testy (ang. **golden tests**)?
 Złote testy są dobre dla legacy projektów,
 gdzie nie wiemy,
 co zwrócą testowane funkcje.
@@ -35,7 +35,7 @@ Jednak zdecydowałem się na HSpec ponieważ:
 * HSpec posiada automatyczne generowanie agregatora testów.
 * HSpec ma zagnieżdżoną składnię `describe`/`context`/`it`, którą można ładnie wypaczać.
 
-Jeśli jednak ktoś wolałby złote testy we frameworku [taste] znalazłem dwa teksty poświęcone temu zagadnieniu:
+Jeśli jednak ktoś wolałby złote testy we frameworku [Taste] znalazłem dwa teksty poświęcone temu zagadnieniu:
 * https://ro-che.info/articles/2017-12-04-golden-tests
 * https://kseo.github.io/posts/2016-12-15-golden-tests-are-tasty.html
 
@@ -109,12 +109,12 @@ Bez grawisów trzeba by zapisać:
 
 Moduł `AsmParserSpec` testuje funkcję `AsmParser.parseAssembler`.
 Funkcja `parseAssembler :: Text -> Parsed InstructionList` parsuje plik w języku [EAS] i zwraca listę instrukcji.
-Parsowanie może się nie udać lista instrukcji opakowana jest w typ `Parsed`, który ma postać:
+Ponieważ parsowanie może się nie udać to lista instrukcji opakowana jest w typ `Parsed`, który ma postać:
 ```haskell
 type Parsed a = Either String a
 ```
 
-Ponieważ jednak nie będziemy pracować zmiennej typu `Text`,
+Ponieważ jednak nie będziemy pracować ze zmiennej typu `Text`,
 a zmienną typu `IO Text` to naszym ostatecznym typem do porównania będzie `IO (Parsed InstructionList)`,
 czyli dokładniej `IO (Either String InstructionList)`. 
 Który dla wygody nazwiemy `ParsedIO`:
@@ -268,7 +268,7 @@ data SourcePath = SourcePath
 
 Ponieważ funkcja `Assembler.assembleFile` zwraca monadę `IO` potrzebujemy asercji działającej dla typu `IO (Golden String)`.
 
-W tym celu prostszego zapisu tworzymy alias typu:
+W celu prostszego zapisu tworzymy alias typu:
 ```haskell
 type GoldenIO a = IO (Golden a)
 ```
@@ -278,8 +278,7 @@ A następnie asercję:
 goldenShouldReturn' :: IO String -> String -> GoldenIO String
 goldenShouldReturn' actualOutputIO fileName = flip goldenShouldBe fileName <$> actualOutputIO
 ```
-Jednak ta asercja nie zadziała, z powodu niezgodności typów.
-
+Jednak ta asercja nie zadziała z powodu niezgodności typów:
 ```haskell
 hs/test/HelVM/HelPA/Assemblers/EAS/AssemblerSpec.hs:39:7: error:
     • Couldn't match type ‘Arg
@@ -311,12 +310,12 @@ hs/test/HelVM/HelPA/Assemblers/EAS/AssemblerSpec.hs:39:7: error:
 
 Dlaczego?
 Otóż:
-* Normalne asercje zwracają typ `Expectation`, który jest aliasem typu dla `IO ()`.
+* Normalne asercje zwracają typ `Expectation`, który jest aliasem dla typu `IO ()`.
 * Złote testy zwracają - `Golden a`.
 * Nasze testy zwracają - `Golden (IO String)`.
 
-Problemem jest brak instancji (implementacji) klasy typu `Example` dla `Golden (IO String)`
-W związku, spróbujmy ją napisać:
+Problemem jest brak instancji (implementacji) klasy typu `Example` dla `Golden (IO String)`.
+Dlatego spróbujmy ją napisać:
 ```haskell
 instance Eq str => Example (GoldenIO str) where
   type Arg (GoldenIO str) = ()
@@ -325,8 +324,8 @@ instance Eq str => Example (GoldenIO str) where
 ```
 BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
 
-Niestety to także nie zadziała i dostaniemy mniej więcej taki błąd:
-```bash
+Niestety to także nie zadziała i dostaniemy błąd:
+```haskell
 hs/test/HelVM/HelPA/Assemblers/Expectations.hs:87:1: error: [-Worphans, -Werror=orphans]
     Orphan instance: instance Eq str => Example (GoldenIO str)
     To avoid this
@@ -407,15 +406,20 @@ Po tym wszystkim rodzą się dwa pytania:
 
 ### Gdzie testy jednostkowe i piramida testów?
 
-Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. 
+Trochę offtop, ale IMHO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. 
 Dlaczego o tym mówimy? 
 Bo pokazywali nam to na konferencjach. 
 A czemu nam to pokazywali? Bo piramida ładnie wygląda na slajdach.
 Chyba widziałem wszystkie możliwe ułożenia testów (z wyjątkiem piramid):
-* Pracowałem w firmach, gdzie istniały tylko testy manualne.
-* Widziałem firmę gdzie istniały tylko testy manualne i jednostkowe, bo testerzy nie mieli czasu pisać testów systemowo-akceptacyjnych.
-* Pracowałem w firmie gdzie nie dało się powiedzieć czy jest więcej jednostkowych czy systemowo-akceptacyjnych bo programiści pisali swoje testy, a testerzy swoje.
-* Pracowałem w firmie gdzie była niechęć do testów jednostkowych, a programiści i testerzy wspólnie pisali testy integracyjno-akceptacyjne
+* Pracowałem w firmach,
+  gdzie istniały tylko testy manualne.
+* Widziałem firmę,
+  gdzie istniały tylko testy manualne i jednostkowe, bo testerzy nie mieli czasu pisać testów systemowo-akceptacyjnych.
+* Pracowałem w firmie,
+  gdzie nie dało się powiedzieć czy jest więcej jednostkowych czy systemowo-akceptacyjnych,
+  bo programiści pisali swoje testy, a testerzy swoje.
+* Pracowałem w firmie,
+  gdzie była niechęć do testów jednostkowych, a programiści i testerzy wspólnie pisali testy integracyjno-akceptacyjne.
 
 Co do samych definicji to nie widziałem żadnego porządnego papieru,
 który określałby co to jest jednostka. 
@@ -438,7 +442,8 @@ Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
 Tutaj jednak, na szczęście, nie mamy aplikacji webowej z http i bazą danych.
 Mamy aplikację pracującą na plikach i to na plikach powinniśmy ją testować.
 
-Nie mówię że testy jednostkowe są całkiem złe.
+Nie mówię,
+że testy jednostkowe są całkiem złe.
 Testy jednostkowe były dla mnie przydatne na początku pisania.
 Ale teraz małe testy jednostkowe są spowalniaczem przy refaktoryzacji.
 
@@ -452,7 +457,7 @@ Pozwala ona mierzyć czas wykonywania pojedynczych przypadków testowych.
 
 Przy założeniu,
 że punkt wejściowy dla testów był w pliku `hs/test/Spec.hs`,
-tworzym plik `hs/test/Main.hs`,
+tworzymy plik `hs/test/Main.hs`,
 który będzie nowym punktem wejściowym dla testów:
 
 ```haskell
@@ -503,7 +508,7 @@ Ilość testów jest jednak spora:
 ```
 
 Rozwiązaniem może być pozbycie się części testów.
-W tej chwili testuje wszystkie kombinacje parametrów na wszystkich przykładowych programach w językach ezoterycznych.
+W tej chwili testuję wszystkie kombinacje parametrów na wszystkich przykładowych programach w językach ezoterycznych.
 Drugim rozwiązaniem może być podzielenie testów na dwa zestawy:
 * Szybko wykonujące się testy dymne (ang. smoke test)
 * Pozostałe testy
@@ -515,7 +520,8 @@ Krótko - warto.
 Kod testów się skrócił,
 ponieważ wartości oczekiwane do testów zostały przeniesione do złotych plików.
 Jednocześnie zlikwidowało to przymus używania znaków ucieczki do zapisywania znaku końca linii.
-Oraz rozwiązało to problem że niektó©e skrypty w [BrainFucku] są zgodne z Windowsem, a nie Linuksem
+Oraz rozwiązało to problem,
+że niektóre skrypty w [BrainFucku] są zgodne z Windowsem, a nie Linuksem
 
 [Haskell]:      /langs/haskell
 
@@ -527,7 +533,7 @@ Oraz rozwiązało to problem że niektó©e skrypty w [BrainFucku] są zgodne z 
 [HSpec.Golden]: /libs/hspec-golden
 [HSpec-Slow]:   /libs/hspec-slow
 [HUnit]:        /libs/hunit
-[Taste]:        /libs/taste
+[Taste]:        /libs/Taste
 
 [BrainFucku]:   /eso/brainfuck
 [EAS]:          /eso/eas
