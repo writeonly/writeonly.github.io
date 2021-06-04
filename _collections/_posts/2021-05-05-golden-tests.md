@@ -4,83 +4,46 @@ author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
 libs:     attoparsec hspec hunit taste
-tools:    stack
 projects: helma helpa
-eso:      eas eta whitespace wsa
+eso:      brainfuck eas eta
 tags:     applicative do-notation framework functor monad testing
 redirect_from:
 - golden-tests
 - haskell-eta/golden-tests
 ---
 
-Zainspirowany wpisem o złotymi testami postanowiłem dodać je do swojego projektu w **[Haskellu]**.
+Zainspirowany wpisem o złotych testach na [4programers]() postanowiłem dodać je do swojego projektu w **[Haskellu]**.
 
-Niestety [HUnit] nie wspiera złotych testów.
+Niestety [HUnit] nie wspiera złotych testów, 
+ale już wcześniej byłem zdecydowany na migrację do frameworka testowego [HSpec].
+Jednak nie sądziłem,
+że zmiana będzie od razu tak radykalna.
+Oprócz [HSpec], także framework [Taste] pozwala na używanie złotych testów.
+Jednak zdecydowałem się na HSpec ponieważ:
+* HSpec posiada automatyczne generowanie agregatora testów.
+* HSpec ma zagnieżdżoną składnię `describe`/`context`/`it`, którą można ładnie wypaczać.
 
+Jeśli jednak ktoś wolałby złote testy we frameworku [taste] znalazłem dwa teksty poświęcone temu zagadnieniu:
+* https://ro-che.info/articles/2017-12-04-golden-tests
+* https://kseo.github.io/posts/2016-12-15-golden-tests-are-tasty.html
 
-Niestety napisałem brzydkie testy z wykorzystaniem [HUnit].
-A mówili `Pisz specyfikacje, a nie testy`.
-W związku z czym postanowiłem przepisać wszystkie testy na framework [HSpec].
+A jako przykład użycia polecam projekt [Husk Schema](https://justinethier.github.io/husk-scheme/).
 
+Dlaczego w ogóle złote testy?
+Złote testy są dobre dla legacy projektów,
+gdzie nie wiemy,
+co zwrócą testowane funkcje.
+Ja,
+pisząc od początku nowy,
+kod powinienem dobrze wiedzieć co i kiedy może zostać zwrócone.
 
-IHMO największą zaletą HSpec jest generacja modułu Spec
-
-
-## Haskell i złote testy
-
-
-
-Haskell posiada trzy frameworki 
-
-### Taste - https://hackage.haskell.org/package/tasty-golden
-
-https://ro-che.info/articles/2017-12-04-golden-tests
-
-https://kseo.github.io/posts/2016-12-15-golden-tests-are-tasty.html
-
-
-Framework jest użyty w 
-
-https://github.com/UnkindPartition/tasty
-
-
-https://github.com/UnkindPartition/tasty-golden#readme
-
-
-
-https://justinethier.github.io/husk-scheme/
-
-### HSpec - hspec-golden
-
-https://github.com/stackbuilders/hspec-golden#readme
-
-> Golden tests store the expected output in a separated file. Each time a golden test is executed the output of the subject under test (SUT) is compared with the expected output. If the output of the SUT changes then the test will fail until the expected output is updated.
-
-Golden testy przechowują oczekiwane wyniki w oddzielnym pliku. Za każdym razem, gdy wykonywany jest złoty test, dane wyjściowe badanego podmiotu (SUT) są porównywane z oczekiwanymi wynikami. Jeśli wynik testu SUT ulegnie zmianie, test zakończy się niepowodzeniem, dopóki oczekiwane dane wyjściowe nie zostaną zaktualizowane.
-
-hspec-golden pozwala na pisanie złotych testów przy użyciu popularnego hspec. 
-
-
-
-### HUnit
-
-https://github.com/hspec/HUnit#readme
-
-HUnit jest (jak nazwa wskazuje) dedykoany do testów jednostkowych, a złote testy to z założenia testy integracyjne.
-A przynajmniej integracyjne małe (czyli integrujące się z systemem plików).
-W zasadzie to jedyne co chciałem napisać o HUnit to przestrzec przed jego używaniem.
-Za równo budowanie drzewa testów, jak i używanie operatorów `@?` `@=?` i `@?=` jako odpowiedników dla assertBool/assertEqual.
-Użyłem tego frameworku w HelMA, ale ostatecznie wszystkie testy przepisałem na HSpec
-
-
-
-
-
+Jednak tak nie jest.
+O ile tak jest dla prostych przypadków,
+o tyle dla długich fragmentów eso
 
 
 
 ## Złote testy w projekcie HelPA
-
 
 Jako prosty przykład do testów wybrałem asembler [EAS] z projektu [HelPA].
 
@@ -89,8 +52,6 @@ Asembler [EAS] składa się z trzech głównych modułów:
 * `Reducer` - frontend backendu asemblera
 * `CodeGenerator` - właściwy backend asemblera
 * `Assembler` - moduł, który składa to wszystko razem.
-
-
 
 ### ReducerSpec, czyli parametryzowane testy 
 
@@ -289,8 +250,8 @@ spec = do
 Tablica zawiera krotki (tuple).
 Pierwszy element krotki to nazwa pliku,
 drugi element krotki to lista instrukcji ze zredukowanymi rozkazami.
-Po lewej mamy generowanie kodu.
-Po prawej mamy wczytanie pliku z kodem źródłowym w **[ETA]**.
+Po lewej stronie asercji mamy generowanie kodu.
+Po prawej stronie asercji mamy wczytanie pliku z kodem źródłowym w **[ETA]**.
 
 ### AssemblerSpec, czyli złote testy z czytaniem danych testowych z pliku
 
@@ -307,7 +268,7 @@ data SourcePath = SourcePath
 
 Ponieważ funkcja `Assembler.assembleFile` zwraca monadę `IO` potrzebujemy asercji działającej dla typu `IO (Golden String)`.
 
-W tym celu (dla prostrzego zapisu) tworzymy alias typu:
+W tym celu prostszego zapisu tworzymy alias typu:
 ```haskell
 type GoldenIO a = IO (Golden a)
 ```
@@ -350,7 +311,7 @@ hs/test/HelVM/HelPA/Assemblers/EAS/AssemblerSpec.hs:39:7: error:
 
 Dlaczego?
 Otóż:
-* Normalne asercje zwracają typ `IO ()`.
+* Normalne asercje zwracają typ `Expectation`, który jest aliasem typu dla `IO ()`.
 * Złote testy zwracają - `Golden a`.
 * Nasze testy zwracają - `Golden (IO String)`.
 
@@ -364,8 +325,7 @@ instance Eq str => Example (GoldenIO str) where
 ```
 BTW to, co widzimy powyżej to chyba rodziny typów (ang. [Family Types])
 
-
-Niestety to także nie zadziała i dostaniemy mniej więcej błąd:
+Niestety to także nie zadziała i dostaniemy mniej więcej taki błąd:
 ```bash
 hs/test/HelVM/HelPA/Assemblers/Expectations.hs:87:1: error: [-Worphans, -Werror=orphans]
     Orphan instance: instance Eq str => Example (GoldenIO str)
@@ -439,14 +399,13 @@ spec = do
       it fileName $ do assembleFile `goldenShouldParseReturn` buildAbsolutePathToEtaFile fileName
 ```
 
-## Piramida testów, a gdzie testy jednostkowe?
+## Testy jednostkowe kontra testy integracyjne
 
-Ogólnie to nie wierzę w testy jednostkowe.
-Testy jednostkowe były dla mnie przydatne na początku do testowania.
-Teraz małe testy jednostkowe są spowalniaczem przy refaktoryzacji.
-Dodatkowym problemem jest to,
-że często nie wiadomo co powinien wygenerować assembler.
-Jedyną wyrocznią może być wykonanie kody przez interpreter.
+### Gdzie testy jednostkowe i piramida testów?
+
+Czy to są testy jednostkowe?
+Czytamy te wszystkie wartości z plików.
+
 
 Trochę offtop, ale IHMO ta cała piramida testów (i odwrócona piramida testów) to pic na wodę. 
 Dlaczego o tym mówimy? 
@@ -477,39 +436,27 @@ Jeśli czegoś w prosty sposób nie da się postawić w dockerze to mockuję.
 Albo na poziomie http, albo dostarczam alternatywną implementację klienta.
 
 
+Mam teorię że piramida testów zos
 
+Ogólnie to nie wierzę w testy jednostkowe.
+Testy jednostkowe były dla mnie przydatne na początku do testowania.
+Teraz małe testy jednostkowe są spowalniaczem przy refaktoryzacji.
+Dodatkowym problemem jest to,
+że często nie wiadomo co powinien wygenerować assembler.
+Jedyną wyrocznią może być wykonanie kody przez interpreter.
 
-## Czas - czy to nie jest za wolne
+### Czas, czyli czy to nie jest za wolne.
 
-Jesli rezygnujemy z testów jednostkowych na rzecz testów integracyjnych to najważniejsze jest pytanie o czas.
+Jeśli rezygnujemy z testów jednostkowych na rzecz testów integracyjnych to najważniejsze jest pytanie o czas.
 Czy testy integracyjne nie wykonują się za wolno?
 
+Z pomocą przychodzi nam tu biblioteka `hspec-slow`.
+Pozwala ona mierzyć czas wykonywania pojedynczych przypadków testowych.
 
-Czytamy te wszystkie wartości z plików. 
-Czy to nie jest za wolne?
-
-Z pomocą przychodzi nam tu biblioteka hspec-slow
-
-Cabal domyślnie nie tworzy folderów na kod i testy.
-Za to 
-
-Jak już mamy te testu to w którym miejscu należy je umieścić?
-Pracujac wiele lat z w Javie  z Mavenem przywykłem do bardzo rozbudowanej i sztywnej hierarchi folderów.
-Taką samą chierarcię folderów używa Gradle.
-W Haskellu nie ma sztywnych wskazuwek które foldery należy używać.
-Generat
-
-Konwencja narzucona przez [stack], podtrzymywana przez 
-* folder src
-* folder test z plikiem Spec.hs
-* folder app z plikiem Main.hs
-
-
-
-## Łamanie konwencji
-
-Te trzy foldery do folderu hs
-Start testów z pliku hs/test/main
+Przy założeniu,
+że punkt wejściowy dla testów był w pliku `hs/test/Spec.hs`,
+tworzym plik `hs/test/Main.hs`,
+który będzie nowym punktem wejściowym dla testów:
 
 ```haskell
 module Main where
@@ -524,8 +471,16 @@ main = do
   hspec $ timeThese config Spec.spec
 ```
 
+Jednocześnie,
+jeśli chcemy dalej automatycznie generować agregator dla wszystkich testów,
+musimy zmienić plik `hs/test/Spec.hs` na
+```haskell
+{-# OPTIONS_GHC -F -pgmF hspec-discover -optF --module-name=Spec #-}
+```
+
 ### Wyniki
-Kilka testów jest ewidentnie wolniejszych:
+W projekcie [HelPA] nie ma żadnych testów dłuższych niż jedna sekunda.
+Jednak w projekcie [HelMA] kilka takich testów się znalazło: 
 ```bash
 1.128178606s: hs/test/HelVM/HelMA/Automata/ETA/EvaluatorSpec.hs[70:9]
         interact/ListStackType/bottles
@@ -551,23 +506,20 @@ Ilość testów jest jednak spora:
 ```
 
 Rozwiązaniem może być pozbycie się części testów.
-W tej chwili testuje wszystkie kombinacje parametrów na wszystkich przykładowych programach w esojęzykach.
-Drogim rozwiązaniem może być podzielenie testów na dwazestawy
+W tej chwili testuje wszystkie kombinacje parametrów na wszystkich przykładowych programach w językach ezoterycznych.
+Drugim rozwiązaniem może być podzielenie testów na dwa zestawy:
 * Szybko wykonujące się testy dymne (ang. smoke test)
 * Pozostałe testy
 
-## PS udało mi sicakowicie pozbyć `do natation` z kodu produkcyjnego
 
-```haskell
-instance WrapperIO m => Evaluator (m ()) where
-  doEnd = pass
 
-  doInputChar iu s = doInputChar' =<< wGetChar where
-    doInputChar' char = next iu $ push1 (ord char) s
+## Złote testy - czy warto?
 
-  doOutputChar iu s = wPutChar (chr symbol) *> next iu s' where (symbol, s') = pop1 s
-```
-
+Krótko - warto.
+Kod testów się skrócił,
+ponieważ wartości oczekiwane do testów zostały przeniesione do złotych plików.
+Jednocześnie zlikwidowało to przymus używania znaków ucieczki do zapisywania znaku końca linii.
+Oraz rozwiązało to problem że niektó©e skrypty w [BrainFucku] są zgodne z Windowsem, a nie Linuksem
 
 [Haskell]:      /langs/haskell
 
@@ -577,9 +529,11 @@ instance WrapperIO m => Evaluator (m ()) where
 [AttoParsec]:   /libs/attoparsec
 [HSpec]:        /libs/hspec
 [HSpec.Golden]: /libs/hspec-golden
+[HSpec-Slow]:   /libs/hspec-slow
 [HUnit]:        /libs/hunit
 [Taste]:        /libs/taste
 
+[BrainFucku]:   /eso/brainfuck
 [EAS]:          /eso/eas
 [ETA]:          /eso/eta
 [WhiteSpace]:   /eso/whitespace
