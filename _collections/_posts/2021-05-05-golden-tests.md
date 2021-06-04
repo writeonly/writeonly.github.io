@@ -1,12 +1,12 @@
 ---
-title:    'Złote testy'
+title:    'Złote testy w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
 libs:     attoparsec hspec hunit taste
 tools:    stack
 projects: helma helpa
-eso:      eas eta whitespace
+eso:      eas eta whitespace wsa
 tags:     applicative do-notation framework functor monad testing
 redirect_from:
 - golden-tests
@@ -15,7 +15,7 @@ redirect_from:
 
 Zainspirowany wpisem o złotymi testami postanowiłem dodać je do swojego projektu w **[Haskellu]**.
 
-Niestety HUnit nie wspiera złotych testów.
+Niestety [HUnit] nie wspiera złotych testów.
 
 
 Niestety napisałem brzydkie testy z wykorzystaniem [HUnit].
@@ -79,10 +79,10 @@ Użyłem tego frameworku w HelMA, ale ostatecznie wszystkie testy przepisałem n
 
 
 
-## Złote testy w  i HelMA i HelPA
+## Złote testy w projekcie HelPA
 
 
-Jako prosty przykład do testów wybrałem EAS z projektu [HelPA].
+Jako prosty przykład do testów wybrałem asembler [EAS] z projektu [HelPA].
 
 Asembler [EAS] składa się z trzech głównych modułów:
 * `AsmParser` - frontend asemblera
@@ -130,20 +130,16 @@ spec = do
       it fileName $ do reduce ilLinked `shouldBe` ilReduced
 ```
 
-`forM_` zamienia nam zwykłe testy na testy parametryczne.
+Funkcja `forM_` zamienia nam zwykłe testy na testy parametryczne.
 
-Nastepnie mamy listę krotek.
-Pierwszy element krotki zawiera nazwę testu, drugi - listę instrukcji do zredukowania, trzeci - zredukowaną listę instrukcji.
+Następnie mamy listę krotek.
+Pierwszy element krotki zawiera nazwę testu,
+drugi — listę instrukcji do zredukowania,
+trzeci — zredukowaną listę instrukcji.
 
-`shouldBe` to funkcja assercja.
+Funkcja `shouldBe` to asercja.
 Dzięki grawisom funkcja może być użyta jak operator.
-Bez grafisów trzeba by zapisać
-
-```haskell
-shouldBe :: (HasCallStack, Show a, Eq a) => a -> a -> Expectation
-```
-
-Inaczej porównanie musiało by wyglądać tak:
+Bez grawisów trzeba by zapisać:
 ```haskell
       it fileName $ do shouldBe (reduce ilLinked) ilReduced
 ```
@@ -152,15 +148,15 @@ Inaczej porównanie musiało by wyglądać tak:
 
 Moduł `AsmParserSpec` testuje funkcję `AsmParser.parseAssembler`.
 Funkcja `parseAssembler :: Text -> Parsed InstructionList` parsuje plik w języku [EAS] i zwraca listę instrukcji.
-Ponieważ parsowanie może się nie udać lista instrukcji opakowana jest w typ `Parsed`, który ma postać:
+Parsowanie może się nie udać lista instrukcji opakowana jest w typ `Parsed`, który ma postać:
 ```haskell
 type Parsed a = Either String a
 ```
 
-Ponieważ jednak nie będziemy pracować na typie `Text`,
-a na typie `IO Text` to naszym ostatecznym typem do porównania będzie `IO (Parsed InstructionList)`,
+Ponieważ jednak nie będziemy pracować zmiennej typu `Text`,
+a zmienną typu `IO Text` to naszym ostatecznym typem do porównania będzie `IO (Parsed InstructionList)`,
 czyli dokładniej `IO (Either String InstructionList)`. 
-Który dla wygody nazwę ParsedIO:
+Który dla wygody nazwiemy `ParsedIO`:
 ```haskell
 type ParsedIO a = IO (Parsed a)
 ```
@@ -179,7 +175,7 @@ eitherToIO (Right value)  = pure value
 eitherToIO (Left message) = fail message
 ```
 
-A następnie możemy dodać do tego składanie (flatMapowanie) `IO (IO a)` na `IO a` 
+A następnie możemy dodać do tego składanie monad (flatMapowanie) z `IO (IO a)` na `IO a` 
 ```haskell
 joinEitherToIO :: ParsedIO a -> IO a
 joinEitherToIO io = eitherToIO =<< io
