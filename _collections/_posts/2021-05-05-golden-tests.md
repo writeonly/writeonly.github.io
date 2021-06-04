@@ -13,6 +13,10 @@ redirect_from:
 - haskell-eta/golden-tests
 ---
 
+Zainspirowany wpisem o złotymi testami postanowiłem dodać je do swojego projektu w **[Haskellu]**.
+
+Niestety HUnit nie wspiera złotych testów.
+
 
 Niestety napisałem brzydkie testy z wykorzystaniem [HUnit].
 A mówili `Pisz specyfikacje, a nie testy`.
