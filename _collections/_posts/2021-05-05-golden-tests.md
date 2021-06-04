@@ -14,9 +14,9 @@ redirect_from:
 ---
 
 
-Niestety napisałem brzydkie testy z wykorzystaniem HUnit.
-
-A mówili Pisz specyfikacje a nie testy
+Niestety napisałem brzydkie testy z wykorzystaniem [HUnit].
+A mówili `Pisz specyfikacje, a nie testy`.
+W związku z czym postanowiłem przepisać wszystkie testy na framework [HSpec].
 
 
 IHMO największą zaletą HSpec jest generacja modułu Spec
