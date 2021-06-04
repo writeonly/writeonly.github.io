@@ -12,7 +12,7 @@ redirect_from:
 - haskell-eta/golden-tests
 ---
 
-Zainspirowany wpisem o złotych testach na [4programers](https://4programmers.net/Mikroblogi/View/90241) postanowiłem dodać je do swojego projektu w **[Haskellu]**.
+Zainspirowany wpisem o złotych testach na [4programmers](https://4programmers.net/Mikroblogi/View/90241) postanowiłem dodać je do swojego projektu w **[Haskellu]**.
 
 Dlaczego w ogóle złote testy?
 Złote testy są dobre dla legacy projektów,
