@@ -227,3 +227,15 @@ Wystarczy wiedzieć czego się szuka i znaleźć to :)
 
 Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny i polimorficzny kod
 
+[Haskell]:              /langs/haskell
+[Haskella]:             /langs/haskell
+[Haskellu]:             /langs/haskell
+
+[pattern-matching]:                /pattern-matching
+
+[Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
+
+Dependencies types
+
+https://wiki.haskell.org/Functional_dependencies_vs._type_families
+https://wiki.haskell.org/Functional_dependencies
