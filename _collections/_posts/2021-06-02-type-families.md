@@ -12,7 +12,9 @@ redirect_from:
 - haskell-eta/type-family
 ---
 
-Spytano mnie raz co jest trudniego w Haskellu co jednocześnie jest łatwa w OOP.
+Spytano mnie raz,
+co jest trudnego w **[Haskellu]**,
+co jednocześnie jest łatwa w OOP.
 Stworzenie interfejsu kolekcji i danie możliwości implementowania go klientom
 
 Klasa typu od dwóch parametrów
