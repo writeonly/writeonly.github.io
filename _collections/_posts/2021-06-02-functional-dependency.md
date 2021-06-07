@@ -11,7 +11,14 @@ redirect_from:
 - type-family
 - haskell-eta/type-family
 ---
-
+* 
+* Type Family
+  * Closed Type Family - są podobne do funkcji, GADT, HList
+  * Open Type Family - Data families Associated type
+* 
+  * 
+    Functional dependencies    
+ 
 Spytano mnie raz,
 co jest trudnego w **[Haskellu]**,
 co jednocześnie jest łatwa w OOP.
