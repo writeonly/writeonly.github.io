@@ -1,5 +1,5 @@
 ---
-title:    'Rodziny typów w Haskellu'
+title:    'Zależności funkcyjne w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
@@ -11,14 +11,9 @@ redirect_from:
 - type-family
 - haskell-eta/type-family
 ---
-* 
-* Type Family
-  * Closed Type Family - są podobne do funkcji, GADT, HList
-  * Open Type Family - Data families Associated type
-* 
-  * 
-    Functional dependencies    
- 
+
+Funkcje zależne
+
 Spytano mnie raz,
 co jest trudnego w **[Haskellu]**,
 co jednocześnie jest łatwa w OOP.
@@ -28,15 +23,16 @@ Klasa typu od dwóch parametrów
 
 Próbowałem, wyszło źle o czym jest w https://writeonly.pl/haskell-eta/pattern-matching
 
-Opazało się że potrzebuje rodziny typów
+Okazało się że potrzebuje Functional Dependency.
 
-Rodziny typów to rozmudowanie zagadnienie zachaczające od typy zależne (ang. Dependencies types)
+https://web.cecs.pdx.edu/~mpj/pubs/fundeps-esop2000.pdf
 
-O czymmożna poczytać na wiki haskella
+https://cth.altocumulus.org/~hallgren/Papers/hallgren.pdf
 
-https://wiki.haskell.org/GHC/Type_families
+Trzeba uwarzać bo to początek typów zależnych
+Funkcje zależne są początkiem do typów zależnych.
 
-Dodatkowo wplatują się tu jeszcze Algebtaiczne typy danych (ang. Generalised algebraic datatype, **GADT**) 
+https://wiki.haskell.org/Dependent_type
 
 
 Główna różnica miedzy nimi jest taka że algebraiczne typy danych są zamknięte (wszystkie implementacje muszą być w jednym miejscu),
@@ -44,33 +40,8 @@ a rodziny typów są otwarte (można dodawać nowe implementacje w nowych plikac
 
 ## Składnia
 
-Poszukując 
 
-```haskell
--- Declare a list-like data family
-data family XList a
 
--- Declare a list-like instance for Char
-data instance XList Char = XCons !Char !(XList Char) | XNil
-
--- Declare a number-like instance for ()
-data instance XList () = XListUnit !Int
-```
-
-Szykając interfejsu kolekcji trzeba wiedzieć że szuka się interfejsu kolekcji.
-Wtedy w prosty sposób można znaleźć to:
-```haskell
-class Collects ce where
-  type Elem ce
-  empty  :: ce
-  insert :: Elem ce -> ce -> ce
-  member :: Elem ce -> ce -> Bool
-  toList :: ce -> [Elem ce]
-```
-A więc rodzina typów nie różni się wiele od klasy typu.
-Jedyną różnicą jest linia `type Elem ce`
-
-Jest też krótrzy zapis
 ```haskell
 class Collects e ce | ce -> e where
   empty  :: ce
@@ -91,18 +62,6 @@ instance Eq e => Collects e [e] where
   toList l        = l
 ```
 
-Ale można zdefiować element też wprost
-```haskell
-instance Eq e => Collects [e] where
-  type Elem [e]   = e
-  empty           = []
-  insert e l      = (e:l)
-  member e []     = False
-  member e (x:xs) 
-    | e == x      = True
-    | otherwise   = member e xs
-  toList l        = l
-```
 
 ## Klasy typów w HelMA
 
