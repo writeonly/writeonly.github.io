@@ -21,6 +21,8 @@ Stworzenie interfejsu kolekcji i danie możliwości implementowania go klientom
 
 Klasa typu od dwóch parametrów
 
+
+
 Próbowałem, wyszło źle o czym jest w https://writeonly.pl/haskell-eta/pattern-matching
 
 Okazało się że potrzebuje Functional Dependency.
@@ -32,15 +34,18 @@ https://cth.altocumulus.org/~hallgren/Papers/hallgren.pdf
 Trzeba uwarzać bo to początek typów zależnych
 Funkcje zależne są początkiem do typów zależnych.
 
-https://wiki.haskell.org/Dependent_type
+https://wiki.haskell.org/Dependent_type - typy zależne
+https://en.wikipedia.org/wiki/Dependent_type
 
 
 Główna różnica miedzy nimi jest taka że algebraiczne typy danych są zamknięte (wszystkie implementacje muszą być w jednym miejscu),
 a rodziny typów są otwarte (można dodawać nowe implementacje w nowych plikach)
 
+http://dev.stephendiehl.com/hask/#constraint-kinds
+
 ## Składnia
 
-
+https://www.fpcomplete.com/haskell/tutorial/fundeps/
 
 ```haskell
 class Collects e ce | ce -> e where
@@ -185,6 +190,15 @@ doBinary Mod = mod
 data BinaryOperator = Add | Sub | Mul | Div | Mod
   deriving (Eq, Show, Read)
 ```
+
+## Jeden wielki Stack
+
+## Dużo małych typeckass
+Jak to działa dla funktora?
+
+## jedna implementacja
+
+## sumowanie ograniczeń
 
 ## Podsumowanie
 
