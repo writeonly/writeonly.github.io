@@ -192,14 +192,24 @@ data BinaryOperator = Add | Sub | Mul | Div | Mod
 ## Jeden wielki Stack
 
 ## Dużo małych Klas Typów
-Jak to działa dla funktora?
+Jak to działa dla funktora, aplikatyw i monada?
+Każde dziedziczy z poprzedniego
 
 ## Jedna implementacja
 
-
+Najpierw importujemy wszystkie potrzebne funkcje do `I`:
 ```haskell
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 
+import qualified HelVM.HelMA.Common.Collections.Drop     as I
+import qualified HelVM.HelMA.Common.Collections.FromList as I
+import qualified HelVM.HelMA.Common.Collections.Lookup   as I
+import qualified HelVM.HelMA.Common.Collections.Pop      as I
+import qualified HelVM.HelMA.Common.Collections.SplitAt  as I
+```
 
+Nastepnie tworzymy naszą [Klasę Typów] z jedną implementacją (instancją):
+```haskell
 class (Semigroup c , Show c) => Stack e c | c -> e where
   fromList :: [e] -> c
   empty    :: c
@@ -221,11 +231,40 @@ instance (Show c , Semigroup c , I.Drop e c , I.FromList e c , I.Lookup e c , I.
   pop2     = I.pop2
 ```
 
+Cała implementacja jest w pliku [StackImpl].
+Czemu `*Impl`?
+Bo przypomina to Javową patologię z Serwisami z jedną implementacją `*ServiceImpl`
+
 ## Sumowanie ograniczeń
 
+Gdy już byłem zdołowany że zostanę z beznensowną Klasą Typu z jedną implementacją
+przypadkiem przeczytałem że w Haskellu ograniczenia rodzai mogą być elementami pierwszego rodzaju.
+Wystarczy łączyć rozszeżenie
 
 http://dev.stephendiehl.com/hask/#constraint-kinds
 
+Po włączeniu rozszeżenia importujemy wszystkie potrzebne nam funkcje:
+```haskell
+
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
+
+import HelVM.HelMA.Common.Collections.Drop
+import HelVM.HelMA.Common.Collections.FromList
+import HelVM.HelMA.Common.Collections.Lookup
+import HelVM.HelMA.Common.Collections.Pop
+import HelVM.HelMA.Common.Collections.SplitAt
+```
+
+A następnie piszemy jedną magiczną linię:
+```haskell
+type Stack e c = (Show c , Semigroup c , Drop e c , FromList e c , Lookup e c , SplitAt e c , Pop1 e c , Pop2 e c)
+```
+Właśnie zsumowaliśmy wszystkie ograniczenia do jednego typu `Stack`.
+
+I teraz można żyć.
+I teraz da się pracować.
+
+Cała implementacja jest w pliku [StackConst] (jak ograniczenia).
 
 ## Podsumowanie
 
