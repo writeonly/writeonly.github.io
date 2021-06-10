@@ -41,8 +41,6 @@ https://en.wikipedia.org/wiki/Dependent_type
 Główna różnica miedzy nimi jest taka że algebraiczne typy danych są zamknięte (wszystkie implementacje muszą być w jednym miejscu),
 a rodziny typów są otwarte (można dodawać nowe implementacje w nowych plikach)
 
-http://dev.stephendiehl.com/hask/#constraint-kinds
-
 ## Składnia
 
 https://www.fpcomplete.com/haskell/tutorial/fundeps/
@@ -193,12 +191,41 @@ data BinaryOperator = Add | Sub | Mul | Div | Mod
 
 ## Jeden wielki Stack
 
-## Dużo małych typeckass
+## Dużo małych Klas Typów
 Jak to działa dla funktora?
 
-## jedna implementacja
+## Jedna implementacja
 
-## sumowanie ograniczeń
+
+```haskell
+
+
+class (Semigroup c , Show c) => Stack e c | c -> e where
+  fromList :: [e] -> c
+  empty    :: c
+  index    :: c -> Index -> e
+  lookup   :: Index -> c -> Maybe e
+  splitAt  :: Index -> c -> (c , c)
+  drop     :: Index -> c -> c
+  pop1     :: c -> (e , c)
+  pop2     :: c -> (e , e , c)
+
+instance (Show c , Semigroup c , I.Drop e c , I.FromList e c , I.Lookup e c , I.SplitAt e c , I.Pop1 e c , I.Pop2 e c) => Stack e c where
+  fromList = I.fromList
+  empty    = I.empty
+  index    = I.index
+  lookup   = I.lookup
+  splitAt  = I.splitAt
+  drop     = I.drop
+  pop1     = I.pop1
+  pop2     = I.pop2
+```
+
+## Sumowanie ograniczeń
+
+
+http://dev.stephendiehl.com/hask/#constraint-kinds
+
 
 ## Podsumowanie
 
