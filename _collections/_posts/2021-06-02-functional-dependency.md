@@ -195,6 +195,141 @@ data BinaryOperator = Add | Sub | Mul | Div | Mod
 Jak to działa dla funktora, aplikatyw i monada?
 Każde dziedziczy z poprzedniego
 
+Funktor posiada metodę (funkcję polimorficzną) `fmap`.
+Dzięki temu nie musimy pisać w kodzie `List.fmap`, `Seq.fmap` czy `IntMap.fmap`,
+tylko odpowiednia implementacja jest ustalana na podstawie parametrów.
+
+
+Miło by było mieć też polimorficzne funkcje  `drop`, `empty`, `fromList` , `splitAt`,
+
+
+Tworzymy folder
+
+```haskell
+module HelVM.HelMA.Common.Collections.FromList where
+
+import Prelude hiding (fromList)
+
+import qualified Data.List.Index as List
+import qualified Data.IntMap     as IntMap
+import qualified Data.Sequence   as Seq
+
+intMapFromList :: [e] -> IntMap e
+intMapFromList = IntMap.fromList . List.indexed
+
+class FromList e c | c -> e where
+  fromList :: [e] -> c
+  empty :: c
+  empty = fromList []
+
+instance FromList e [e] where
+  fromList = id
+  empty = []
+
+instance FromList e (Seq e) where
+  fromList = Seq.fromList
+  empty = Seq.empty
+
+instance FromList e (IntMap e) where
+  fromList = intMapFromList
+  empty = IntMap.empty
+```
+
+```haskell
+module HelVM.HelMA.Common.Collections.Lookup where
+
+import qualified Data.IntMap   as IntMap
+import qualified Data.Sequence as Seq
+
+index :: (Show c , Lookup e c) => c -> Int -> e
+index c i = check (c `indexMaybe` i) where
+  check (Just e) = e
+  check  Nothing = error $ "Empty stack " <> show c <> " index " <> show i
+
+indexMaybe :: Lookup e c => c -> Int -> Maybe e
+indexMaybe = flip lookup
+
+class Lookup e c | c -> e where
+  lookup:: Int -> c -> Maybe e
+
+instance Lookup e [e] where
+  lookup = flip (!!?)
+
+instance Lookup e (Seq e) where
+  lookup = Seq.lookup
+
+instance Lookup e (IntMap e) where
+  lookup = IntMap.lookup
+```
+
+```haskell
+module HelVM.HelMA.Common.Collections.Insert where
+
+import Data.Default
+import Data.Sequence ((|>))
+
+import qualified Data.IntMap     as IntMap
+import qualified Data.Sequence   as Seq
+
+class Insert e c | c -> e where
+  insert :: Int -> e -> c -> c
+
+instance Default e => Insert e [e] where
+  insert 0 e []     = [e]
+  insert 0 e (_:xs) = e   : xs
+  insert i e []     = def : insert (i-1) e []
+  insert i e (x:xs) = x   : insert (i-1) e xs
+
+instance Default e => Insert e (Seq e) where
+  insert i e c = insert' $ Seq.length c where
+    insert' l
+      | i < l       = Seq.update i e c
+      | otherwise   = c <> Seq.replicate (i - l) def |> e
+
+instance Insert e (IntMap e) where
+  insert = IntMap.insert
+```
+
+```haskell
+module HelVM.HelMA.Common.Collections.Pop where
+
+import Data.Sequence (Seq(..))
+
+class Pop1 e c | c -> e where
+  pop1 :: c -> (e , c)
+
+instance Show e => Pop1 e [e] where
+  pop1 (e  : c) = (e , c)
+  pop1       c  = error $ "Empty " <> show c
+
+instance Show e => Pop1 e (Seq e) where
+  pop1 (e :<|  c) = (e , c)
+  pop1         c  = error $ "Empty " <> show c
+
+class Pop2 e c | c -> e where
+  pop2 :: c -> (e , e , c)
+
+instance Show e => Pop2 e [e] where
+  pop2 (e : e' : c) = (e , e', c)
+  pop2           c  = error $ "Empty " <> show c
+
+instance Show e => Pop2 e (Seq e) where
+  pop2 (e :<| e' :<| c) = (e , e', c)
+  pop2               c  = error $ "Empty  " <> show c
+```
+
+Importujemy wszystkie potrzebne moetody
+```haskell
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
+
+import HelVM.HelMA.Common.Collections.Drop
+import HelVM.HelMA.Common.Collections.FromList
+import HelVM.HelMA.Common.Collections.Lookup
+import HelVM.HelMA.Common.Collections.Pop
+import HelVM.HelMA.Common.Collections.SplitAt
+```
+
+
 ## Jedna implementacja
 
 Najpierw importujemy wszystkie potrzebne funkcje do `I`:
