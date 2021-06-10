@@ -329,6 +329,7 @@ import HelVM.HelMA.Common.Collections.Pop
 import HelVM.HelMA.Common.Collections.SplitAt
 ```
 
+Jednak pisanie kolejnych metod do jakaś tragedia:
 ```haskell
 -- Arithmetic
 
