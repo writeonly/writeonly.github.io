@@ -107,61 +107,89 @@ instance Show e => Stack e (Seq e) where
 Od tej pory nie potrzebujemy już rzutować elementu stosu na `Symbol`,
 a więc wiele metod pomocniczych do manipulacji stosem możemy przenieść bezpośrednio do modułu `Stack`:
 ```haskell
-halibut :: (Integral s, Stack s m) => m -> m
-halibut stack
-  | i <= 0     = copy (negate i) stack'
-  | otherwise  = move i stack'
-    where 
-      (symbol, stack') = pop1 stack
-      i = fromIntegral symbol
+-- Stack instructions
 
-move :: Stack s m => Index -> m -> m
-move i stack = tops <> middles <> bottoms where
-  (middles, stack')  = splitAt' i stack
-  (tops, bottoms)    = splitAt' 1 stack'
+halibut :: (Integral e , Stack e c) => c -> c
+halibut c
+  | i <= 0    = copy (negate i) c'
+  | otherwise = move i c'
+    where
+      i = fromIntegral e
+      (e , c') = pop1 c
 
-swap :: Stack s m => m -> m
-swap stack = push2 symbol' symbol stack' where (symbol, symbol', stack') = pop2 stack
+move :: Stack e c => Index -> c -> c
+move i c = c1 <> c2 <> c3 where
+  (c1 , c3) = splitAt 1 c'
+  (c2 , c') = splitAt i c
 
-discard :: Stack s m => m -> m
-discard = drop' 1
+swap :: Stack e c => c -> c
+swap c = push2 e' e c' where (e , e', c') = pop2 c
 
-slide :: Stack s m => Index -> m -> m
-slide i stack = push1 symbol (drop' i stack') where (symbol, stack') = pop1 stack
+discard :: Stack e c => c -> c
+discard = drop 1
 
-dup :: Stack s m => m -> m
+slide :: Stack e c => Index -> c -> c
+slide i c = push1 e (drop i c') where (e , c') = pop1 c
+
+dup :: Stack e c => c -> c
 dup = copy 0
 
-copy :: Stack s m => Index -> m -> m
-copy i stack = push1 (select i stack) stack
+copy :: Stack e c => Index -> c -> c
+copy i c = push1 (c `index` i) c
+
+-- Push instructions
+
+pushChar1 :: (Num e , Stack e c) => Char -> c -> c
+pushChar1 = genericPush1 . ord
+
+genericPush1 :: (Integral v , Num e , Stack e c) => v -> c -> c
+genericPush1 = push1 . fromIntegral
+
+push1 ::  Stack e c => e -> c -> c
+push1 e = pushList [e]
+
+push2 :: Stack e c => e -> e -> c -> c
+push2 e e' = pushList [e , e']
+
+pushList :: Stack e c => [e] -> c -> c
+pushList es c = fromList es <> c
+
+----
+
+index :: (Stack e c) => c -> Int -> e
+index c i = check (c `indexMaybe` i) where
+  check (Just e) = e
+  check  Nothing = error $ "Empty stack " <> show c <> " index " <> show i
 ```
 
 Możemy też zdefiniować operacja arytmetyczne:
 ```haskell
-divMod :: (Integral s, Stack s m) => m -> m
+-- Arithmetic
+
+divMod :: (Integral e , Stack e c) => c -> c
 divMod = binaryOps [Mod , Div]
 
-sub :: (Integral s, Stack s m) => m -> m
+sub :: (Integral e , Stack e c) => c -> c
 sub = binaryOp Sub
 
-binaryOp :: (Integral s, Stack s m) => BinaryOperator -> m -> m
+binaryOp :: (Integral e , Stack e c) => BinaryOperator -> c -> c
 binaryOp op = binaryOps [op]
 
-binaryOps :: (Integral s, Stack s m) => [BinaryOperator] -> m -> m
-binaryOps ops stack = pushList (calculateOps symbol symbol' ops) stack' where (symbol, symbol', stack') = pop2 stack
+binaryOps :: (Integral e , Stack e c) => [BinaryOperator] -> c -> c
+binaryOps ops c = pushList (calculateOps e e' ops) c' where (e , e', c') = pop2 c
 ```
 
 W tym celu wydzielimy moduł `BinaryOperator`:
 ```haskell
 module HelVM.HelMA.Common.BinaryOperator where
 
-calculateOps :: Integral s => s -> s -> [BinaryOperator] -> [s]
-calculateOps symbol symbol' = map (calculateOp symbol symbol')
+calculateOps :: Integral a => a -> a -> [BinaryOperator] -> [a]
+calculateOps operand operand' = map (calculateOp operand operand')
 
-calculateOp :: Integral s => s -> s -> BinaryOperator -> s
-calculateOp symbol symbol' op = doBinary op symbol' symbol
+calculateOp :: Integral a => a -> a -> BinaryOperator -> a
+calculateOp operand operand' operation = doBinary operation operand' operand
 
-doBinary :: Integral s => BinaryOperator -> s -> s -> s
+doBinary :: Integral a => BinaryOperator -> a -> a -> a
 doBinary Add = (+)
 doBinary Sub = (-)
 doBinary Mul = (*)
@@ -169,12 +197,18 @@ doBinary Div = div
 doBinary Mod = mod
 
 data BinaryOperator = Add | Sub | Mul | Div | Mod
-  deriving (Eq, Show, Read)
+  deriving (Eq , Show , Read)
 ```
 
-## Jeden wielki Stack
 
 ## Dużo małych Klas Typów
+
+Mam wrażenie że ten kod dalej nie jest odpowiednio polimorficzny.
+Stworzyliśmy jeden wielki interfejs.
+Co jednak gdybyśmu chcieli klasyczny stos tylko z funkcjami push i empty?
+Musielibyśmy szystko pisać od początki.
+Nasze życie  byłoby o wiele łątwiejsze gdybyśmy mieli polimorficzne funkcje
+
 Jak to działa dla funktora, aplikatyw i monada?
 Każde dziedziczy z poprzedniego
 
@@ -183,7 +217,7 @@ Dzięki temu nie musimy pisać w kodzie `List.fmap`, `Seq.fmap` czy `IntMap.fmap
 tylko odpowiednia implementacja jest ustalana na podstawie parametrów.
 
 
-Miło by było mieć też polimorficzne funkcje  `drop`, `empty`, `fromList` , `splitAt`,
+Miło by było mieć też polimorficzne funkcje  [drop], [empty], [fromList] , [index] , [lookuo]  [splitAt],
 
 
 Tworzymy folder
