@@ -488,4 +488,3 @@ Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny 
 [StackUtil]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackUtil.hs
 
 [Functional dependencies vs. type families]: https://wiki.haskell.org/Functional_dependencies_vs._type_families
-
