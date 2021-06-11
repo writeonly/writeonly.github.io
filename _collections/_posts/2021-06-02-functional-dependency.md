@@ -3,41 +3,29 @@ title:    'Zależności funkcyjne w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell java
-lib:      relude rio
+lib:      classy-prelude relude rio
 projects: helma
 tags:     collection dependent-type functional-dependency multi-parameter-type-class type-class
 redirect_from:
-- type-family
-- haskell-eta/type-family
+- functional-dependency
+- haskell-eta/functional-dependency
 ---
 
 Spytano mnie raz,
 co jest trudnego w **[Haskellu]**,
 co jednocześnie jest łatwa w OOP.
-Stworzenie interfejsu kolekcji i danie możliwości implementowania go klientom
+Np. stworzenie interfejsu kolekcji i danie możliwości implementowania go klientom-użytkownikom.
+W tym celu potrzebujemy [klasę typu] od dwóch parametrów.
+Ale żeby mieć dobry interfejs, to nie wystarczy.
+O czym się przekonaliśmy w artykule [pattern-matching].
 
-Klasa typu od dwóch parametrów
+Okazuje się,
+że tego,
+czego nam brakowało to [Zależności Funkcyjne] (ang. *Functional Dependency*).
 
+## Składnia Zależności Funkcyjnych
 
-
-Próbowałem, wyszło źle o czym jest w [pattern-matching]
-
-Okazało się że potrzebuje Functional Dependency.
-
-Trzeba uważać, bo to początek typów zależnych
-Funkcje zależne są początkiem do typów zależnych.
-
-https://wiki.haskell.org/Dependent_type - typy zależne
-https://en.wikipedia.org/wiki/Dependent_type
-
-
-Główna różnica miedzy nimi jest taka że algebraiczne typy danych są zamknięte (wszystkie implementacje muszą być w jednym miejscu),
-a rodziny typów są otwarte (można dodawać nowe implementacje w nowych plikach)
-
-## Składnia
-
-
-
+Poszukując przykładu interfejsu dla kolekcji można trafić na taki przykład [Zależności Funkcyjnych]:
 ```haskell
 class Collects e ce | ce -> e where
   empty  :: ce
@@ -45,8 +33,10 @@ class Collects e ce | ce -> e where
   member :: e -> ce -> Bool
   toList :: ce -> [e]
 ```
+Czyli jedyna nowość to `| ce -> e `.
+Zapis ten pozwala na uzależnienie jednego typu od drugiego.
 
-implementacja wygląda jak implementacja klasy typu dla dwóch parametrów:
+Implementacja wygląda jak implementacja [klasy typu] dla dwóch parametrów:
 ```haskell
 instance Eq e => Collects e [e] where
   empty           = []
@@ -58,11 +48,9 @@ instance Eq e => Collects e [e] where
   toList l        = l
 ```
 
+## Zależności Funkcyjnych w HelMA
 
-## Klasy typów w HelMA
-
-Głowna zmiana polegała na dodaniu `| c -> e` do klasy typu [Stack].
-
+Główna zmiana polegała na dodaniu `| c -> e` do klasy typu [Stack].
 ```haskell
 class (Semigroup c , Show c) => Stack e c | c -> e where
   fromList   :: [e] -> c
@@ -76,6 +64,7 @@ class (Semigroup c , Show c) => Stack e c | c -> e where
   indexMaybe = flip lookup
   lookup     = flip indexMaybe
 ```
+Przy okazji poprawiłem trochę sygnatury metod.
 
 Musimy też poprawić nasze implementacje (instancje):
 ```haskell
@@ -200,27 +189,24 @@ data BinaryOperator = Add | Sub | Mul | Div | Mod
 
 ## Dużo małych Klas Typów
 
-Mam wrażenie że ten kod dalej nie jest odpowiednio polimorficzny.
+Mam wrażenie,
+że ten kod dalej nie jest odpowiednio polimorficzny.
 Stworzyliśmy jeden wielki interfejs.
-Co jednak gdybyśmu chcieli klasyczny stos tylko z funkcjami push i empty?
-Musielibyśmy szystko pisać od początki.
-Nasze życie  byłoby o wiele łątwiejsze gdybyśmy mieli polimorficzne funkcje
+Co,
+jednak gdybyśmy chcieli stworzyć klasyczny stos tylko z funkcjami `push` i `pop`?
+Musielibyśmy wszystko pisać od początku.
+Programowanie byłoby o wiele łatwiejsze,
+gdybyśmy mieli polimorficzne funkcje dla kolekcji podobne,
+tak jak mamy polimorficzną metodę `fmap` zdefiniowaną w Funktorze.
 
-Jak to działa dla funktora, aplikatyw i monada?
-Każde dziedziczy z poprzedniego
+Dzięki polimorfizmowi nie musimy pisać w kodzie `List.fmap`, `Seq.fmap` czy `IntMap.fmap`,
+tylko wybór odpowiedniej implementacji jest ustalana na podstawie parametru.
+Miło by było mieć tak samo polimorficzne metody  `drop`, `empty`, `fromList`, `index`, `insert`, `lookup` i `splitAt`.
 
-Funktor posiada metodę (funkcję polimorficzną) `fmap`.
-Dzięki temu nie musimy pisać w kodzie `List.fmap`, `Seq.fmap` czy `IntMap.fmap`,
-tylko odpowiednia implementacja jest ustalana na podstawie parametrów.
-
-
-Miło by było mieć też polimorficzne funkcje  [drop], [empty], [fromList], [index], [insert], [lookup], [splitAt].
-
-
-Tworzymy folder Collections i umieszczamy w nim następujące [Klasy Typów]:
+W tym celu tworzymy folder `HelMA.Common.Collections` i umieszczamy w nim następujące [Klasy Typów]:
 
 [FromList] z metodami `fromList` i `empty`,
-żeby tworzyć kolekcję:
+żeby tworzyć kolekcję na podstawie listy:
 ```haskell
 module HelVM.HelMA.Common.Collections.FromList where
 
@@ -252,7 +238,7 @@ instance FromList e (IntMap e) where
 ```
 
 [Lookup] z metodą `lookup`,
-żeby wyszukiwać w kolekcji:
+żeby wyszukiwać elementy w kolekcji po indeksie:
 ```haskell
 module HelVM.HelMA.Common.Collections.Lookup where
 
@@ -281,7 +267,7 @@ instance Lookup e (IntMap e) where
 ```
 
 [Insert] z metodą `insert`,
-żeby wstawiać do kolekcji:
+żeby wstawiać elementy do kolekcji:
 ```haskell
 module HelVM.HelMA.Common.Collections.Insert where
 
@@ -340,7 +326,9 @@ instance Show e => Pop2 e (Seq e) where
   pop2               c  = error $ "Empty  " <> show c
 ```
 
-Importujemy wszystkie potrzebne metody:
+Plus jeszcze [Drop] i [Pop] z nudną implementacją.
+
+Teraz importujemy wszystkie potrzebne metody do modułu `Stack`:
 ```haskell
 import HelVM.HelMA.Common.Collections.Drop
 import HelVM.HelMA.Common.Collections.FromList
@@ -349,12 +337,12 @@ import HelVM.HelMA.Common.Collections.Pop
 import HelVM.HelMA.Common.Collections.SplitAt
 ```
 
-Musimy jeszcze ukryć monomorficzne funkcje dla list:
+Musimy jeszcze ukryć przeszkadzające nam funkcje:
 ```haskell
 import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 ```
 
-Niby osiągneliśmy cel,
+Niby osiągnęliśmy cel,
 jednak pisanie wysokopoziomowych metod do jakaś tragedia:
 ```haskell
 -- Stack instructions
@@ -405,28 +393,29 @@ pushList :: (Semigroup c , FromList e c) => [e] -> c -> c
 pushList es c = fromList es <> c
 ```
 
-Naprawdę sygnaturą metody `halibut :: (Show c , Semigroup c , Integral e , FromList e c , Lookup e c , SplitAt e c , Pop1 e c) => c -> c` można by straszyć dzieci.
+Naprawdę sygnaturą metody `halibut :: (Show c , Semigroup c , Integral e , FromList e c , Lookup e c , SplitAt e c , Pop1 e c) => c -> c` można straszyć dzieci.
 
 Cała implementacja jest w pliku [StackUtil].
 Czemu `Util`?
 Bo nie mamy to żadnego wspólnego interfejsu,
-tylko zbiór przypadkowych metod.
+tylko zbiór przypadkowych metod :(
 
-## Wszystkie metody w jednej klasie typu z jedną implementacją
+## Wszystkie metody w jednej Klasie Typu z jedną implementacją
 Pomysł jest prosty.
-Za pomocą małych klas typów zdefiniujemy nową implementację klasy typu `Stack`.
+Za pomocą małych Klas Typów zdefiniujemy nową implementację Klasy Typu `Stack`.
 
-Najpierw ukryjmy domyślne importowane funkcje dla listy:
-```haskell
-import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
-```
-Najpierw importujemy wszystkie potrzebne funkcje do `I`:
+Najpierw importujemy wszystkie potrzebne funkcje do `I` (jak `Implementation`):
 ```haskell
 import qualified HelVM.HelMA.Common.Collections.Drop     as I
 import qualified HelVM.HelMA.Common.Collections.FromList as I
 import qualified HelVM.HelMA.Common.Collections.Lookup   as I
 import qualified HelVM.HelMA.Common.Collections.Pop      as I
 import qualified HelVM.HelMA.Common.Collections.SplitAt  as I
+```
+
+I oczywiście ukryjmy domyślne importowane funkcje:
+```haskell
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 ```
 
 Następnie tworzymy naszą [Klasę Typów]:
@@ -465,12 +454,12 @@ Bo przypomina to [Javową] patologię z Serwisami z jedną implementacją `*Serv
 ## Sumowanie ograniczeń
 
 Gdy już byłem zdołowany,
-że zostawię projekt z bezsensowną klasą typu,
+że zostawię projekt z bezsensowną [Klasą Typu],
 z jedną implementacją to przypadkiem przeczytałem,
 że w [Haskellu] ograniczenia rodzai mogą być elementami pierwszego rodzaju.
 Wystarczy łączyć rozszerzenie `{-#LANGUAGE ConstraintKinds#-}`.
 
-Po włączeniu rozszerzenia importujemy wszystkie potrzebne nam motody:
+Po włączeniu rozszerzenia importujemy wszystkie potrzebne nam metody:
 ```haskell
 import HelVM.HelMA.Common.Collections.Drop
 import HelVM.HelMA.Common.Collections.FromList
@@ -478,7 +467,8 @@ import HelVM.HelMA.Common.Collections.Lookup
 import HelVM.HelMA.Common.Collections.Pop
 import HelVM.HelMA.Common.Collections.SplitAt
 ```
-I ponownie ukrywamy funkcje dla list:
+
+I ponownie ukrywamy funkcje przeszkadzające nam funkcje:
 ```haskell
 import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 ```
@@ -492,14 +482,21 @@ Właśnie zsumowaliśmy wszystkie ograniczenia do jednego typu `Stack`.
 I teraz można żyć.
 I teraz da się pracować.
 
-Cała implementacja jest w pliku [StackConst] (`Const` jak `Constraint`).
+Cały kod jest w pliku [StackConst] (`Const` jak `Constraint`).
 
 ## Podsumowanie
 
 Stworzenie interfejsu kolekcji w **[Haskellu]** nie jest jednak trudne.
 Wystarczy wiedzieć,
 czego się szuka i znaleźć to :)
-Klasy typów są niesamowity narzędziem pozwalającym pisać bardzo elastyczny i polimorficzny kod.
+[zależności Funkcyjne] są niesamowity narzędziem pozwalającym pisać bardzo elastyczny i polimorficzny kod.
+
+Kod jednak dalej nie jest idealny.
+Co można jeszcze poprawić?
+* Przepisać [Relude] na [RIO] - uniknie się w ten sposób importów ukrywających.
+* Przepisać [zależności funkcyjne] na [rodziny typów] - rodziny typów są bardziej restrykcyjne i popularniejsze.
+* Użyć ograniczenia istniejące już w [Haskellu] jak `IsList`.
+* Użyć biblioteki polimorficznych importów jak [ClassyPrelude].
 
 [Pattern Matching]:            /pattern-matching
 
@@ -516,13 +513,17 @@ Klasy typów są niesamowity narzędziem pozwalającym pisać bardzo elastyczny 
 [Wieloparametrowa klasa typu]: /tags/multi-parameter-type-class
 [Zalezności funkcyjne]:        /tags/functional-dependencies
 
-[Lookup]:        https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Collections/Lookup.hs
+[Drop]:       https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Drop.hs
+[Insert]:     https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Insert.hs
+[SplitAt]:    https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/SplitAt.hs
+[Pop]:        https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Pop.hs
+[Push]:       https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Push.hs
 
-[RAM]:        https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/RAM.hs
-[Stack]:      https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/Stack.hs
-[StackConst]: https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackConst.hs
-[StackImpl]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackImpl.hs
-[StackUtil]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackUtil.hs
+[RAM]:        https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/RAM.hs
+[Stack]:      https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/Stack.hs
+[StackConst]: https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/StackConst.hs
+[StackImpl]:  https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/StackImpl.hs
+[StackUtil]:  https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/StackUtil.hs
 
 [constraint-kinds]:                          http://dev.stephendiehl.com/hask/#constraint-kinds
 [Functional dependencies vs. type families]: https://wiki.haskell.org/Functional_dependencies_vs._type_families
