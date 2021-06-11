@@ -77,7 +77,7 @@ class (Semigroup c , Show c) => Stack e c | c -> e where
   lookup     = flip indexMaybe
 ```
 
-Musimy też poprawić nasze implementacje (instancje)
+Musimy też poprawić nasze implementacje (instancje):
 ```haskell
 instance Show e => Stack e [e] where
   fromList             = id
@@ -100,12 +100,10 @@ instance Show e => Stack e (Seq e) where
   pop1                   c = error $ "Empty c " <> show c
   pop2    (e :<| e' :<| c) = (e , e', c)
   pop2                  c  = error $ "Empty c " <> show c
-
 ```
 
-
 Od tej pory nie potrzebujemy już rzutować elementu stosu na `Symbol`,
-a więc wiele metod pomocniczych do manipulacji stosem możemy przenieść bezpośrednio do modułu `Stack`:
+a więc wiele metod pomocniczych do manipulacji stosem możemy przenieść bezpośrednio do modułu [Stack]:
 ```haskell
 -- Stack instructions
 
@@ -179,7 +177,7 @@ binaryOps :: (Integral e , Stack e c) => [BinaryOperator] -> c -> c
 binaryOps ops c = pushList (calculateOps e e' ops) c' where (e , e', c') = pop2 c
 ```
 
-W tym celu wydzielimy moduł `BinaryOperator`:
+W tym celu wydzielimy moduł [BinaryOperator]:
 ```haskell
 module HelVM.HelMA.Common.BinaryOperator where
 
@@ -200,7 +198,6 @@ data BinaryOperator = Add | Sub | Mul | Div | Mod
   deriving (Eq , Show , Read)
 ```
 
-
 ## Dużo małych Klas Typów
 
 Mam wrażenie że ten kod dalej nie jest odpowiednio polimorficzny.
@@ -220,8 +217,10 @@ tylko odpowiednia implementacja jest ustalana na podstawie parametrów.
 Miło by było mieć też polimorficzne funkcje  [drop], [empty], [fromList], [index], [insert], [lookup], [splitAt].
 
 
-Tworzymy folder Collections i umieszczemy wnim następujące [Klasy Typów]:
+Tworzymy folder Collections i umieszczamy w nim następujące [Klasy Typów]:
 
+[FromList] z metodami `fromList` i `empty`,
+żeby tworzyć kolekcję:
 ```haskell
 module HelVM.HelMA.Common.Collections.FromList where
 
@@ -251,8 +250,9 @@ instance FromList e (IntMap e) where
   fromList = intMapFromList
   empty = IntMap.empty
 ```
-żeby tworzyć kolekcję.
 
+[Lookup] z metodą `lookup`,
+żeby wyszukiwać w kolekcji:
 ```haskell
 module HelVM.HelMA.Common.Collections.Lookup where
 
@@ -279,8 +279,9 @@ instance Lookup e (Seq e) where
 instance Lookup e (IntMap e) where
   lookup = IntMap.lookup
 ```
-Żeby wyszukiwać w kolekcji.
 
+[Insert] z metodą `insert`,
+żeby wstawiać do kolekcji:
 ```haskell
 module HelVM.HelMA.Common.Collections.Insert where
 
@@ -308,8 +309,9 @@ instance Default e => Insert e (Seq e) where
 instance Insert e (IntMap e) where
   insert = IntMap.insert
 ```
-Żeby zapisać.
 
+[Pop] z metodą `pop1` i `pop2`,
+żeby pobierać ze szczytu stosu:
 ```haskell
 module HelVM.HelMA.Common.Collections.Pop where
 
@@ -337,7 +339,6 @@ instance Show e => Pop2 e (Seq e) where
   pop2 (e :<| e' :<| c) = (e , e', c)
   pop2               c  = error $ "Empty  " <> show c
 ```
-Żeby pobrać wartość ze stosu.
 
 Importujemy wszystkie potrzebne metody:
 ```haskell
@@ -348,12 +349,13 @@ import HelVM.HelMA.Common.Collections.Pop
 import HelVM.HelMA.Common.Collections.SplitAt
 ```
 
-Musimy jeszcze ukryć monomorficzne odpowiedniki dla list:
+Musimy jeszcze ukryć monomorficzne funkcje dla list:
 ```haskell
 import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 ```
 
-Jednak pisanie wysokopoziomowych metod do jakaś tragedia:
+Niby osiągneliśmy cel,
+jednak pisanie wysokopoziomowych metod do jakaś tragedia:
 ```haskell
 -- Stack instructions
 
@@ -405,14 +407,19 @@ pushList es c = fromList es <> c
 
 Naprawdę sygnaturą metody `halibut :: (Show c , Semigroup c , Integral e , FromList e c , Lookup e c , SplitAt e c , Pop1 e c) => c -> c` można by straszyć dzieci.
 
+Cała implementacja jest w pliku [StackUtil].
+Czemu `Util`?
+Bo nie mamy to żadnego wspólnego interfejsu,
+tylko zbiór przypadkowych metod.
 
 ## Wszystkie metody w jednej klasie typu z jedną implementacją
+Pomysł jest prosty.
+Za pomocą małych klas typów zdefiniujemy nową implementację klasy typu `Stack`.
 
-Najpier ukryjmy domyślne importowane funkcje dla listy:
+Najpierw ukryjmy domyślne importowane funkcje dla listy:
 ```haskell
 import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 ```
-
 Najpierw importujemy wszystkie potrzebne funkcje do `I`:
 ```haskell
 import qualified HelVM.HelMA.Common.Collections.Drop     as I
@@ -448,28 +455,32 @@ instance (Show c , Semigroup c , I.Drop e c , I.FromList e c , I.Lookup e c , I.
   pop2     = I.pop2
 ```
 
+Niestety musimy dodać rozszerzenie kompilatora `{-#LANGUAGE UndecidableInstances#-}`,
+co nie jest fajne.
+
 Cała implementacja jest w pliku [StackImpl].
 Czemu `*Impl`?
-Bo przypomina to [Javową] patologię z Serwisami z jedną implementacją `*ServiceImpl`
+Bo przypomina to [Javową] patologię z Serwisami z jedną implementacją `*ServiceImpl`.
 
 ## Sumowanie ograniczeń
 
-Gdy już byłem zdołowany że zostanę z beznensowną Klasą Typu z jedną implementacją
-przypadkiem przeczytałem że w Haskellu ograniczenia rodzai mogą być elementami pierwszego rodzaju.
-Wystarczy łączyć rozszeżenie
+Gdy już byłem zdołowany,
+że zostawię projekt z bezsensowną klasą typu,
+z jedną implementacją to przypadkiem przeczytałem,
+że w [Haskellu] ograniczenia rodzai mogą być elementami pierwszego rodzaju.
+Wystarczy łączyć rozszerzenie `{-#LANGUAGE ConstraintKinds#-}`.
 
-[constraint-kinds]
-
-Po włączeniu rozszeżenia importujemy wszystkie potrzebne nam funkcje:
+Po włączeniu rozszerzenia importujemy wszystkie potrzebne nam motody:
 ```haskell
-
-import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
-
 import HelVM.HelMA.Common.Collections.Drop
 import HelVM.HelMA.Common.Collections.FromList
 import HelVM.HelMA.Common.Collections.Lookup
 import HelVM.HelMA.Common.Collections.Pop
 import HelVM.HelMA.Common.Collections.SplitAt
+```
+I ponownie ukrywamy funkcje dla list:
+```haskell
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 ```
 
 A następnie piszemy jedną magiczną linię:
@@ -486,13 +497,9 @@ Cała implementacja jest w pliku [StackConst] (`Const` jak `Constraint`).
 ## Podsumowanie
 
 Stworzenie interfejsu kolekcji w **[Haskellu]** nie jest jednak trudne.
-Wystarczy wiedzieć czego się szuka i znaleźć to :)
-
-
-
-Klasy typów są niesamowity narzędziem pozwanającym pisać bardzo elastyczny i polimorficzny kod.
-
-
+Wystarczy wiedzieć,
+czego się szuka i znaleźć to :)
+Klasy typów są niesamowity narzędziem pozwalającym pisać bardzo elastyczny i polimorficzny kod.
 
 [Pattern Matching]:            /pattern-matching
 
