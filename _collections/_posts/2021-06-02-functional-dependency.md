@@ -2,7 +2,7 @@
 title:    'Zależności funkcyjne w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
-langs:    haskell
+langs:    haskell java
 lib:      relude rio
 projects: helma
 tags:     collection dependent-type functional-dependency multi-parameter-type-class type-class
@@ -403,13 +403,18 @@ pushList :: (Semigroup c , FromList e c) => [e] -> c -> c
 pushList es c = fromList es <> c
 ```
 
+Naprawdę sygnaturą metody `halibut :: (Show c , Semigroup c , Integral e , FromList e c , Lookup e c , SplitAt e c , Pop1 e c) => c -> c` można by straszyć dzieci.
 
-## Jedna implementacja
+
+## Wszystkie metody w jednej klasie typu z jedną implementacją
+
+Najpier ukryjmy domyślne importowane funkcje dla listy:
+```haskell
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
+```
 
 Najpierw importujemy wszystkie potrzebne funkcje do `I`:
 ```haskell
-import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
-
 import qualified HelVM.HelMA.Common.Collections.Drop     as I
 import qualified HelVM.HelMA.Common.Collections.FromList as I
 import qualified HelVM.HelMA.Common.Collections.Lookup   as I
@@ -417,7 +422,7 @@ import qualified HelVM.HelMA.Common.Collections.Pop      as I
 import qualified HelVM.HelMA.Common.Collections.SplitAt  as I
 ```
 
-Nastepnie tworzymy naszą [Klasę Typów] z jedną implementacją (instancją):
+Następnie tworzymy naszą [Klasę Typów]:
 ```haskell
 class (Semigroup c , Show c) => Stack e c | c -> e where
   fromList :: [e] -> c
@@ -428,7 +433,10 @@ class (Semigroup c , Show c) => Stack e c | c -> e where
   drop     :: Index -> c -> c
   pop1     :: c -> (e , c)
   pop2     :: c -> (e , e , c)
+```
 
+I jedną implementację (instancję) dla niej:
+```haskell
 instance (Show c , Semigroup c , I.Drop e c , I.FromList e c , I.Lookup e c , I.SplitAt e c , I.Pop1 e c , I.Pop2 e c) => Stack e c where
   fromList = I.fromList
   empty    = I.empty
@@ -442,7 +450,7 @@ instance (Show c , Semigroup c , I.Drop e c , I.FromList e c , I.Lookup e c , I.
 
 Cała implementacja jest w pliku [StackImpl].
 Czemu `*Impl`?
-Bo przypomina to Javową patologię z Serwisami z jedną implementacją `*ServiceImpl`
+Bo przypomina to [Javową] patologię z Serwisami z jedną implementacją `*ServiceImpl`
 
 ## Sumowanie ograniczeń
 
