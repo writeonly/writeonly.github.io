@@ -3,16 +3,12 @@ title:    'Zależności funkcyjne w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
-libs:     rio
 projects: helma
-eso:      eta whitespace
-tags:     collection dependencies-types functional-dependencies multi-parameter-type-class type-class
+tags:     collection dependent-type functional-dependency multi-parameter-type-class type-class
 redirect_from:
 - type-family
 - haskell-eta/type-family
 ---
-
-Funkcje zależne
 
 Spytano mnie raz,
 co jest trudnego w **[Haskellu]**,
@@ -27,10 +23,6 @@ Próbowałem, wyszło źle o czym jest w [pattern-matching]
 
 Okazało się że potrzebuje Functional Dependency.
 
-
-
-https://cth.altocumulus.org/~hallgren/Papers/hallgren.pdf
-
 Trzeba uważać, bo to początek typów zależnych
 Funkcje zależne są początkiem do typów zależnych.
 
@@ -43,7 +35,7 @@ a rodziny typów są otwarte (można dodawać nowe implementacje w nowych plikac
 
 ## Składnia
 
-https://www.fpcomplete.com/haskell/tutorial/fundeps/
+
 
 ```haskell
 class Collects e ce | ce -> e where
@@ -68,7 +60,7 @@ instance Eq e => Collects e [e] where
 
 ## Klasy typów w HelMA
 
-Głowna zmiana polegała na dodaniu `| m -> s` do klasy typu `Stack`.
+Głowna zmiana polegała na dodaniu `| m -> s` do klasy typu [Stack].
 
 ```haskell
 class (Semigroup m, Show m) => Stack s m | m -> s where
@@ -474,27 +466,26 @@ Wystarczy wiedzieć czego się szuka i znaleźć to :)
 
 Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny i polimorficzny kod.
 
-https://hackage.haskell.org/package/keys-3.12.1/docs/Data-Key.html#v:index
 
 
+[Pattern Matching]:            /pattern-matching
 
-[Pattern Matching]:           /pattern-matching
+[Haskell]:                     /langs/haskell
+[Haskella]:                    /langs/haskell
+[Haskellu]:                    /langs/haskell
 
-[Haskell]:                    /langs/haskell
-[Haskella]:                   /langs/haskell
-[Haskellu]:                   /langs/haskell
+[ClassyPrelude]:               /libs/classy-prelude
 
 [Klasę Typów]:                 /tags/type-class
-[Typy zależne]:                /tags/dependencies-types
+[Typy zależne]:                /tags/dependent-types
 [Wieloparametrowa klasa typu]: /tags/multi-parameter-type-class
 [Zalezności funkcyjne]:        /tags/functional-dependencies
 
-[RAM]:        https://github.com/helvm/helpa
-[Stack]:      https://github.com/helvm/helpa
-[StackConst]: https://github.com/helvm/helpa
-[StackImpl]:  https://github.com/helvm/helpa
-[StackUtil]:  https://github.com/helvm/helpa
+[RAM]:        https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/RAM.hs
+[Stack]:      https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/Stack.hs
+[StackConst]: https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackConst.hs
+[StackImpl]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackImpl.hs
+[StackUtil]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackUtil.hs
 
-
-https://wiki.haskell.org/Functional_dependencies_vs._type_families
+[Functional dependencies vs. type families]: https://wiki.haskell.org/Functional_dependencies_vs._type_families
 
