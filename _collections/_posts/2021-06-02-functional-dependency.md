@@ -3,6 +3,7 @@ title:    'Zależności funkcyjne w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
+lib:      relude rio
 projects: helma
 tags:     collection dependent-type functional-dependency multi-parameter-type-class type-class
 redirect_from:
@@ -60,56 +61,46 @@ instance Eq e => Collects e [e] where
 
 ## Klasy typów w HelMA
 
-Głowna zmiana polegała na dodaniu `| m -> s` do klasy typu [Stack].
+Głowna zmiana polegała na dodaniu `| c -> e` do klasy typu [Stack].
 
 ```haskell
-class (Semigroup m, Show m) => Stack s m | m -> s where
-  empty    :: m
-  lookup   :: Index -> m -> Maybe s
-  splitAt  :: Index -> m -> (m, m)
-  drop     :: Index -> m -> m
-  pushList :: [s] -> m -> m
-  push1    :: s -> m -> m
-  push2    :: s -> s -> m -> m
-  pop1     :: m -> (s, m)
-  pop2     :: m -> (s, s, m)
-  push1  symbol         = pushList [symbol]
-  push2  symbol symbol' = pushList [symbol , symbol']
-  splitAt' :: Index -> m -> (m, m)
-  drop'    :: Index -> m -> m
-  splitAt'  = HelVM.HelMA.Common.Memories.Stack.splitAt
-  drop'     = HelVM.HelMA.Common.Memories.Stack.drop
+class (Semigroup c , Show c) => Stack e c | c -> e where
+  fromList   :: [e] -> c
+  empty      :: c
+  indexMaybe :: c -> Index -> Maybe e
+  lookup     :: Index -> c -> Maybe e
+  splitAt    :: Index -> c -> (c , c)
+  drop       :: Index -> c -> c
+  pop1       :: c -> (e , c)
+  pop2       :: c -> (e , e , c)
+  indexMaybe = flip lookup
+  lookup     = flip indexMaybe
 ```
-Przepraszam za brzydkie `splitAt'` i `drop'`.
-Mam nadzieję że gdy przemigrujemy z [relude] na [rio] przestaną być one potrzebne.
 
 Musimy też poprawić nasze implementacje (instancje)
 ```haskell
-instance Show s => Stack s [s] where
-  empty                              = []
-  lookup            i         stack  = stack !!? i
-  splitAt           i         stack  = Prelude.splitAt i stack
-  drop              i         stack  = Prelude.drop i stack
-  pushList          symbols   stack  = symbols <> stack
---  push1             symbol    stack  = symbol: stack
---  push2    symbol   symbol'   stack  = symbol: symbol': stack
-  pop1             (symbol  : stack) = (symbol, stack)
-  pop1                        stack  = error $ "Empty stack " <> show stack
-  pop2    (symbol : symbol' : stack) = (symbol, symbol', stack)
-  pop2                        stack  = error $ "Empty stack " <> show stack
+instance Show e => Stack e [e] where
+  fromList             = id
+  empty                = []
+  lookup        i   c  = c !!? i
+  splitAt       i   c  = List.splitAt i c
+  drop          i   c  = List.drop i c
+  pop1         (e : c) = (e , c)
+  pop1              c  = error $ "Empty c " <> show c
+  pop2    (e : e' : c) = (e , e', c)
+  pop2              c  = error $ "Empty c " <> show c
 
-instance Show s => Stack s (Seq s) where
-  empty                                  = Seq.fromList []
-  lookup              i           stack  = Seq.lookup i stack
-  splitAt             i           stack  = Seq.splitAt i stack
-  drop                i           stack  = Seq.drop i stack
-  pushList            symbols     stack  = Seq.fromList symbols >< stack
---  push1               symbol      stack  = symbol <| stack
---  push2    symbol     symbol'     stack  = symbol <| symbol' <| stack
-  pop1               (symbol :<|  stack) = (symbol, stack)
-  pop1                            stack  = error $ "Empty stack " <> show stack
-  pop2    (symbol :<| symbol' :<| stack) = (symbol, symbol', stack)
-  pop2                            stack  = error $ "Empty stack " <> show stack
+instance Show e => Stack e (Seq e) where
+  fromList                 = Seq.fromList
+  empty                    = Seq.empty
+  lookup         i      c  = Seq.lookup i c
+  splitAt        i      c  = Seq.splitAt i c
+  drop           i      c  = Seq.drop i c
+  pop1          (e :<|  c) = (e , c)
+  pop1                   c = error $ "Empty c " <> show c
+  pop2    (e :<| e' :<| c) = (e , e', c)
+  pop2                  c  = error $ "Empty c " <> show c
+
 ```
 
 
@@ -310,7 +301,7 @@ instance Show e => Pop2 e (Seq e) where
   pop2               c  = error $ "Empty  " <> show c
 ```
 
-Importujemy wszystkie potrzebne moetody
+Importujemy wszystkie potrzebne metody:
 ```haskell
 import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
 
@@ -455,7 +446,7 @@ Właśnie zsumowaliśmy wszystkie ograniczenia do jednego typu `Stack`.
 I teraz można żyć.
 I teraz da się pracować.
 
-Cała implementacja jest w pliku [StackConst] ( `Const` jak `Constraint`).
+Cała implementacja jest w pliku [StackConst] (`Const` jak `Constraint`).
 
 ## Podsumowanie
 
@@ -475,11 +466,15 @@ Klasy typów są niesamowity narzędziem pozwanającym pisać bardzo elastyczny 
 [Haskellu]:                    /langs/haskell
 
 [ClassyPrelude]:               /libs/classy-prelude
+[Relude]:                      /libs/relude
+[RIO]:                         /libs/rio
 
 [Klasę Typów]:                 /tags/type-class
 [Typy zależne]:                /tags/dependent-types
 [Wieloparametrowa klasa typu]: /tags/multi-parameter-type-class
 [Zalezności funkcyjne]:        /tags/functional-dependencies
+
+[Lookup]:        https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Collections/Lookup.hs
 
 [RAM]:        https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/RAM.hs
 [Stack]:      https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/Stack.hs
