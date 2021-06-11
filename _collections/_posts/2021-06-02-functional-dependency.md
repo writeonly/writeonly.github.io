@@ -432,7 +432,7 @@ Gdy już byłem zdołowany że zostanę z beznensowną Klasą Typu z jedną impl
 przypadkiem przeczytałem że w Haskellu ograniczenia rodzai mogą być elementami pierwszego rodzaju.
 Wystarczy łączyć rozszeżenie
 
-http://dev.stephendiehl.com/hask/#constraint-kinds
+[constraint-kinds]
 
 Po włączeniu rozszeżenia importujemy wszystkie potrzebne nam funkcje:
 ```haskell
@@ -455,16 +455,16 @@ Właśnie zsumowaliśmy wszystkie ograniczenia do jednego typu `Stack`.
 I teraz można żyć.
 I teraz da się pracować.
 
-Cała implementacja jest w pliku [StackConst] (jak ograniczenia).
+Cała implementacja jest w pliku [StackConst] ( `Const` jak `Constraint`).
 
 ## Podsumowanie
 
-Stworzenie interfejsu kolekcji  Haskellu nie jest jednak trudne.
+Stworzenie interfejsu kolekcji w **[Haskellu]** nie jest jednak trudne.
 Wystarczy wiedzieć czego się szuka i znaleźć to :)
 
 
 
-Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny i polimorficzny kod.
+Klasy typów są niesamowity narzędziem pozwanającym pisać bardzo elastyczny i polimorficzny kod.
 
 
 
@@ -487,4 +487,5 @@ Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny 
 [StackImpl]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackImpl.hs
 [StackUtil]:  https://github.com/helvm/helma/blob/master/hs/src/HelVM/HelMA/Common/Memories/StackUtil.hs
 
+[constraint-kinds]:                          http://dev.stephendiehl.com/hask/#constraint-kinds
 [Functional dependencies vs. type families]: https://wiki.haskell.org/Functional_dependencies_vs._type_families
