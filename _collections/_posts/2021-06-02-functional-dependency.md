@@ -220,7 +220,7 @@ tylko odpowiednia implementacja jest ustalana na podstawie parametrów.
 Miło by było mieć też polimorficzne funkcje  [drop], [empty], [fromList], [index], [insert], [lookup], [splitAt].
 
 
-Tworzymy folder
+Tworzymy folder Collections i umieszczemy wnim następujące [Klasy Typów]:
 
 ```haskell
 module HelVM.HelMA.Common.Collections.FromList where
@@ -251,6 +251,7 @@ instance FromList e (IntMap e) where
   fromList = intMapFromList
   empty = IntMap.empty
 ```
+żeby tworzyć kolekcję.
 
 ```haskell
 module HelVM.HelMA.Common.Collections.Lookup where
@@ -278,6 +279,7 @@ instance Lookup e (Seq e) where
 instance Lookup e (IntMap e) where
   lookup = IntMap.lookup
 ```
+Żeby wyszukiwać w kolekcji.
 
 ```haskell
 module HelVM.HelMA.Common.Collections.Insert where
@@ -306,6 +308,7 @@ instance Default e => Insert e (Seq e) where
 instance Insert e (IntMap e) where
   insert = IntMap.insert
 ```
+Żeby zapisać.
 
 ```haskell
 module HelVM.HelMA.Common.Collections.Pop where
@@ -334,11 +337,10 @@ instance Show e => Pop2 e (Seq e) where
   pop2 (e :<| e' :<| c) = (e , e', c)
   pop2               c  = error $ "Empty  " <> show c
 ```
+Żeby pobrać wartość ze stosu.
 
 Importujemy wszystkie potrzebne metody:
 ```haskell
-import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
-
 import HelVM.HelMA.Common.Collections.Drop
 import HelVM.HelMA.Common.Collections.FromList
 import HelVM.HelMA.Common.Collections.Lookup
@@ -346,22 +348,13 @@ import HelVM.HelMA.Common.Collections.Pop
 import HelVM.HelMA.Common.Collections.SplitAt
 ```
 
-Jednak pisanie kolejnych metod do jakaś tragedia:
+Musimy jeszcze ukryć monomorficzne odpowiedniki dla list:
 ```haskell
--- Arithmetic
+import Prelude hiding (divMod , drop , empty , fromList , splitAt , swap)
+```
 
-divMod :: (Integral e , Semigroup c , FromList e c , Pop2 e c) => c -> c
-divMod = binaryOps [Mod , Div]
-
-sub :: (Integral e , Semigroup c , FromList e c , Pop2 e c) => c -> c
-sub = binaryOp Sub
-
-binaryOp :: (Integral e , Semigroup c , FromList e c , Pop2 e c) => BinaryOperator -> c -> c
-binaryOp op = binaryOps [op]
-
-binaryOps :: (Integral e , Semigroup c , FromList e c , Pop2 e c) => [BinaryOperator] -> c -> c
-binaryOps ops c = pushList (calculateOps e e' ops) c' where (e , e', c') = pop2 c
-
+Jednak pisanie wysokopoziomowych metod do jakaś tragedia:
+```haskell
 -- Stack instructions
 
 halibut :: (Show c , Semigroup c , Integral e , FromList e c , Lookup e c , SplitAt e c , Pop1 e c) => c -> c
