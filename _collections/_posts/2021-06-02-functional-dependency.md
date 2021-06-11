@@ -217,7 +217,7 @@ Dzięki temu nie musimy pisać w kodzie `List.fmap`, `Seq.fmap` czy `IntMap.fmap
 tylko odpowiednia implementacja jest ustalana na podstawie parametrów.
 
 
-Miło by było mieć też polimorficzne funkcje  [drop], [empty], [fromList] , [index] , [lookuo]  [splitAt],
+Miło by było mieć też polimorficzne funkcje  [drop], [empty], [fromList], [index], [insert], [lookup], [splitAt].
 
 
 Tworzymy folder
