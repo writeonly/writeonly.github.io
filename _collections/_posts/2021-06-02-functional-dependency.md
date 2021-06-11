@@ -6,7 +6,7 @@ langs:    haskell
 libs:     rio
 projects: helma
 eso:      eta whitespace
-tags:     collection stack type-class type-family 
+tags:     collection dependencies-types functional-dependencies multi-parameter-type-class type-class
 redirect_from:
 - type-family
 - haskell-eta/type-family
@@ -23,15 +23,15 @@ Klasa typu od dwóch parametrów
 
 
 
-Próbowałem, wyszło źle o czym jest w https://writeonly.pl/haskell-eta/pattern-matching
+Próbowałem, wyszło źle o czym jest w [pattern-matching]
 
 Okazało się że potrzebuje Functional Dependency.
 
-https://web.cecs.pdx.edu/~mpj/pubs/fundeps-esop2000.pdf
+
 
 https://cth.altocumulus.org/~hallgren/Papers/hallgren.pdf
 
-Trzeba uwarzać bo to początek typów zależnych
+Trzeba uważać, bo to początek typów zależnych
 Funkcje zależne są początkiem do typów zależnych.
 
 https://wiki.haskell.org/Dependent_type - typy zależne
@@ -472,17 +472,29 @@ Wystarczy wiedzieć czego się szuka i znaleźć to :)
 
 
 
-Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny i polimorficzny kod
+Klasy typów są niesamowity narzędziem pozwanalącym pisać bardzo elastyczny i polimorficzny kod.
 
-[Haskell]:              /langs/haskell
-[Haskella]:             /langs/haskell
-[Haskellu]:             /langs/haskell
+https://hackage.haskell.org/package/keys-3.12.1/docs/Data-Key.html#v:index
 
-[pattern-matching]:                /pattern-matching
 
-[Wieloparametrowa klasa typu]: https://wiki.haskell.org/Multi-parameter_type_class
 
-Dependencies types
+[Pattern Matching]:           /pattern-matching
+
+[Haskell]:                    /langs/haskell
+[Haskella]:                   /langs/haskell
+[Haskellu]:                   /langs/haskell
+
+[Klasę Typów]:                 /tags/type-class
+[Typy zależne]:                /tags/dependencies-types
+[Wieloparametrowa klasa typu]: /tags/multi-parameter-type-class
+[Zalezności funkcyjne]:        /tags/functional-dependencies
+
+[RAM]:        https://github.com/helvm/helpa
+[Stack]:      https://github.com/helvm/helpa
+[StackConst]: https://github.com/helvm/helpa
+[StackImpl]:  https://github.com/helvm/helpa
+[StackUtil]:  https://github.com/helvm/helpa
+
 
 https://wiki.haskell.org/Functional_dependencies_vs._type_families
-https://wiki.haskell.org/Functional_dependencies
+
