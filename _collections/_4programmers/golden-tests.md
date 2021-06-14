@@ -17,5 +17,5 @@ Jeśli jednak ktoś wolałby złote testy we frameworku Taste znalazłem dwa tek
 
 A jako przykład użycia polecam projekt [Husk Schema](https://justinethier.github.io/husk-scheme/).
 
-Reszta artykułu na [blogu writeonly](https://writeonly.pl/golden-tests :)
+Reszta artykułu na [blogu writeonly](https://writeonly.pl/golden-tests) :)
 
