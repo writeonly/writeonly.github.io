@@ -7,9 +7,11 @@ Tutaj idealnie sprawdzają się złote testy.
 
 Niestety HUnit nie wspiera złotych testów, ale już wcześniej byłem zdecydowany na migrację do frameworka testowego HSpe].
 Jednak nie sądziłem, że zmiana będzie od razu tak radykalna. Oprócz HSpec, także framework Taste pozwala na używanie złotych testów.
-Jednak zdecydowałem się na HSpec ponieważ: * HSpec posiada automatyczne generowanie agregatora testów. * HSpec ma zagnieżdżoną składnię `describe`/`context`/`it`, którą można ładnie wypaczać.
+Jednak zdecydowałem się na HSpec ponieważ: 
+* HSpec posiada automatyczne generowanie agregatora testów. 
+* * HSpec ma zagnieżdżoną składnię `describe`/`context`/`it`, którą można ładnie wypaczać.
 
-Jeśli jednak ktoś wolałby złote testy we frameworku [Taste] znalazłem dwa teksty poświęcone temu zagadnieniu:
+Jeśli jednak ktoś wolałby złote testy we frameworku Taste znalazłem dwa teksty poświęcone temu zagadnieniu:
 * [Introduction to golden testing](https://ro-che.info/articles/2017-12-04-golden-tests)
 * [Golden tests are tasty](https://kseo.github.io/posts/2016-12-15-golden-tests-are-tasty.html)
 
