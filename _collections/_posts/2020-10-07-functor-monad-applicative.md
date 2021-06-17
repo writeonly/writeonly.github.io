@@ -1,5 +1,5 @@
 ---
-title:    'Funktor, Monada i Aplikatywa'
+title:    'Funktor, Monada i Aplikatywa w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 tags:     applicative functor library monad operator parser type-class
