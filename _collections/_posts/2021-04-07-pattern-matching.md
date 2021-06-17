@@ -1,5 +1,5 @@
 ---
-title:    'Abstrakcja i dopasowanie do wzorców'
+title:    'Abstrakcja i dopasowanie do wzorców w Haskellu'
 author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
