@@ -9,10 +9,12 @@ Monada to <a href="/tags/interface">interfejs</a>,
 <a href="/tags/trait">trait</a>,
 <a href="/tags/protocol">protokół</a>
 czy <a href="/tags/type-class">klasa typu</a> 
-dziedziczący po <a href="/tags/applicative">Aplikatywie</a> z dodatkową metodą zwaną <code>bind</code>, <code>>>=</code>, czy <code>flateMap</code> do składania Monad.
-Alternatywnie może istniać metoda flatten/join, ale wtedy musi dziedziczyć po <a href="/tags/functor">Funktorze</a>
-(i tak zasze dziedziczy bo <code>fmap f xs  =  xs >>= return . f</code>.
-W <a href="/langs/hackage">Haskellu</a> nie należy użuwać metody <code>return</code>, tylko <code>pure</code>.
+dziedziczący po <a href="/tags/applicative">Aplikatywie</a> z dodatkową metodą zwaną 
+<code>bind</code>,<code>>>=</code>, czy <code>flateMap</code> do składania Monad.
+Alternatywnie może istniać metoda flatten/join,
+ale wtedy musi dziedziczyć po <a href="/tags/functor">Funktorze</a>
+(i tak zasze dziedziczy, bo <code>fmap f xs  =  xs >>= return . f</code>).
+W <a href="/langs/hackage">Haskellu</a> nie należy używać metody <code>return</code>, tylko <code>pure</code>.
 
 
 <h3>Dokumentacja</h3>
