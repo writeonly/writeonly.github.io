@@ -35,19 +35,31 @@ moveHeadLeft (left , cell:right) = pad (cell:left , right)
 moveHeadLeft (_ , [])            = error "End of the Tipe"
 ```
 
+Jest to jednak złe rozwiązanie.
+
+## Rodzaje błędów w Haskellu
 
 
 Najpierw zdefiniujmy czym będzie nasz typ `Error`.
 Ponieważ piszemy prostą aplikacje konsolową nie potrzebujemy skomplikowanej logiki obsługi błędów.
 Dlatego wys
 
-## Przypadek jednej monady, czlu Safe czyli Either Error
+```haskell
+type Error = Text
+```
+
+Czasem jednak potrzebujemy zwrócić kilka informacji o błędzie
+```haskell
+type Errors = [Text]
+```
 
 
-Monada Either
+## Przypadek jednej monady, czyli Either
+
+W normalnym kodzie najlepszym rozwiązaniem jest Either.
 
 Either ma dwie wartości
-* Prawą poprawną
+* Prawą  - poprawną
 * Lewą - niepoprawny
 
 Ale jest to uproszczenie.
@@ -65,9 +77,9 @@ callExternalServices params = do
 ```
 
 
+
 ```haskell
-type Safe a = Either Error a
-type Error = Text
+type Safe a = Either Errors a
 ```
 
 ```haskell
@@ -91,14 +103,33 @@ unsafe (Left a) = error a
 
 I tu by można skończyć, ale piszemy w Haskellu i potrzebujemu dwóch monad.
 
-## ExceptT - Przypadek dwóch monad, czili Safe i WrapperIO SafeMonadT
+## Przypadek dwóch monad, czyli Either i BusinessIO
 
-W Nieczystycj języmacj programowania jedna metoda Safe wystarczy.
-Ale w haskellu potrzubujemy dodatkową monadę do komunikacji ze światem zewnętrnym
-Mamy dodatkową monadę WrapperIO
+W Nieczystycj języmacj programowania jedna struktura `Safe` wystarczy.
+Ale w Haskellu potrzubujemy dodatkową monadę do komunikacji ze światem zewnętrnym.
+Mamy dodatkową monadę lub monady do kontaktu ze światem zewnętrznym.
+Taka monada ma co najmniej dwie implementacje:
+* Główną, opartą na strukturze `IO`, dla kodu produkcyjnego
+* Dodatkową, opartą na strukturze `State`, dla testów jednostkowych
 
- rezultacie mamy dwie monady i nie możemy ich w prosty sposób składać.
-Dlatego potrzebujemy trzeciej monady która jest złożeniem dwóch pozostałych monad
+BusinessIO
+
+W rezultacie mamy dwie struktury (`Safe` i `BusinessIO`) i trzy kombinacje:
+* funkcje które mogą zawieść, ale nie mają kontaktu ze światem zewnętrznym zwracają struktórę `Safe a`
+* funkcje które nie mogą zawieść, ale mają kontaktu ze światem zewnętrznym zwracają monadę `BusinessIO a`
+* funkcje które mogą zawieść i mają kontakt ze światem zewnętrznym zwracają monadę `BusinessIO (Safe a)`
+
+Niestety takich monad nie można składać razem.
+Wszystkie przypadki sprowadzić do wspólnego mianownika jakim jest `BusinessIO (Safe a)`.
+W rezultacie otrzymujemy monadę w monadzie co jest prolematyczne.
+Ponieważ składnia Haskella ułatwia pracowanie tylko na zewnętrznej monadzie.
+Dlatego potrzebujemy równoważnej, bardziej płaskiej struktury
+
+Tą strukturą jest ExceptT z biblioteki MTL 
+
+```haskell
+type SafeExceptT m = ExceptT Errors m
+```
 
 Praca na monadzie `Safe` jest łatwa w czystym (ang. *pure*), funkcyjnym kodzie.
 Gdy jednak posiadamy już jakąś monadę do obsługi komunikacji ze światem zewnętrznym sprawa się komplikuje.
@@ -132,7 +163,7 @@ Czemu biblioteka mtl a nie transform?
 ponieważ mlt jest reimportowane przez bibliotekę relude
 
 
-Funkcje te podnoszą monadę biznesową, `Safe` i `Error` do monady `SafeMonadT`
+Funkcje te podnoszą monadę biznesową, `Safe` i `Errors` do monady `SafeMonadT`
 
 Potrzebujemy jeszcze 
 ```haskell
@@ -143,68 +174,72 @@ unsafeRunExceptT = fmap unsafe . runExceptT
 ```
 
 ## MonadError
-I gdy wydaje się że będziemy żyć z tymi dziwactwami wchodzi Monada Error cała na biało.
+I gdy wydaje się,
+że będziemy żyć z tymi dziwactwami wchodzi Monada `MonadError` cała na biało.
 
+Monada `MonadError` robi magię dzięki której znów nie trzeba się przejmować
+W rezultacie prawie cały kod do obsługi `SafeExceptT` mogłem wyrzucić
+
+Monada `MonadError` ma dwie metody:
 ```haskell
 class (Monad m) => MonadError e m | m -> e where
     throwError :: e -> m a
     catchError :: m a -> (e -> m a) -> m a
 ```
 
-Monada MonadError robi magię dzięki której znów nie trzeba się przejmować 
-W rezultacie prawie cały kod do obsługi `SafeExceptT` wyrzuciłem
+```haskell
+liftExceptT :: MonadError e m => ExceptT e m a -> m a
+liftExceptT m = liftEither =<< runExceptT m
+```
+* `runExceptT` pozbywa się `ExceptT` (Jest dekonstruktorem, czyli odwrotnością konstrutrora `ExceptT`)
+* `liftEither` podnosi `Either` do monady `MonadError`
 
 
+Monada `MonadError` posiada oczywiście wiele implementacji między innymi dla `Either`, `ExceptT` i `IO`:
 ```haskell
 instance MonadError e (Either e) where
     throwError             = Left
     Left  l `catchError` h = h l
     Right r `catchError` _ = Right r
-```
 
-```haskell
 instance Monad m => MonadError e (ExceptT e m) where
     throwError = ExceptT.throwE
     catchError = ExceptT.catchE
-```
 
-```haskell
 instance MonadError IOException IO where
     throwError = ioError
     catchError = catch
 ```
 
-### Error vs Errors
-To jeszcze nie wszystko
+I właśnie implementacja dla `IO` jest problematyczna.
+Wynika ona z tego że `IO` może zawierać błąd, ale tylko typu `IOException` (zwanego też `IOError`).
+Dlatego potrzebujemy konwersję z typu `Errors` na `IOError`
 
+Najpierw definiujemy funkcję zamieniającą `Errors` na `Text`:
+```haskell
+errorsToText :: Errors -> Text
+errorsToText = unlines . reverse
+```
 
+Następnie definiujemy fnkcję zamieniającą `Errors` na `String`
+```haskell
+errorsToString :: Errors -> String
+errorsToString = toString . errorsToText
+```
 
-[Pattern Matching]:            /pattern-matching
+```haskell
+exceptTToIO :: SafeExceptT IO a -> IO a
+exceptTToIO = liftExceptT . withExceptT (userError . errorsToString)
+```
+* `userError` - tworzy IOError na podstawie parametru typu `String`
+* `withExceptT` - pozwala przemapować typ błędu w `ExceptT`
 
-[Haskell]:                     /langs/haskell
-[Haskella]:                    /langs/haskell
-[Haskellu]:                    /langs/haskell
+```haskell
+type MonadSafeError m = MonadError Errors m
+```
 
-[ClassyPrelude]:               /libs/classy-prelude
-[Relude]:                      /libs/relude
-[RIO]:                         /libs/rio
+## Czy to może być użyteczne w obiektowym języku?
 
-[Klasę Typów]:                 /tags/type-class
-[Typy zależne]:                /tags/dependent-types
-[Wieloparametrowa klasa typu]: /tags/multi-parameter-type-class
-[Zalezności funkcyjne]:        /tags/functional-dependencies
+Jakoś tak się złożyło że po zaimplementowaniu Safe, SafeExceptT i MonadSafeError
 
-[Drop]:       https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Drop.hs
-[Insert]:     https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Insert.hs
-[SplitAt]:    https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/SplitAt.hs
-[Pop]:        https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Pop.hs
-[Push]:       https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Collections/Push.hs
-
-[RAM]:        https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/RAM.hs
-[Stack]:      https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/Stack.hs
-[StackConst]: https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/StackConst.hs
-[StackImpl]:  https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/StackImpl.hs
-[StackUtil]:  https://github.com/helvm/helma/blob/v0.6.6.0/hs/src/HelVM/HelMA/Common/Memories/StackUtil.hs
-
-[constraint-kinds]:                          http://dev.stephendiehl.com/hask/#constraint-kinds
-[Functional dependencies vs. type families]: https://wiki.haskell.org/Functional_dependencies_vs._type_families
+[HelMA]:        https://github.com/helvm/helma/tree/v0.6.9.0
