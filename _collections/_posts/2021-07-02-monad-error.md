@@ -44,23 +44,26 @@ Najpierw zdefiniujmy czym będzie nasz typ `Error`.
 Ponieważ piszemy prostą aplikacje konsolową nie potrzebujemy skomplikowanej logiki obsługi błędów.
 Dlatego wys
 
+Można by utworzyć alias typu:
 ```haskell
 type Error = Text
 ```
-
-Czasem jednak potrzebujemy zwrócić kilka informacji o błędzie
+Ale lepszy będzie alias:
 ```haskell
 type Errors = [Text]
 ```
+Pozwoli nam to na budowanie 
+Czasem jednak potrzebujemy zwrócić kilka informacji o błędzie
 
 
-## Przypadek jednej monady, czyli Either
+## Przypadek kodu czystego, czyli Either
 
-W normalnym kodzie najlepszym rozwiązaniem jest Either.
+W czystym kodzie najlepszym rozwiązaniem do obsługi błędu jest struktura Either.
 
-Either ma dwie wartości
+`Either` ma dwie wartości:
 * Prawą  - poprawną
 * Lewą - niepoprawny
+
 
 Ale jest to uproszczenie.
 Po prawej stronie powinna być wartość, którą chcemy dalej przetwarzać za pomocą flatMap.
@@ -76,34 +79,21 @@ callExternalServices params = do
   
 ```
 
-
-
+Ponieważ w naszym przypadku wartością niepoprawną będzie `Errors` możemy utworzyć pomocniczy typ:
 ```haskell
-type Safe a = Either Errors a
-```
-
-```haskell
-safe :: a -> Safe a
-safe = Right
-
-safeError :: Error -> Safe a
-safeError = Left
-
-appendError :: Error -> Safe a -> Safe a
-appendError message = first (<> message)
-```
-
-
-
-```haskell
-unsafe :: Safe a -> a
-unsafe (Right a) = a
-unsafe (Left a) = error a
+type Safe = Either Errors
 ```
 
 I tu by można skończyć, ale piszemy w Haskellu i potrzebujemu dwóch monad.
 
-## Przypadek dwóch monad, czyli Either i BusinessIO
+## Przypadek kodu nieczystego, czyli Either i BusinessIO
+
+Do tej pory:
+* w z funkcji bez efektów zwracaliśmy `a`, gdzie `a` reprezentuje jakiś typ
+* w kodzie nieczystym zw
+
+
+
 
 W Nieczystycj języmacj programowania jedna struktura `Safe` wystarczy.
 Ale w Haskellu potrzubujemy dodatkową monadę do komunikacji ze światem zewnętrnym.
