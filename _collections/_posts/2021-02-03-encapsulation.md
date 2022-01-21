@@ -5,7 +5,7 @@ category: haskell-eta
 langs:    haskell
 libs:     containers
 eso:      subleq whitespace
-projects: helma
+projects: helma helvm
 redirect_from:
 - encapsulation
 - haskell-eta/encapsulation
