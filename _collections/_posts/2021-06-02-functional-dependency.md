@@ -4,7 +4,7 @@ author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell java
 lib:      classy-prelude relude rio
-projects: helma
+projects: helma helvm
 tags:     collection dependent-type functional-dependency multi-parameter-type-class oop type-class
 redirect_from:
 - functional-dependency
