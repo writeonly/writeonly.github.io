@@ -4,7 +4,7 @@ author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
 libs:     attoparsec hspec hunit taste
-projects: helma helpa
+projects: helma helpa helvm
 eso:      brainfuck eas eta wsa
 tags:     framework monad testing
 redirect_from:
