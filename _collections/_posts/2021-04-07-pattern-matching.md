@@ -4,7 +4,7 @@ author:   TheKamilAdam
 category: haskell-eta
 langs:    haskell
 libs:     containers
-projects: helma
+projects: helma helvm
 eso:      eta whitespace
 tags:     abstraction operator pattern-matching sequence type-class
 redirect_from:
