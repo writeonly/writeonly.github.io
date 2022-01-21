@@ -5,7 +5,7 @@ category: haskell-eta
 tags:     applicative functor library monad operator parser type-class
 langs:    haskell
 libs:     semigroupoids
-projects: helpa
+projects: helpa helvm
 eso:      eta
 redirect_from:
   - functor-monad-applicative
