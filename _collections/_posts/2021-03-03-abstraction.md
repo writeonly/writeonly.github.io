@@ -5,7 +5,7 @@ category: haskell-eta
 langs:    haskell java scala
 libs:     containers
 eso:      subleq
-projects: helma
+projects: helma helvm
 tags:     abstraction interface oop trait type-class
 redirect_from:
 - abstraction
