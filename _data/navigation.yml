@@ -8,9 +8,9 @@ main:
   - title: "🔖"
     url: /books
   - title: "☀️"
-    url: https://helvm.online/
+    url: http://helvm.github.io/
   - title: "🍆"
-    url: https://www.degustujacaistota.pl/
+    url: http://degustujacaistota.com/
 
 sidebar-main:
   - title: "Artykuły"
@@ -41,9 +41,9 @@ sidebar-main:
     - title: "🔖 Przeczytane książki"
       url: /books
     - title: "☀ HelVM️"
-      url: https://helvm.online/
+      url: http://helvm.github.io/
     - title: "🍆 Degustująca Istota"
-      url: https://www.degustujacaistota.pl/
+      url: http://degustujacaistota.com/
 #  - title: "Wyszukiwarki"
 #    children:
 #      - title: "Wyszukiwarka Jekyll"
