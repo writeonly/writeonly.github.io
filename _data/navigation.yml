@@ -8,7 +8,7 @@ main:
   - title: "🔖"
     url: /books
   - title: "☀️"
-    url: http://helvm.github.io/
+    url: http://helvm.org/
   - title: "🍆"
     url: http://degustujacaistota.com/
 
@@ -41,7 +41,7 @@ sidebar-main:
     - title: "🔖 Przeczytane książki"
       url: /books
     - title: "☀ HelVM️"
-      url: http://helvm.github.io/
+      url: http://helvm.org/
     - title: "🍆 Degustująca Istota"
       url: http://degustujacaistota.com/
 #  - title: "Wyszukiwarki"
