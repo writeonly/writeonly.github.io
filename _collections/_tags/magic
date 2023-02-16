@@ -1,0 +1,9 @@
+---
+tag: magic
+title: Magic
+---
+Magia się nie komponuje. 
+Np adnotacje się nie komponują. 
+Za to monady się idealnie komponują. 
+Dlatego nie używaj magii. 
+Używaj antymagii czyli monad.
