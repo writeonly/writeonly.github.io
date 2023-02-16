@@ -5,4 +5,8 @@ title: Structured programming
 Radykalne programowanie strukturalne - 
 Radykalność definicji polega na tym,
 że oprócz zakazu używania goto jest jeszcze zakaz używania 
-skomplikowanych rekurencji, exceptionów, continue, breaków (oczywisty wyjątek switch w C bo nas język zmusza) i wielu (więcej niż jeden) returnów
+skomplikowanych rekurencji, 
+exceptionów, 
+continue, 
+breaków (oczywisty wyjątek switch w C bo nas język zmusza) 
+i wielu (więcej niż jeden) returnów (dobry język powinien dawać domyslnego returna z ostatniej linii)
